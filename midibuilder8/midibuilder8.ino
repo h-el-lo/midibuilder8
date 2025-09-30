@@ -124,19 +124,19 @@
 
 // ==============================  KEYS VARIABLES  =====================================
 // KEYSCAN MATRIX VARIABLES
-const int COL_NUM = 8;
-const int ROW_NUM = 8;
+const uint8_t COL_NUM = 8;
+const uint8_t ROW_NUM = 8;
 
-int cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };       // Blue cols (Mux2 0 - 7) input_pullup
-int KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux1 0 - 7), output
-int KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux1 8 - 15), output
+uint8_t cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };       // Blue cols (Mux2 0 - 7) input_pullup
+uint8_t KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux1 0 - 7), output
+uint8_t KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux1 8 - 15), output
 
 // Array to keep track of previous states of kps and kpe data for all keys
 int pState[2][ROW_NUM][COL_NUM] = { 0 };  // pState[2] for kps[x][y] and kpe[x][y]
 int temp;                                 // variable for temporary storage
 // Arrays to keep track of present states of kps and kpe data for all keys
 bool kps[ROW_NUM][COL_NUM] = { 0 };
-int kpe[ROW_NUM][COL_NUM] = { 0 };
+bool kpe[ROW_NUM][COL_NUM] = { 0 };
 bool pressed[ROW_NUM][COL_NUM] = { 0 };
 
 // The "not_ready[x][y]" variable name is used here because using "ready[x][y] = 1" would
@@ -155,13 +155,13 @@ int time;
 
 // ============================  MIDI VARIABLES  =============================
 // Channel chan;
-const int channel = 0;  // chan.get();
+const uint8_t channel = 0;  // chan.get();
 int note, vel, velocity;
-int vel_min = 0;
-int vel_max = 45;
+uint8_t vel_min = 0;
+uint8_t vel_max = 45;
 
 
-int nums[ROW_NUM][COL_NUM] = {
+uint8_t nums[ROW_NUM][COL_NUM] = {
   // Array  of midi note numbers C1 (24) to D#6 (87), 64 notes in total.
   { 24, 25, 26, 27, 28, 29, 30, 31 },
   { 32, 33, 34, 35, 36, 37, 38, 39 },
@@ -183,13 +183,13 @@ int transpose = 12;
 // ===================  POTENTIOMETER VARIABLES  =======================
 
 // Global Analog Input Variables
-const int N_ANALOGS = 5;
-int analogPins[N_ANALOGS] = { 0, 1, 2, 3, 4 };  // (Mux3 0 - 7) input_pullup
+const uint8_t N_ANALOGS = 5;
+uint8_t analogPins[N_ANALOGS] = { 0, 1, 2, 3, 4 };  // (Mux3 0 - 7) input_pullup
 
 // Potentiometer Variables
-const int N_POTS = 5;
-int potPin[N_POTS] = { 0, 1, 2, 3, 4 };  // (Mux3 0 - 7) input_pullup
-int potCC[N_POTS] = { 27, 26, 25, 24, 3 };
+const uint8_t N_POTS = 5;
+uint8_t potPin[N_POTS] = { 0, 1, 2, 3, 4 };  // (Mux3 0 - 7) input_pullup
+uint8_t potCC[N_POTS] = { 27, 26, 25, 24, 3 };
 
 int potReading[N_POTS] = { 0 };
 int potState[N_POTS] = { 0 };
@@ -204,7 +204,7 @@ unsigned long pPotTime[N_POTS] = { 0 };
 unsigned long potTimer[N_POTS] = { 0 };
 
 // Wheel Variables
-int wheel = 5;  // (Mux3, ch5)
+uint8_t wheel = 5;  // (Mux3, ch5)
 int wheelMin = 510;
 int wheelMax = 785;
 int wheelMid = ceil((wheelMin + wheelMax) / 2);
@@ -215,9 +215,9 @@ int pitchState, pitchPrevState;
 int wheelCCState, wheelCCPrevState;
 
 // =====================  SUSTAIN PEDAL VARIABLES  =========================
-int sustainPin = 6;  // Mux3, ch7
-int susState = 0;
-int susPrevState = 0;
+uint8_t sustainPin = 6;  // Mux3, ch7
+uint8_t susState = 0;
+uint8_t susPrevState = 0;
 
 // Transpose transpose;
 
@@ -248,9 +248,9 @@ void setup() {
 
 void loop() {
   // ==============================  READ THROUGH THE KEYS  ===============================
-  for (int y = 0; y < COL_NUM; y++) {
+  for (uint8_t y = 0; y < COL_NUM; y++) {
 
-    for (int x = 0; x < ROW_NUM; x++) {
+    for (uint8_t x = 0; x < ROW_NUM; x++) {
 
       note = nums[x][y] + transpose;
 
@@ -335,7 +335,7 @@ void loop() {
 
 
   // ============  READ THROUGH ALL POTS MINUS PITCH AND MOD WHEELS  =====================
-  for (int i = 0; i < N_POTS; i++) {
+  for (uint8_t i = 0; i < N_POTS; i++) {
 
     mux3_ch(potPin[i]);
     potReading[i] = analogRead(signal3);
@@ -405,8 +405,8 @@ void loop() {
   // Sustain Pedal
   //=========================================================
   mux3_ch(sustainPin);
-  int susRead = !digitalRead(signal3);
-  int susState = map(susRead, 0, 1, 0, 127);
+  bool susRead = !digitalRead(signal3);
+  susState = map(susRead, 0, 1, 0, 127);
 
   if (susState != susPrevState) {
     controlChange(channel, 64, susState);
@@ -417,21 +417,21 @@ void loop() {
 }
 
 
-void mux_ch(int channel) {
+void mux_ch(uint8_t channel) {
   digitalWrite(S10, channel & 0x01);
   digitalWrite(S11, (channel >> 1) & 0x01);
   digitalWrite(S12, (channel >> 2) & 0x01);
   digitalWrite(S13, (channel >> 3) & 0x01);
 }
 
-void mux2_ch(int channel) {
+void mux2_ch(uint8_t channel) {
   digitalWrite(S20, channel & 0x01);
   digitalWrite(S21, (channel >> 1) & 0x01);
   digitalWrite(S22, (channel >> 2) & 0x01);
   digitalWrite(S23, (channel >> 3) & 0x01);
 }
 
-void mux3_ch(int channel) {
+void mux3_ch(uint8_t channel) {
   digitalWrite(S30, channel & 0x01);
   digitalWrite(S31, (channel >> 1) & 0x01);
   digitalWrite(S32, (channel >> 2) & 0x01);
@@ -444,21 +444,21 @@ void noteOn(byte channel, byte note, byte velocity) {
   MidiUSB.flush();
 }
 
-void noteOff(byte channel, byte note, byte velocity) {
-  midiEventPacket_t noteOff = { 0x08, 0x80 | channel, note, velocity };
-  MidiUSB.sendMIDI(noteOff);
+void noteOff(uint8_t channel, uint8_t note, uint8_t velocity) {
+  midiEventPacket_t event = { 0x08, 0x80 | channel, note, velocity };
+  MidiUSB.sendMIDI(event);
   MidiUSB.flush();
 }
 
-void controlChange(byte channel, byte control, byte value) {
+void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
   midiEventPacket_t event = { 0x0B, 0xB0 | channel, control, value };
   MidiUSB.sendMIDI(event);
   MidiUSB.flush();
 }
 
-void pitchBend(byte channel, int value) {
-  midiEventPacket_t pitchBend = { 0x0E, 0xE0 | channel, value & 0x7F, (value >> 7) & 0x7F };
-  MidiUSB.sendMIDI(pitchBend);
+void pitchBend(uint8_t channel, int value) {
+  midiEventPacket_t event = { 0x0E, 0xE0 | channel, value & 0x7F, (value >> 7) & 0x7F };
+  MidiUSB.sendMIDI(event);
   MidiUSB.flush();
 }
 

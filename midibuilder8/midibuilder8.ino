@@ -1,6 +1,7 @@
 // WORKING ALL KEYS NOTEON, NOTE OFF, VELOCITY SENSITIVE
 // ALL KEYS, 3 MUXS, PEDAL
 #include <MIDIUSB.h>
+#include <avr/wdt.h>
 
 // =================== MUX VARIABLES =======================
 // Mux 1 (Outputs (keys), KPS AND KPE (rows))
@@ -35,21 +36,29 @@ uint8_t cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };       // Blue cols (Mux2 0 -
 uint8_t KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux1 0 - 7), output
 uint8_t KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux1 8 - 15), output
 
+enum ErrorCodes {
+  ERROR1,  // kpe before kps
+  ERROR2,  // kpe takes too long to read after kps (10s) - timing sanity check
+  ERROR3
+};
+
+
 // Array to keep track of previous states of kps and kpe data for all keys
-int pState[2][ROW_NUM][COL_NUM] = { 0 };  // pState[2] for kps[x][y] and kpe[x][y]
-int temp;                                 // variable for temporary storage
+uint8_t pState[2][ROW_NUM][COL_NUM] = { 0 };  // pState[2] for kps[x][y] and kpe[x][y]
+uint8_t temp;                                 // variable for temporary storage
 // Arrays to keep track of present states of kps and kpe data for all keys
 bool kps[ROW_NUM][COL_NUM] = { 0 };
 bool kpe[ROW_NUM][COL_NUM] = { 0 };
-bool pressed[ROW_NUM][COL_NUM] = { 0 };
 
-// The "not_ready[x][y]" variable name is used here because using "ready[x][y] = 1" would
-// set just ready[0][0] to "1", and all other elements to "0". The logic is then negated
-// in variable naming and assignment to "0" instead. This way, one saves the stress of
-// having to hardcode the array, giving flexibility when modifying the program.
+enum KeyState {
+  KEY_IDLE,
+  KEY_HALF_PRESSED,
+  KEY_FULL_PRESSED,
+  KEY_RELEASING,
+  KEY_ERROR
+};
 
-// bool ready[ROW_NUM][COL_NUM] = { 1 };
-bool not_ready[ROW_NUM][COL_NUM] = { 0 };
+KeyState keyState[ROW_NUM][COL_NUM] = { KEY_IDLE };
 
 // TIMER VARIABLES
 unsigned long timer[2][ROW_NUM][COL_NUM] = { 0 };  // timer[2] for kps[x][y] and kpe[x][y]
@@ -60,12 +69,12 @@ int time;
 // ============================  MIDI VARIABLES  =============================
 // Channel chan;
 const uint8_t channel = 0;  // chan.get();
-int note, vel, velocity;
+uint8_t note, vel, velocity;
 uint8_t vel_min = 0;
 uint8_t vel_max = 45;
 
 
-uint8_t nums[ROW_NUM][COL_NUM] = {
+const uint8_t PROGMEM nums[ROW_NUM][COL_NUM] = {
   // Array  of midi note numbers C1 (24) to D#6 (87), 64 notes in total.
   { 24, 25, 26, 27, 28, 29, 30, 31 },
   { 32, 33, 34, 35, 36, 37, 38, 39 },
@@ -80,7 +89,7 @@ uint8_t nums[ROW_NUM][COL_NUM] = {
 // Transpose transposer(0, 24, -24);
 // int transpose = transposer.get();
 
-int transpose = 12;
+uint8_t transpose = 12;
 // ==========================================================
 
 
@@ -99,8 +108,8 @@ int potReading[N_POTS] = { 0 };
 int potState[N_POTS] = { 0 };
 int potPState[N_POTS] = { 0 };
 
-int midiState[N_POTS] = { 0 };
-int midiPState[N_POTS] = { 0 };
+uint8_t midiState[N_POTS] = { 0 };
+uint8_t midiPState[N_POTS] = { 0 };
 
 byte potThreshold = 15;
 const int POT_TIMEOUT = 300;
@@ -116,7 +125,7 @@ int wheelReading = 0;
 byte wheelThreshold = 2;
 int wheelState, wheelPrevState;
 int pitchState, pitchPrevState;
-int wheelCCState, wheelCCPrevState;
+uint8_t wheelCCState, wheelCCPrevState;
 
 // =====================  SUSTAIN PEDAL VARIABLES  =========================
 uint8_t sustainPin = 6;  // Mux3, ch7
@@ -128,6 +137,8 @@ uint8_t susPrevState = 0;
 
 void setup() {
   // put your setup code here, to run once:
+  wdt_enable(WDTO_250MS);
+
   pinMode(S10, OUTPUT);
   pinMode(S11, OUTPUT);
   pinMode(S12, OUTPUT);
@@ -151,14 +162,18 @@ void setup() {
 }
 
 void loop() {
+  // Reset watchdog timer
+  wdt_reset();
+
   // ==============================  READ THROUGH THE KEYS  ===============================
   for (uint8_t y = 0; y < COL_NUM; y++) {
 
     for (uint8_t x = 0; x < ROW_NUM; x++) {
 
-      note = nums[x][y] + transpose;
+      note = pgm_read_byte(&nums[x][y]) + transpose;
 
-      if (!not_ready[x][y]) {
+      // if (keyState[x][y] == (KEY_IDLE or KEY_HALF_PRESSED))
+      if ((keyState[x][y] == KEY_IDLE) || (keyState[x][y] == KEY_HALF_PRESSED)) {
 
         // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
         mux_ch(KPS[x]);
@@ -168,15 +183,9 @@ void loop() {
         digitalWrite(signal, HIGH);
 
         if (temp != pState[0][x][y]) {
-          if (temp == 1) {
-            timer[0][x][y] = millis();
-            kps[x][y] = 1;  // Set "keypress-start" of that key to true (half-press)
-            pState[0][x][y] = temp;
-          } else {
-            timer[0][x][y] = 0;
-            kps[x][y] = 0;
-            pState[0][x][y] = temp;
-          }
+          timer[0][x][y] = (temp == 1) ? millis() : 0;
+          kps[x][y] = temp;
+          pState[0][x][y] = temp;
         }
 
         // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
@@ -187,35 +196,33 @@ void loop() {
         digitalWrite(signal, HIGH);
 
         if (temp != pState[1][x][y]) {
-          if (temp == 1) {
-            timer[1][x][y] = millis();
-            kpe[x][y] = 1;  // Set "keypress-end" of that key to true (full-press)
-            pState[1][x][y] = temp;
-          } else {
-            timer[1][x][y] = 0;
-            kpe[x][y] = 0;
-            pState[1][x][y] = temp;
-          }
+          timer[1][x][y] = (temp == 1) ? millis() : 0;
+          kpe[x][y] = temp;
+          pState[1][x][y] = temp;
         }
+      }
 
-        if (kps[x][y] && kpe[x][y]) {
-          // Declare key[x][y] as "pressed" and not ready to read another keypress
-          pressed[x][y] = 1;
-          not_ready[x][y] = 1;
-        }
+      if ((kps[x][y] == 1) && (kpe[x][y] == 0)) {
+        keyState[x][y] = KEY_HALF_PRESSED;
+      } else if ((kps[x][y] == 1) && (kpe[x][y] == 1)) {
+        keyState[x][y] = KEY_FULL_PRESSED;
+      } else if ((kps[x][y] == 0) && (kpe[x][y] == 1)) {
+        keyState[x][y] = KEY_ERROR;
+        Serial.println("Error with key " + String(note - 23) + ". kpe before kps");
+        // Remember to state the error code, log the error and increment the error counter.
       }
 
       // Sends a noteOn midi message when keypress is complete
-      if (pressed[x][y]) {
+      if (keyState[x][y] == KEY_FULL_PRESSED) {
         time = abs(int(timer[1][x][y] - timer[0][x][y]));
         Serial.println(time);
-        vel = constrain(time, vel_min, vel_max);
-        velocity = map(vel, vel_max, vel_min, 5, 127);
+        velocity = map(constrain(time, vel_min, vel_max), vel_max, vel_min, 5, 127);
         noteOn(0, note, velocity);
-        pressed[x][y] = 0;
+        keyState[x][y] = KEY_RELEASING;
       }
 
-      if (not_ready[x][y]) {
+
+      if (keyState[x][y] == KEY_RELEASING) {
 
         mux_ch(KPS[x]);
         digitalWrite(signal, LOW);
@@ -230,7 +237,7 @@ void loop() {
         digitalWrite(signal, HIGH);
         if (!kps[x][y] && !kpe[x][y]) {
           noteOff(0, note, velocity);
-          not_ready[x][y] = 0;
+          keyState[x][y] = KEY_IDLE;
         }
       }
     }
@@ -325,6 +332,7 @@ void mux_ch(uint8_t channel) {
   digitalWrite(S11, (channel >> 1) & 0x01);
   digitalWrite(S12, (channel >> 2) & 0x01);
   digitalWrite(S13, (channel >> 3) & 0x01);
+  delayMicroseconds(50);
 }
 
 void mux2_ch(uint8_t channel) {
@@ -332,6 +340,7 @@ void mux2_ch(uint8_t channel) {
   digitalWrite(S21, (channel >> 1) & 0x01);
   digitalWrite(S22, (channel >> 2) & 0x01);
   digitalWrite(S23, (channel >> 3) & 0x01);
+  delayMicroseconds(50);
 }
 
 void mux3_ch(uint8_t channel) {
@@ -339,6 +348,7 @@ void mux3_ch(uint8_t channel) {
   digitalWrite(S31, (channel >> 1) & 0x01);
   digitalWrite(S32, (channel >> 2) & 0x01);
   digitalWrite(S33, (channel >> 3) & 0x01);
+  delayMicroseconds(50);
 }
 
 void noteOn(byte channel, byte note, byte velocity) {
@@ -395,8 +405,8 @@ void PitchMod() {
         }
 
         if (wheelCCState != wheelCCPrevState) {
-        controlChange(channel, 1, wheelCCState);  // Modulation Wheel
-        wheelCCPrevState = wheelCCState;
+          controlChange(channel, 1, wheelCCState);  // Modulation Wheel
+          wheelCCPrevState = wheelCCState;
         }
 
         wheelPrevState = wheelState;
@@ -414,6 +424,3 @@ int findIndex(int arr[], int size, int target) {
 
   return -1;  // Return =1 if the target is not found in the array.
 }
-
-
-

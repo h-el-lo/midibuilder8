@@ -1,0 +1,255 @@
+HARDWARE VALIDATION
+
+// Validate analog readings are in expected range
+bool validateAnalogRead(int reading, int expectedMin, int expectedMax) {
+  if (reading < 0 || reading > 1023) {
+    // ADC returned invalid value
+    return false;
+  }
+  // Optional: check if value is in calibrated range
+  if (reading < expectedMin - 50 || reading > expectedMax + 50) {
+    // Sensor may be disconnected or failing
+    return false;
+  }
+  return true;
+}
+
+// Use in PitchMod():
+int wheelReading = analogRead(signal3);
+if (!validateAnalogRead(wheelReading, wheelMin - 100, wheelMax + 100)) {
+  // Handle error: use last good value, send default, or log error
+  return; // Skip this reading
+}
+
+
+* WATCHDOG TIMER (DONE)
+* STATE MACHINES FOR KEY SCANNING (DONE)
+* TIMING SANITY CHECKS
+
+// Check for timing anomalies
+if (pressed[x][y]) {
+  time = abs(int(timer[1][x][y] - timer[0][x][y]));
+  
+  // Sanity check: physically impossible timing
+  if (time == 0) {
+    // Both switches triggered simultaneously - hardware glitch
+    time = vel_max / 2;  // Use medium velocity
+  } else if (time > 500) {
+    // Over 500ms between switches? Likely a stuck key
+    // Don't send note or use maximum time
+    time = vel_max;
+  }
+  
+  vel = constrain(time, vel_min, vel_max);
+  velocity = map(vel, vel_max, vel_min, 5, 127);
+  noteOn(0, note, velocity);
+  pressed[x][y] = 0;
+}
+
+* ERROR LOGGING
+
+#define ERROR_LED_PIN 13
+
+enum ErrorCode {
+  ERR_NONE = 0,
+  ERR_KEY_STUCK = 1,
+  ERR_INVALID_TIMING = 2,
+  ERR_ADC_FAULT = 3,
+  ERR_MIDI_OVERFLOW = 4
+};
+
+uint8_t errorCode = ERR_NONE;
+uint16_t errorCount[5] = {0};  // Count each error type
+
+void logError(ErrorCode code) {
+  errorCode = code;
+  errorCount[code]++;
+  
+  // Flash LED in pattern
+  for (int i = 0; i < code; i++) {
+    digitalWrite(ERROR_LED_PIN, HIGH);
+    delay(100);
+    digitalWrite(ERROR_LED_PIN, LOW);
+    delay(100);
+  }
+  
+  // Also log to serial for debugging
+  Serial.print("Error ");
+  Serial.print(code);
+  Serial.print(": count=");
+  Serial.println(errorCount[code]);
+}
+
+
+* ERROR LOGGING
+
+#define ERROR_LED_PIN 13
+
+enum ErrorCode {
+  ERR_NONE = 0,
+  ERR_KEY_STUCK = 1,
+  ERR_INVALID_TIMING = 2,
+  ERR_ADC_FAULT = 3,
+  ERR_MIDI_OVERFLOW = 4
+};
+
+uint8_t errorCode = ERR_NONE;
+uint16_t errorCount[5] = {0};  // Count each error type
+
+void logError(ErrorCode code) {
+  errorCode = code;
+  errorCount[code]++;
+  
+  // Flash LED in pattern
+  for (int i = 0; i < code; i++) {
+    digitalWrite(ERROR_LED_PIN, HIGH);
+    delay(100);
+    digitalWrite(ERROR_LED_PIN, LOW);
+    delay(100);
+  }
+  
+  // Also log to serial for debugging
+  Serial.print("Error ");
+  Serial.print(code);
+  Serial.print(": count=");
+  Serial.println(errorCount[code]);
+}
+
+
+
+* GRACEFUL DEGRADATION
+
+// If a key appears stuck, automatically send note-off after timeout
+const unsigned long KEY_STUCK_TIMEOUT = 5000;  // 5 seconds
+
+void checkStuckKeys() {
+  static unsigned long lastCheck = 0;
+  
+  if (millis() - lastCheck > 1000) {  // Check every second
+    for (uint8_t x = 0; x < ROW_NUM; x++) {
+      for (uint8_t y = 0; y < COL_NUM; y++) {
+        if (not_ready[x][y]) {
+          if (millis() - timer[1][x][y] > KEY_STUCK_TIMEOUT) {
+            // Force note off
+            note = nums[x][y] + transpose;
+            noteOff(0, note, 0);
+            not_ready[x][y] = 0;
+            logError(ERR_KEY_STUCK);
+          }
+        }
+      }
+    }
+    lastCheck = millis();
+  }
+}
+
+// Call in loop():
+checkStuckKeys();
+
+
+
+
+
+Fail gracefully - Don't crash, degrade functionality instead
+Log errors - Use LEDs/serial since there's no display
+Validate inputs - Hardware can glitch, always sanity-check
+Use timeouts - Prevent infinite waits
+State machines - Catch impossible state transitions
+Watchdogs - Last resort recovery from lockups
+
+
+
+
+
+
+
+
+// Wheel Variables
+uint8_t wheel = 5;  // (Mux3, ch5)
+int wheelMin = 510;
+int wheelMax = 785;
+int wheelMid = ceil((wheelMin + wheelMax) / 2);
+int wheelReading = 0;
+byte wheelThreshold = 2;
+int wheelState, wheelPrevState;
+int pitchState, pitchPrevState;
+uint8_t wheelCCState, wheelCCPrevState;
+
+// =====================  SUSTAIN PEDAL VARIABLES  =========================
+uint8_t sustainPin = 6;  // Mux3, ch7
+uint8_t susState = 0;
+uint8_t susPrevState = 0;
+
+// Transpose transpose;
+
+
+
+
+
+
+
+
+
+  // Pitch Wheel (Joystick X)
+  //=========================================================
+  // PitchMod();
+  //==========================================================
+
+
+  // // Sustain Pedal
+  // //=========================================================
+  // mux3_ch(sustainPin);
+  // bool susRead = !digitalRead(signal3);
+  // susState = map(susRead, 0, 1, 0, 127);
+
+  // if (susState != susPrevState) {
+  //   controlChange(channel, 64, susState);
+  //   susPrevState = susState;
+  // }
+  // //==========================================================
+}
+
+
+// void PitchMod() {
+//   mux3_ch(wheel);
+//   int wheelReading = analogRead(signal3);
+//   wheelState = constrain(wheelReading, wheelMin, wheelMax);
+//   int wheelVar = abs(wheelState - wheelPrevState);
+
+//   if (wheelVar > wheelThreshold) {
+//     if (wheelState != wheelPrevState) {
+
+//       if (wheelState < wheelMid) {
+//         // If wheel is in the lower section
+//         pitchState = map(wheelState, wheelMin, wheelMid, 0, 8191);
+//         if (pitchState > 7700) {
+//           pitchState = 8191;
+//         }
+//         if (pitchState != pitchPrevState) {
+//           pitchBend(channel, pitchState);
+//           pitchPrevState = pitchState;
+//         }
+//         wheelPrevState = wheelState;
+//       } else if (wheelState > wheelMid) {
+//         // if wheel is in the upper section
+//         wheelCCState = map(wheelState, wheelMid, wheelMax, 0, 127);
+//         if (wheelCCState < 23) {
+//           wheelCCState = 0;
+//         } else if (wheelCCState >= 124) {
+//           wheelCCState = 127;
+//         }
+
+//         if (wheelCCState != wheelCCPrevState) {
+//           controlChange(channel, 1, wheelCCState);  // Modulation Wheel
+//           wheelCCPrevState = wheelCCState;
+//         }
+
+//         wheelPrevState = wheelState;
+//       }
+//     }
+//   }
+// }
+
+
+
+

@@ -1,7 +1,6 @@
 #ifndef PITCHWHEEL_H
 #define PITCHWHEEL_H
 
-#include <Arduino.h>
 #include "MIDIHelper.h"
 
 uint8_t wheelPin;  // This pin is connected directly to the MCU board, not a multiplexer

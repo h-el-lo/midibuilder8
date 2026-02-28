@@ -3,6 +3,19 @@
 
 #include "Knob.h"
 #include "TouchSensor.h"
+#include "MuxHelper.h"
+
+// =============================  MIDI VARIABLES  =============================
+uint8_t GLOBAL_MIDI_CHANNEL = 1;
+uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
+// ============================================================================
+
+// ==============================  MUX VARIABLES  =============================
+Mux Mux1(15, 14, 16, 10, A0, DIGITAL, INPUT_PULLUP);  // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
+Mux Mux2(9, 8, 7, 6, A1, DIGITAL, OUTPUT);            // Mux 2 (Outputs (keys), KPS AND KPE (rows))
+Mux Mux3(5, 4, 3, 2, A2, DIGITAL, OUTPUT);            // Mux 3 (Digital output of buttons)
+Mux Mux4(5, 4, 3, 2, A2, ANALOG, INPUT);              // Mux 4 (Analog Input, Knobs and Faders)
+// ============================================================================
 
 const uint8_t NUM_OF_KNOBS = 16;
 Knob knobSet[NUM_OF_KNOBS] = {

@@ -14,12 +14,12 @@ Knob::Knob(uint8_t potPin, uint8_t CCNumber)
 }
 
 // Getters
-uint8_t Knob::getCCNumber() {
+uint8_t Knob::getCCNumber() const {
   return _CCNumber;
 }
 
-uint8_t Knob::getMinMax() {
-  return _min, _max;
+Knob::MinMax Knob::getMinMax() const {
+  return { _min, _max };
 }
 
 // Setters

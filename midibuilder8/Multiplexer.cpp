@@ -32,7 +32,7 @@ void Mux::shiftSignalTo(uint8_t channel) {
   digitalWrite(_S1, (channel >> 1) & 0x01);
   digitalWrite(_S2, (channel >> 2) & 0x01);
   digitalWrite(_S3, (channel >> 3) & 0x01);
-  delayMicroseconds(50);
+  delayMicroseconds(50); // for signal stabilization
 }
 
 uint16_t Mux::read() {

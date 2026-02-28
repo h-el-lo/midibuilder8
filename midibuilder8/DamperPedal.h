@@ -1,7 +1,6 @@
 #ifndef DAMPERPEDAL_H
 #define DAMPERPEDAL_H
 
-#include <Arduino.h>
 #include "MIDIHelper.h"
 
 uint8_t susPin;  // This pin is connected directly to the MCU board, not a multiplexer

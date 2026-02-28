@@ -24,10 +24,13 @@ public:
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
   Knob(uint8_t potPin, uint8_t CCNumber);
+  struct MinMax {
+    uint8_t min, max;
+  };
 
   // Getters
-  uint8_t getCCNumber();
-  uint8_t getMinMax();  // Returns min and max CC values of knob
+  uint8_t getCCNumber() const;
+  MinMax getMinMax() const;  // Returns min and max CC values of knob
 
   // Setters
   void setMIDIChannel(uint8_t channel);

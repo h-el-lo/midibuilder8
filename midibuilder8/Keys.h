@@ -1,7 +1,6 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include <Arduino.h>
 #include "MuxHelper.h"
 #include "MIDIHelper.h"
 

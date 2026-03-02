@@ -5,7 +5,7 @@
 
 uint8_t wheelPin;  // This pin is connected directly to the MCU board, not a multiplexer
 uint16_t wheelState, wheelPrevState;
-uint8_t wheelThreshold = 4;
+uint8_t wheelThreshold = 3;
 uint16_t wheelMin = 0;     // Expected min value from the rotation of pitch wheel
 uint16_t wheelMax = 1023;  // Expected max value from the rotation of pitch wheel
 uint16_t wheelCenter = (wheelMin + wheelMax) / 2;
@@ -26,7 +26,7 @@ void readWheel() {
 }
 
 void centerWheel() {
-  pitchBend(KEYS_CHANNEL, 0);
+  centerPitchWheel();
 }
 
 // Validate analog readings are in expected range

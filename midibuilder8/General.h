@@ -2,8 +2,10 @@
 #define GENERAL_H
 
 #include "Knob.h"
+#include "Joystick.h"
 #include "TouchSensor.h"
 #include "MuxHelper.h"
+#include "MIDIHelper.h"
 
 // =============================  MIDI VARIABLES  =============================
 uint8_t GLOBAL_MIDI_CHANNEL = 1;
@@ -17,6 +19,11 @@ Mux Mux3(5, 4, 3, 2, A2, DIGITAL, OUTPUT);            // Mux 3 (Digital output o
 Mux Mux4(5, 4, 3, 2, A2, ANALOG, INPUT);              // Mux 4 (Analog Input, Knobs and Faders)
 // ============================================================================
 
+// ==============================  JOYSTICK  ==================================
+Joystick joystick(2, 3);
+// ============================================================================
+
+// ===============================  KNOBS  ====================================
 const uint8_t NUM_OF_KNOBS = 16;
 Knob knobSet[NUM_OF_KNOBS] = {
   Knob(0, 1),    // Modulation Wheel (Fader)
@@ -36,7 +43,9 @@ Knob knobSet[NUM_OF_KNOBS] = {
   Knob(14, 26),  // Fader 7
   Knob(15, 27),  // Fader 8
 };
+// ============================================================================
 
+// ============================  TOUCH SENSORS  ===============================
 const uint8_t NUM_OF_TOUCH_SENSORS = 4;
 TouchSensor touchSensors[NUM_OF_TOUCH_SENSORS] = {
   TouchSensor(1, 66),
@@ -44,6 +53,7 @@ TouchSensor touchSensors[NUM_OF_TOUCH_SENSORS] = {
   TouchSensor(3, 68),
   TouchSensor(4, 69),
 };
+// ============================================================================
 
 
 

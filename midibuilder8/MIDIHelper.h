@@ -35,6 +35,13 @@ inline void pitchBend(uint8_t channel, int value) {
   MidiUSB.flush();
 }
 
+inline void centerPitchWheel() {
+  uint8_t value = 0;
+  midiEventPacket_t event = { 0x0E, 0xE0 | KEYS_CHANNEL, value & 0x7F, (value >> 7) & 0x7F };
+  MidiUSB.sendMIDI(event);
+  MidiUSB.flush();
+}
+
 // Maybe in future versions, implement a special function for sendMIDI.
 // This function should send the midi MESSAGES IN THE BUFFRER
 // Buffer size shall be 64 messages(max length of keypresses per time)/ should be enough for knobs and special units (pedals, pitch wheel etc.)

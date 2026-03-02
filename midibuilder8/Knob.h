@@ -7,6 +7,7 @@
 // Analog Input for Knobs and Faders alike
 class Knob {
 private:
+  bool _isEnabled;
   uint8_t _potPin;  // Mux channel connected to potentiometer
   uint8_t _CCNumber;
   uint8_t _channel;
@@ -21,6 +22,7 @@ private:
 
 public:
   // Constructors
+  Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
   Knob(uint8_t potPin, uint8_t CCNumber);
@@ -38,9 +40,10 @@ public:
   void setMax(uint8_t value);
 
   // Methods
-  void update();
+  void disable();
   void readKnob();
   void validateAnalogRead(uint16_t reading);
+  void update();
 };
 
 

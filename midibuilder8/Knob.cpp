@@ -2,15 +2,20 @@
 #include "MIDIHelper.h"
 
 // Constructors
-Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel)
-  : _potPin(potPin), _CCNumber(CCNumber), _min(min), _max(max), _channel(channel) {
+Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled)
+  : _potPin(potPin), _CCNumber(CCNumber), _min(min), _max(max), _channel(channel), _isEnabled(isEnabled) {
 }
+
+Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel)
+  : Knob(potPin, CCNumber, min, max, channel, true) {
+}
+
 Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max)
-  : Knob(potPin, CCNumber, min, max, GLOBAL_MIDI_CHANNEL) {
+  : Knob(potPin, CCNumber, min, max, GLOBAL_MIDI_CHANNEL, true) {
 }
 
 Knob::Knob(uint8_t potPin, uint8_t CCNumber)
-  : Knob(potPin, CCNumber, 0, 127, GLOBAL_MIDI_CHANNEL) {
+  : Knob(potPin, CCNumber, 0, 127, GLOBAL_MIDI_CHANNEL, true) {
 }
 
 // Getters
@@ -36,6 +41,9 @@ void Knob::setMax(uint8_t maxCCValue) {
 }
 
 // Methods
+void Knob::disable() {
+}
+
 void Knob::readKnob() {
   _potState = Mux4.readChannel(_potPin);
 }
@@ -46,23 +54,25 @@ void Knob::validateAnalogRead(uint16_t reading) {
 }
 
 void Knob::update() {
-  readKnob();
-  validateAnalogRead(_potState);
-  _midiState = map(_potState, 0, 1023, _min, _max);
+  if (Knob::_isEnabled) {
+    readKnob();
+    validateAnalogRead(_potState);
+    _midiState = map(_potState, 0, 1023, _min, _max);
 
-  static uint16_t potIncrement = abs(_potState - _potPState);
+    static uint16_t potIncrement = abs(_potState - _potPState);
 
-  if (potIncrement > _potThreshold) {
-    snapshot = millis();
-  }
-
-  static uint16_t potTimer = millis() - snapshot;
-
-  if (potTimer < POT_TIMEOUT) {
-    if (_midiState != _midiPState) {
-      controlChange(_channel, _CCNumber, _midiState);
-      _midiPState = _midiState;
+    if (potIncrement > _potThreshold) {
+      snapshot = millis();
     }
-    _potPState = _potState;
+
+    static uint16_t potTimer = millis() - snapshot;
+
+    if (potTimer < POT_TIMEOUT) {
+      if (_midiState != _midiPState) {
+        controlChange(_channel, _CCNumber, _midiState);
+        _midiPState = _midiState;
+      }
+      _potPState = _potState;
+    }
   }
 }

@@ -3,7 +3,7 @@
 
 #include "MIDIHelper.h"
 
-uint8_t wheelPin;  // This pin is connected directly to the MCU board, not a multiplexer
+uint8_t wheelPin = 10;  // This pin is connected directly to the MCU board, not a multiplexer
 uint16_t wheelState, wheelPrevState;
 uint8_t wheelThreshold = 3;
 uint16_t wheelMin = 0;     // Expected min value from the rotation of pitch wheel

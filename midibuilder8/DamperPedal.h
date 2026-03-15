@@ -3,7 +3,7 @@
 
 #include "MIDIHelper.h"
 
-uint8_t susPin;  // This pin is connected directly to the MCU board, not a multiplexer
+uint8_t susPin = 42;  // This pin is connected directly to the MCU board, not a multiplexer
 uint8_t susState, susPrevState;
 uint8_t damperDebounceTime;
 unsigned long lastUpdatedTime = 0;

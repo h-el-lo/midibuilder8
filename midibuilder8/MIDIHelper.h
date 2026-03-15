@@ -1,45 +1,42 @@
 #ifndef MIDIHELPER_H
 #define MIDIHELPER_H
 
-#include <Arduino.h>
-#include <MIDIUSB.h>
-
 extern uint8_t GLOBAL_MIDI_CHANNEL;
 extern uint8_t KEYS_CHANNEL;
+
+#include <Arduino.h>
+#include "USB.h"
+#include "USBMIDI.h"
+
+USBMIDI usbmidi;
 
 
 // These functions are defined as inline to prevent multiple definition errors when
 // header is called in different files
 
-inline void noteOn(byte channel, byte note, byte velocity) {
-  midiEventPacket_t event = { 0x09, 0x90 | channel, note, velocity };
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
+inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
+  usbmidi.noteOn(note, velocity, channel);
 }
 
 inline void noteOff(uint8_t channel, uint8_t note, uint8_t velocity) {
-  midiEventPacket_t event = { 0x08, 0x80 | channel, note, velocity };
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
+  usbmidi.noteOff(note, velocity, channel);
 }
 
 inline void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
-  midiEventPacket_t event = { 0x0B, 0xB0 | channel, control, value };
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
+  usbmidi.controlChange(control, value, channel);
 }
 
-inline void pitchBend(uint8_t channel, int value) {
-  midiEventPacket_t event = { 0x0E, 0xE0 | channel, value & 0x7F, (value >> 7) & 0x7F };
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
+inline void pitchBend(uint16_t channel, uint8_t value) {
+// The generic "int" or "byte" data types cannot be used here to represent values greater than 256 ()
+// this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
+// Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent
+// a range of 0 - 16383 or -8192 to 8191. (2**14)
+  usbmidi.pitchBend(value, channel);
 }
 
 inline void centerPitchWheel() {
   uint8_t value = 0;
-  midiEventPacket_t event = { 0x0E, 0xE0 | KEYS_CHANNEL, value & 0x7F, (value >> 7) & 0x7F };
-  MidiUSB.sendMIDI(event);
-  MidiUSB.flush();
+  pitchBend(KEYS_CHANNEL, value);
 }
 
 // Maybe in future versions, implement a special function for sendMIDI.

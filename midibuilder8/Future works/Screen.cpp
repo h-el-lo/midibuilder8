@@ -4,9 +4,9 @@
 
 // Constructors
 Screen::Screen(uint8_t LCD_ADDR, uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS)
-  : LiquidCrystal_I2C(LCD_ADDR, LCD_COLS, LCD_ROWS), _LCD_ADDR(LCD_ADDR), _SDA_PIN(SDA_PIN), _SCL_PIN(SCL_PIN), _LCD_COLS(LCD_COLS), _LCD_ROWS(LCD_ROWS), {
+  : LiquidCrystal_I2C(LCD_ADDR, LCD_COLS, LCD_ROWS), _LCD_ADDR(LCD_ADDR), _SDA_PIN(SDA_PIN), _SCL_PIN(SCL_PIN), _LCD_COLS(LCD_COLS), _LCD_ROWS(LCD_ROWS) {
 
-  Wire.begin(_SDA_PIN, _SCL_PIN);
+  // Wire.begin(_SDA_PIN, _SCL_PIN);
   LiquidCrystal_I2C::init();
   backlight();
 }
@@ -36,6 +36,6 @@ Screen::Screen()
 
 
 
-Screen::init() {
-
+void Screen::init() {
+  // Pass
 }

@@ -1,6 +1,6 @@
 // WORKING ALL KEYS NOTEON, NOTE OFF, VELOCITY SENSITIVE
 // ALL KEYS, 3 MUXS, PEDAL
-#include <avr/wdt.h>
+// #include <avr/wdt.h>
 #include "Keys.h"
 #include "DamperPedal.h"
 #include "PitchWheel.h"
@@ -14,17 +14,24 @@ uint8_t cycleCount = 0;
 
 // ============================================================================
 
+#if ARDUINO_USB_MODE
+#warning This sketch should be used when USB is in OTG mode
+
+void setup() {}
+void loop() {}
+
+#else
 
 void setup() {
   // put your setup code here, to run once:
-  wdt_enable(WDTO_250MS);
+  // wdt_enable(WDTO_250MS);
   // Serial.begin(115200);
   setSustainPinMode();
 }
 
 void loop() {
   // Reset watchdog timer
-  wdt_reset();
+  // wdt_reset();
 
   // ================================  READ THROUGH KEYS  ===================================
   updateKeys();
@@ -56,3 +63,40 @@ void loop() {
 
   // ========================================================================================
 }
+
+#endif 
+
+
+
+
+
+// mux 1 (Reader)
+// gpio 4, 5, 6, 7, 15             DONE
+
+// mux 4 (Knobs and faders)
+// gpio 16, 17, 18, 8, 3             DONE
+
+// expression pedal
+// connection checker pin gpio 46
+// adc reader pin gpio 9
+
+// pitch wheel gpio
+// 10                                DONE
+
+
+
+
+// joystick xy,
+// gpio 1, 2 adc1ch0, ch1
+
+// sustain pedal
+// gpio 42                           DONE
+
+// LCD Screen sda, scl
+// gpio 41, 40
+
+// mux 2 (keys)
+// gpio 39, 38, 37, 36, 35           DONE
+
+// mux3 (buttons)
+// gpio 0, 45, 48, 47, 21            DONE

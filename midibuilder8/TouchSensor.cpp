@@ -15,7 +15,9 @@ TouchSensor::TouchSensor(uint8_t pinNumber, uint8_t CCNumber)
 // Getters
 
 // Setters
-void TouchSensor::setMIDIChannel(uint8_t channel);
+void TouchSensor::setMIDIChannel(uint8_t channel){
+  
+};
 
 // Methods
 void TouchSensor::init() {

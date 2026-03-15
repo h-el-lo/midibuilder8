@@ -1,15 +1,13 @@
 #ifndef MIDIHELPER_H
 #define MIDIHELPER_H
 
-extern uint8_t GLOBAL_MIDI_CHANNEL;
-extern uint8_t KEYS_CHANNEL;
-
 #include <Arduino.h>
 #include "USB.h"
 #include "USBMIDI.h"
 
-USBMIDI usbmidi;
-
+extern USBMIDI usbmidi;
+extern uint8_t GLOBAL_MIDI_CHANNEL;
+extern uint8_t KEYS_CHANNEL;
 
 // These functions are defined as inline to prevent multiple definition errors when
 // header is called in different files
@@ -26,7 +24,7 @@ inline void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
   usbmidi.controlChange(control, value, channel);
 }
 
-inline void pitchBend(uint16_t channel, uint8_t value) {
+inline void pitchBend(uint8_t channel, int16_t value) {
 // The generic "int" or "byte" data types cannot be used here to represent values greater than 256 ()
 // this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
 // Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent

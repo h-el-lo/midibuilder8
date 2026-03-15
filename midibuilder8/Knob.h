@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "MuxHelper.h"
+#include "Multiplexer.h"
 
 // Analog Input for Knobs and Faders alike
 class Knob {

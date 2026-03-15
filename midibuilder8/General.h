@@ -8,6 +8,7 @@
 #include "MIDIHelper.h"
 
 // =============================  MIDI VARIABLES  =============================
+USBMIDI usbmidi;
 uint8_t GLOBAL_MIDI_CHANNEL = 1;
 uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
 // ============================================================================
@@ -26,22 +27,22 @@ Joystick joystick(1, 2);
 // ===============================  KNOBS  ====================================
 const uint8_t NUM_OF_KNOBS = 16;
 Knob knobSet[NUM_OF_KNOBS] = {
-  Knob(0, 1),    // Modulation Wheel (Fader)
-  Knob(1, 7),    // Channel volume - Knob 1
-  Knob(2, 11),   // Knob 2
-  Knob(3, 11),   // Knob 3
-  Knob(4, 16),   // General Purpose Controller 1 - Knob 4
-  Knob(5, 17),   // General Purpose Controller 2 - Knob 5
-  Knob(6, 18),   // General Purpose Controller 3 - Knob 6
-  Knob(7, 19),   // General Purpose Controller 4 - Knob 7
-  Knob(8, 20),   // Fader 1
-  Knob(9, 21),   // Fader 2
-  Knob(10, 22),  // Fader 3
-  Knob(11, 23),  // Fader 4
-  Knob(12, 24),  // Fader 5
-  Knob(13, 25),  // Fader 6
-  Knob(14, 26),  // Fader 7
-  Knob(15, 27),  // Fader 8
+  Knob(0, 7),    // Channel volume - Knob 1
+  Knob(1, 5),    // Knob 2
+  Knob(2, 11),   // Knob 3
+  Knob(3, 16),   // General Purpose Controller 1 - Knob 4
+  Knob(4, 17),   // General Purpose Controller 2 - Knob 5
+  Knob(5, 18),   // General Purpose Controller 3 - Knob 6
+  Knob(6, 19),   // General Purpose Controller 4 - Knob 7
+  Knob(7, 20),   // Fader 1
+  Knob(8, 21),   // Fader 2
+  Knob(9, 22),   // Fader 3
+  Knob(10, 23),  // Fader 4
+  Knob(11, 24),  // Fader 5
+  Knob(12, 25),  // Fader 6
+  Knob(13, 26),  // Fader 7
+  Knob(14, 27),  // Fader 8
+  Knob(15, 28),  // Fader 9
 };
 // ============================================================================
 

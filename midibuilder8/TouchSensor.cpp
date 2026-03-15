@@ -34,7 +34,7 @@ void TouchSensor::updateMIDI() {
 }
 
 void TouchSensor::update() {
-  if (abs(millis() - _lastUpdatedTime) >= _debounceTime) {
+  if (millis() - _lastUpdatedTime >= _debounceTime) {
     _state = digitalRead(_pinNumber);
     _state = !_state ? _inverted : _state;
 

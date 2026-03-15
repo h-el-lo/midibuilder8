@@ -74,7 +74,7 @@ KeyState keyState[ROW_NUM][COL_NUM] = { KEY_IDLE };
 // TIMER VARIABLES
 unsigned long timeOfStart[ROW_NUM][COL_NUM] = { 0 };  // time of keypress start kps[x][y]
 unsigned long timeOfEnd[ROW_NUM][COL_NUM] = { 0 };    // time of keypress end kpe[x][y]
-int16_t time;
+int16_t keyTravelTime;
 //  ===========================================================================
 
 void allNotesOff() {
@@ -168,12 +168,12 @@ void checkPressLevel(uint8_t x, uint8_t y) {
 
 void performTimingSanityCheck(uint8_t x, uint8_t y) {
   // Check for timing anomilaies
-  time = abs(timeOfEnd[x][y] - timeOfStart[x][y]);
+  keyTravelTime = timeOfEnd[x][y] - timeOfStart[x][y];
 
   // Sanity check: physically impossible timing
-  if (time == 0) {
+  if (keyTravelTime == 0) {
     // Both switches triggered simultaneously - hardware glitch
-    time = vel_max / 2;  // Use medium velocity
+    keyTravelTime = vel_max / 2;  // Use medium velocity
   }
 }
 
@@ -209,8 +209,8 @@ void updateKey(uint8_t x, uint8_t y) {
   // Sends a noteOn midi message when keypress is complete
   if (keyState[x][y] == KEY_FULL_PRESSED) {
     performTimingSanityCheck(x, y);
-    // Serial.println(time); // DEBUGGER
-    velocity = map(constrain(time, vel_min, vel_max), vel_max, vel_min, 5, 127);
+    // Serial.println(keyTravelTime); // DEBUGGER
+    velocity = map(constrain(keyTravelTime, vel_min, vel_max), vel_max, vel_min, 5, 127);
     noteOn(KEYS_CHANNEL, note, velocity);
     keyState[x][y] = KEY_RELEASING;
   }

@@ -1,5 +1,5 @@
-// WORKING ALL KEYS NOTEON, NOTE OFF, VELOCITY SENSITIVE
-// ALL KEYS, 3 MUXS, PEDAL
+// 64 KEYS, VELOCITY SENSITIVE, 4 MUXS, SUSTAIN PEDAL, EXPRESSION PEDAL, 16 KNOBS
+
 // #include <avr/wdt.h>
 #include "Keys.h"
 #include "DamperPedal.h"
@@ -40,6 +40,7 @@ void loop() {
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   checkForSustain();
   updatePitchWheel();
+  slider.update();
   joystick.update();
   // ========================================================================================
 

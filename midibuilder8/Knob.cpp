@@ -4,10 +4,17 @@
 // ================================== REGULAR KNOB CLASS ================================================
 // ======================================================================================================
 // Constructors
-Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled)
+// Protected Knob constructor
+Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled, bool configurablePin)
   : _potPin(potPin), _CCNumber(CCNumber), _minCCValue(minCCValue), _maxCCValue(maxCCValue), _channel(channel), _isEnabled(isEnabled) {
-  _minAnalogValue = 0;     // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
-  _maxAnalogValue = 1023;  // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
+  if (configurablePin) {
+    Knob::setPinMode();
+  }
+}
+
+// Publicly callable Knob constructors
+Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled)
+  : Knob(potPin, CCNumber, minCCValue, maxCCValue, channel, isEnabled, true) {
 }
 
 Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel)
@@ -15,11 +22,11 @@ Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCVa
 }
 
 Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue)
-  : Knob(CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL, true) {
+  : Knob(potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL) {
 }
 
 Knob::Knob(uint8_t potPin, uint8_t CCNumber)
-  : Knob(potPin, CCNumber, 0, 127, GLOBAL_MIDI_CHANNEL, true) {
+  : Knob(potPin, CCNumber, 0, 127) {
 }
 
 // Getters
@@ -32,6 +39,11 @@ Knob::MinMax Knob::getMinMax() const {
 }
 
 // Setters
+void Knob::setPinMode() {
+  // virtual method
+  pinMode(_potPin, INPUT);
+}
+
 void Knob::setMIDIChannel(uint8_t channel) {
   _channel = channel;
 }
@@ -65,26 +77,26 @@ void Knob::readKnob() {
   _potState = analogRead(_potPin);
 }
 
-void Knob::validateAnalogRead(uint16_t reading) {
-  _potState = reading ? (reading >= 0 && reading <= 1023) : constrain(reading, 0, 1023);
-  // Log OUT_OF_RANGE_ERROR -- Knob X
+void Knob::validateAnalogRead() {
+  _potState = (_potState >= 0 && _potState <= 1023) ? _potState : constrain(_potState, 0, 1023);
+  // The ternary operator is used for ease of conditional error logging OUT_OF_RANGE_ERROR -- Knob X
+  // We'd otherwise just use constrain(_potState, 0, 1023) alone
 }
 
 void Knob::update() {
   if (Knob::_isEnabled) {
     readKnob();
     validateAnalogRead(_potState);
-    _midiState = map(_potState, 0, 1023, _minCCValue, _maxCCValue);
+    _midiState = map(_potState, _minAnalogValue, _maxAnalogValue, _minCCValue, _maxCCValue);
+    _potIncrement = abs(_potState - _potPState);
 
-    static uint16_t potIncrement = abs(_potState - _potPState);
-
-    if (potIncrement > _potThreshold) {
+    if (_potIncrement > _potThreshold) {
       snapshot = millis();
     }
 
-    static uint16_t potTimer = millis() - snapshot;
+    _potTimer = millis() - snapshot;
 
-    if (potTimer < POT_TIMEOUT) {
+    if (_potTimer < POT_TIMEOUT) {
       if (_midiState != _midiPState) {
         controlChange(_channel, _CCNumber, _midiState);
         _midiPState = _midiState;
@@ -101,7 +113,7 @@ void Knob::update() {
 // ==========================================================================================================================
 // Constructors
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled)
-  : _mux(mux), Knob(potPin, CCNumber, minCCValue, maxCCValue, channel, isEnabled) {
+  : _mux(mux), Knob(potPin, CCNumber, minCCValue, maxCCValue, channel, isEnabled, false) {
 }
 
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel)
@@ -109,15 +121,18 @@ Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min
 }
 
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue)
-  : Knob_On_Mux(mux, potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL, true) {
+  : Knob_On_Mux(mux, potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL) {
 }
 
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber)
-  : Knob_On_Mux(mux, potPin, CCNumber, 0, 127, GLOBAL_MIDI_CHANNEL, true) {
+  : Knob_On_Mux(mux, potPin, CCNumber, 0, 127) {
 }
 // Getters
 
 // Setters
+void Knob_On_Mux::setPinMode() {
+  // virtual no-op method
+}
 
 // Methods
 void Knob_On_Mux::readKnob() {

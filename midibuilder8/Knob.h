@@ -2,14 +2,15 @@
 #define KNOB_H
 
 #include <Arduino.h>
-#include "MuxHelper.h"
 #include "Multiplexer.h"
 
 // Analog Input for Knobs and Faders alike
-class Knob {
+class Knob_On_Mux {
 private:
-  bool _isEnabled;
+  Mux& _mux;
   uint8_t _potPin;  // Mux channel connected to potentiometer
+
+  bool _isEnabled;
   uint8_t _CCNumber;
   uint8_t _channel;
   uint8_t _minCCValue;  // Minimum CC value
@@ -23,10 +24,10 @@ private:
 
 public:
   // Constructors
-  Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
-  Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
-  Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
-  Knob(uint8_t potPin, uint8_t CCNumber);
+  Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
+  Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
+  Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
+  Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber);
 
   struct MinMax {
     uint8_t min, max;

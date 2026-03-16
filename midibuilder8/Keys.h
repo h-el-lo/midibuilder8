@@ -49,14 +49,12 @@ uint8_t temp;                                 // variable for temporary storage
 // Using an array of 8 bytes, 1 byte per item, every bit within every byte shall represent a data point
 // The macros GET_BIT, SET_BIT and CLEAR_BIT shall then be used to manipulate the arrays
 // This method consumes 8 bytes alone per 8x8 matrix
+// bool kps[ROW_NUM][COL_NUM] = { 0 };
+// bool kpe[ROW_NUM][COL_NUM] = { 0 };
 
 // Arrays to keep track of present states of kps and kpe data for all keys
-bool kps[ROW_NUM][COL_NUM] = { 0 };
-bool kpe[ROW_NUM][COL_NUM] = { 0 };
-
-// byte kps[ROW_NUM] = { 0 };
-// byte kpe[ROW_NUM] = { 0 };
-
+byte kps[ROW_NUM] = { 0 };
+byte kpe[ROW_NUM] = { 0 };
 
 enum KeyState {
   KEY_IDLE,
@@ -77,12 +75,6 @@ unsigned long timeOfEnd[ROW_NUM][COL_NUM] = { 0 };    // time of keypress end kp
 int16_t keyTravelTime;
 //  ===========================================================================
 
-void allNotesOff() {
-  // Set all notes of on selected channel
-  controlChange(KEYS_CHANNEL, 123, 127);
-  // Set CC123 back to 0
-  controlChange(KEYS_CHANNEL, 123, 0);
-}
 
 void setKeysChannel(uint8_t channel) {
   allNotesOff();
@@ -132,7 +124,12 @@ void scanKey(uint8_t x, uint8_t y) {
 
     if (temp != pState[0][x][y]) {
       timeOfStart[x][y] = (temp == 1) ? millis() : 0;
-      kps[x][y] = temp;
+      // kps[x][y] = temp;
+      if (temp) {
+        SET_BIT(kps, x, y);
+      } else {
+        CLEAR_BIT(kps, x, y);
+      }
       pState[0][x][y] = temp;
     }
 
@@ -148,18 +145,18 @@ void scanKey(uint8_t x, uint8_t y) {
 
     if (temp != pState[1][x][y]) {
       timeOfEnd[x][y] = (temp == 1) ? millis() : 0;
-      kpe[x][y] = temp;
+      temp ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);  // kpe[x][y] = temp;
       pState[1][x][y] = temp;
     }
   }
 }
 
 void checkPressLevel(uint8_t x, uint8_t y) {
-  if ((kps[x][y] == 1) && (kpe[x][y] == 0)) {
+  if (GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
     keyState[x][y] = KEY_HALF_PRESSED;
-  } else if (kps[x][y] && kpe[x][y]) {
+  } else if (GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
     keyState[x][y] = KEY_FULL_PRESSED;
-  } else if ((kps[x][y] == 0) && (kpe[x][y] == 1)) {
+  } else if (!GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
     keyState[x][y] = KEY_ERROR;
     Serial.println("Error with key " + String(note - 23) + ". kpe before kps");
     // Remember to state the error code, log the error and increment the error counter.
@@ -185,14 +182,15 @@ void checkForKeyReleasing(uint8_t x, uint8_t y) {
 
   // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
   Mux2.writeToChannel(KPS[x], LOW);
-  kps[x][y] = !Mux1.readChannel(cols[y]);
+  !Mux1.readChannel(cols[y]) ? SET_BIT(kps, x, y) : CLEAR_BIT(kps, x, y);  // kps[x][y] = !Mux1.readChannel(cols[y]);
 
   // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
   Mux2.writeToChannel(KPE[x], LOW);
-  kpe[x][y] = !Mux1.readChannel(cols[y]);
+  !Mux1.readChannel(cols[y]) ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);  // kpe[x][y] = !Mux1.readChannel(cols[y]);
+
 
   Mux2.write(HIGH);  // Tentative, might remove later
-  if (!kps[x][y] && !kpe[x][y]) {
+  if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
     noteOff(KEYS_CHANNEL, note, velocity);
     keyState[x][y] = KEY_IDLE;
     timeOfStart[x][y] = 0;

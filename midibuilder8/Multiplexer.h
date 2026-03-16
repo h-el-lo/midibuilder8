@@ -23,6 +23,8 @@ public:
   // Getters
 
   // Setters
+  void setType();
+  void setMode();
 
   // Methods
   void validate();

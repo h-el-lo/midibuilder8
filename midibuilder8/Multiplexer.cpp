@@ -16,15 +16,20 @@ Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint
 // Getters
 
 // Setters
+void Mux::setType() {
+}
+
+void Mux::setMode() {
+}
 
 // Methods
 void Mux::validate() {
-  _type = DIGITAL ? (_type == DIGITAL) : ANALOG ? (_type == ANALOG)
-                                                : DIGITAL;
+  _type = (_type == DIGITAL) ? DIGITAL : (_type == ANALOG) ? ANALOG
+                                                           : DIGITAL;
 
-  _mode = INPUT ? (_mode == INPUT) : INPUT_PULLUP ? (_mode == INPUT_PULLUP)
-                                   : OUTPUT       ? (_mode == OUTPUT)
-                                                  : INPUT;
+  _mode = (_mode == INPUT) ? INPUT : (_mode == INPUT_PULLUP) ? INPUT_PULLUP
+                                   : (_mode == OUTPUT)       ? OUTPUT
+                                                             : INPUT;
 }
 
 void Mux::shiftSignalTo(uint8_t channel) {

@@ -25,16 +25,23 @@ inline void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
 }
 
 inline void pitchBend(uint8_t channel, int16_t value) {
-// The generic "int" or "byte" data types cannot be used here to represent values greater than 256 ()
-// this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
-// Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent
-// a range of 0 - 16383 or -8192 to 8191. (2**14)
+  // The generic "int" or "byte" data types cannot be used here to represent values greater than 256 ()
+  // this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
+  // Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent
+  // a range of 0 - 16383 or -8192 to 8191. (2**14)
   usbmidi.pitchBend(value, channel);
 }
 
 inline void centerPitchWheel() {
   uint8_t value = 0;
   pitchBend(KEYS_CHANNEL, value);
+}
+
+inline void allNotesOff() {
+  // Set all notes of on selected channel
+  controlChange(KEYS_CHANNEL, 123, 127);
+  // Set CC123 back to 0
+  controlChange(KEYS_CHANNEL, 123, 0);
 }
 
 // Maybe in future versions, implement a special function for sendMIDI.

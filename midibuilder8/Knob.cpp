@@ -49,11 +49,11 @@ void Knob::setMIDIChannel(uint8_t channel) {
 }
 
 void Knob::setAnalogMin(uint16_t minAnalogValue) {
-  _minAnalogValue = constrain(minAnalogValue, 0, 1023);
+  _minAnalogValue = constrain(minAnalogValue, 0, ADC_MAX);
 }
 
 void Knob::setAnalogMax(uint16_t maxAnalogValue) {
-  _maxAnalogValue = constrain(maxAnalogValue, 0, 1023);
+  _maxAnalogValue = constrain(maxAnalogValue, 0, ADC_MAX);
 }
 
 void Knob::setCCMin(uint8_t minCCValue) {
@@ -78,7 +78,7 @@ void Knob::readKnob() {
 }
 
 void Knob::validateAnalogRead() {
-  _potState = (_potState >= 0 && _potState <= 1023) ? _potState : constrain(_potState, 0, 1023);
+  _potState = (_potState >= 0 && _potState <= 1023) ? _potState : constrain(_potState, _minAnalogValue, _maxAnalogValue);
   // The ternary operator is used for ease of conditional error logging OUT_OF_RANGE_ERROR -- Knob X
   // We'd otherwise just use constrain(_potState, 0, 1023) alone
 }
@@ -86,7 +86,7 @@ void Knob::validateAnalogRead() {
 void Knob::update() {
   if (Knob::_isEnabled) {
     readKnob();
-    validateAnalogRead(_potState);
+    validateAnalogRead();
     _midiState = map(_potState, _minAnalogValue, _maxAnalogValue, _minCCValue, _maxCCValue);
     _potIncrement = abs(_potState - _potPState);
 

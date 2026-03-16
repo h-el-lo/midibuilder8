@@ -27,8 +27,9 @@ protected:
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
   uint16_t _potTimer = 0;
-  inline static const uint8_t _potThreshold = 15;
-  inline static const uint8_t POT_TIMEOUT = 300;
+  static constexpr uint8_t _potThreshold = 4;
+  static constexpr uint16_t POT_TIMEOUT = 300;
+  static constexpr uint16_t ADC_MAX = 1023;
 
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled, bool configurablePin);
 
@@ -59,7 +60,7 @@ public:
   void enable();
   void disable();
   virtual void readKnob();
-  void validateAnalogRead(uint16_t reading);
+  void validateAnalogRead();
   void update();
 };
 // =========================================================
@@ -88,7 +89,7 @@ public:
   // Setters
   // This is a no-op method, a safety net if Knob_On_mux::setPinMode is ever called.
   // This way, it doesn't default to Knob::setPinMode
-  void setPinMode() override; 
+  void setPinMode() override;
 
   // Methods
   void readKnob() override;

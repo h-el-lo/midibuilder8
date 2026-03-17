@@ -3,6 +3,7 @@
 // #include <avr/wdt.h>
 #include "Keys.h"
 #include "DamperPedal.h"
+#include "ExpressionPedal.h"
 #include "PitchWheel.h"
 #include "General.h"
 
@@ -26,7 +27,9 @@ void setup() {
   // put your setup code here, to run once:
   // wdt_enable(WDTO_250MS);
   // Serial.begin(115200);
-  setSustainPinMode();
+  INITIALIZE_SUSTAIN_PEDAL();
+  INITIALIZE_EXPRESSION_PEDAL();
+  delay(2000);  // Stabilization delay
 }
 
 void loop() {
@@ -38,7 +41,8 @@ void loop() {
   // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
-  checkForSustain();
+  updateSustainPedal();
+  updateExpressionPedal();
   updatePitchWheel();
   slider.update();
   joystick.update();
@@ -65,7 +69,7 @@ void loop() {
   // ========================================================================================
 }
 
-#endif 
+#endif
 
 
 

@@ -1,5 +1,4 @@
-#ifndef GENERAL_H
-#define GENERAL_H
+#pragma once
 
 #include "Knob.h"
 #include "Joystick.h"
@@ -31,7 +30,7 @@ Knob slider(2, 16);
 // ===============================  KNOBS  ====================================
 const uint8_t NUM_OF_KNOBS = 16;
 Knob_On_Mux knobSet[NUM_OF_KNOBS] = {
-  // Knob_On_Mux(controllingMux, knob_pin_mux_Channel, CC_Number_for_knob),   
+  // Knob_On_Mux(controllingMux, knob_pin_mux_Channel, CC_Number_for_knob),
   Knob_On_Mux(Mux4, 0, 7),    // Channel volume - Knob 1
   Knob_On_Mux(Mux4, 1, 5),    // Knob 2
   Knob_On_Mux(Mux4, 2, 11),   // Knob 3
@@ -75,5 +74,3 @@ void updateTouchSensors() {
     touchSensors[i].update();
   }
 }
-
-#endif

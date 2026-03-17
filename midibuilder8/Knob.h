@@ -24,6 +24,7 @@ protected:
   uint16_t _potState, _potPState;
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
+
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
   uint16_t _potTimer = 0;
@@ -75,7 +76,6 @@ public:
 class Knob_On_Mux : public Knob {
 private:
   Mux& _mux;
-  uint8_t _potPin;  // Mux channel connected to potentiometer
 
 public:
   // Constructors

@@ -1,5 +1,4 @@
-#ifndef MIDIHELPER_H
-#define MIDIHELPER_H
+#pragma once
 
 #include <Arduino.h>
 #include "USB.h"
@@ -47,5 +46,3 @@ inline void allNotesOff() {
 // Maybe in future versions, implement a special function for sendMIDI.
 // This function should send the midi MESSAGES IN THE BUFFRER
 // Buffer size shall be 64 messages(max length of keypresses per time)/ should be enough for knobs and special units (pedals, pitch wheel etc.)
-
-#endif

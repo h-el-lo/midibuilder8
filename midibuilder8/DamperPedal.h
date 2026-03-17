@@ -1,5 +1,4 @@
-#ifndef DAMPERPEDAL_H
-#define DAMPERPEDAL_H
+#pragma once
 
 #include "MIDIHelper.h"
 
@@ -8,11 +7,11 @@ uint8_t susState, susPrevState;
 uint8_t damperDebounceTime;
 unsigned long lastUpdatedTime = 0;
 
-void setSustainPinMode() {
+void INITIALIZE_SUSTAIN_PEDAL() {
   pinMode(susPin, INPUT_PULLUP);
 }
 
-void checkForSustain() {
+void updateSustainPedal() {
   if (millis() - lastUpdatedTime >= damperDebounceTime) {
     susState = map(digitalRead(susPin), 0, 1, 0, 127);
 
@@ -23,4 +22,3 @@ void checkForSustain() {
     }
   }
 }
-#endif

@@ -105,3 +105,16 @@ void loop() {
 
 // mux3 (buttons)
 // gpio 0, 45, 48, 47, 21            DONE
+
+
+
+// joystick 2
+// mux 1,2 10
+// mux 3 4
+// screen 2
+// rgb led 1
+// expression pedal checker pin
+// damper pedal 1
+
+// ina battery management i2c, screen, ads 1115 2
+// ads1115 [mux 3 signal, pitch wheel, slider, expression pedal analog pin]

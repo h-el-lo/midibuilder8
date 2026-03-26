@@ -24,7 +24,7 @@ Joystick joystick(1, 2);
 // ============================================================================
 
 // ===============================  SLIDER  ===================================
-Knob slider(2, 16);
+Knob slider(2, 12);
 // ============================================================================
 
 // ===============================  KNOBS  ====================================
@@ -32,8 +32,8 @@ const uint8_t NUM_OF_KNOBS = 16;
 Knob_On_Mux knobSet[NUM_OF_KNOBS] = {
   // Knob_On_Mux(controllingMux, knob_pin_mux_Channel, CC_Number_for_knob),
   Knob_On_Mux(Mux4, 0, 7),    // Channel volume - Knob 1
-  Knob_On_Mux(Mux4, 1, 5),    // Knob 2
-  Knob_On_Mux(Mux4, 2, 11),   // Knob 3
+  Knob_On_Mux(Mux4, 1, 14),   // Knob 2
+  Knob_On_Mux(Mux4, 2, 15),   // Knob 3
   Knob_On_Mux(Mux4, 3, 16),   // General Purpose Controller 1 - Knob 4
   Knob_On_Mux(Mux4, 4, 17),   // General Purpose Controller 2 - Knob 5
   Knob_On_Mux(Mux4, 5, 18),   // General Purpose Controller 3 - Knob 6

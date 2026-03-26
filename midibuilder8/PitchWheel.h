@@ -9,7 +9,7 @@ uint16_t wheelMin = 0;     // Expected min value from the rotation of pitch whee
 uint16_t wheelMax = 1023;  // Expected max value from the rotation of pitch wheel
 uint16_t wheelCenter = (wheelMin + wheelMax) / 2;
 uint16_t wheelVar;
-constexpr uint16_t TIMEOUT = 300; // 300ms
+constexpr uint16_t TIMEOUT = 300;  // 300ms
 bool wheelReadingIsValid;
 
 unsigned long wheelLastUpdatedTime = 0;
@@ -72,8 +72,6 @@ void updatePitchWheel() {
       }
 
       wheelPrevState = wheelState;
-
     }
   };
 }
-

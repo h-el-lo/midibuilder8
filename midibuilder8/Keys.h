@@ -13,26 +13,30 @@
 const uint8_t COL_NUM = 8;
 const uint8_t ROW_NUM = 8;
 
-uint8_t transpose = 12;
+uint8_t transpose = 0;
 uint8_t note, velocity;
 uint8_t vel_min = 0;
 uint8_t vel_max = 45;
 
 const uint8_t PROGMEM nums[ROW_NUM][COL_NUM] = {
   // Array  of midi note numbers C1 (24) to D#6 (87), 64 notes in total.
-  { 24, 25, 26, 27, 28, 29, 30, 31 },
-  { 32, 33, 34, 35, 36, 37, 38, 39 },
-  { 40, 41, 42, 43, 44, 45, 46, 47 },
-  { 48, 49, 50, 51, 52, 53, 54, 55 },
-  { 56, 57, 58, 59, 60, 61, 62, 63 },
-  { 64, 65, 66, 67, 68, 69, 70, 71 },
-  { 72, 73, 74, 75, 76, 77, 78, 79 },
-  { 80, 81, 82, 83, 84, 85, 86, 87 },
+  { 36, 37, 38, 39, 40, 41, 42, 43 },
+  { 44, 45, 46, 47, 48, 49, 50, 51 },
+  { 52, 53, 54, 55, 56, 57, 58, 59 },
+  { 60, 61, 62, 63, 64, 65, 66, 67 },
+  { 68, 69, 70, 71, 72, 73, 74, 75 },
+  { 76, 77, 78, 79, 80, 81, 82, 83 },
+  { 84, 85, 86, 87, 88, 89, 90, 91 },
+  { 92, 93, 94, 95, 96, 97, 98, 99 },
 };
 
 uint8_t cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };       // Blue cols (Mux1 0 - 7) input_pullup
 uint8_t KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux2 0 - 7), output
 uint8_t KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux2 8 - 15), output
+
+// 2d 8 x 8 array to store pressed notes in memory
+// in case of a transpose after a keypress, this aids the program correctly send pending noteoff messages
+uint8_t pressed_notes[ROW_NUM][COL_NUM] = { 0 };
 
 enum KeyErrorCode {
   ERROR1,                // kpe before kps
@@ -49,8 +53,6 @@ uint8_t temp;                                 // variable for temporary storage
 // Using an array of 8 bytes, 1 byte per item, every bit within every byte shall represent a data point
 // The macros GET_BIT, SET_BIT and CLEAR_BIT shall then be used to manipulate the arrays
 // This method consumes 8 bytes alone per 8x8 matrix
-// bool kps[ROW_NUM][COL_NUM] = { 0 };
-// bool kpe[ROW_NUM][COL_NUM] = { 0 };
 
 // Arrays to keep track of present states of kps and kpe data for all keys
 byte kps[ROW_NUM] = { 0 };
@@ -187,11 +189,11 @@ void checkForKeyReleasing(uint8_t x, uint8_t y) {
   // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
   Mux2.writeToChannel(KPE[x], LOW);
   !Mux1.readChannel(cols[y]) ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);  // kpe[x][y] = !Mux1.readChannel(cols[y]);
+  Mux2.write(HIGH);                                                        // Tentative, might remove later
 
-
-  Mux2.write(HIGH);  // Tentative, might remove later
+  // Send noteoff when key release complete
   if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
-    noteOff(KEYS_CHANNEL, note, velocity);
+    noteOff(KEYS_CHANNEL, pressed_notes[x][y], velocity);
     keyState[x][y] = KEY_IDLE;
     timeOfStart[x][y] = 0;
     timeOfEnd[x][y] = 0;
@@ -210,6 +212,7 @@ void updateKey(uint8_t x, uint8_t y) {
     // Serial.println(keyTravelTime); // DEBUGGER
     velocity = map(constrain(keyTravelTime, vel_min, vel_max), vel_max, vel_min, 5, 127);
     noteOn(KEYS_CHANNEL, note, velocity);
+    pressed_notes[x][y] = note;
     keyState[x][y] = KEY_RELEASING;
   }
 

@@ -78,4 +78,28 @@ uint8_t YZ_array[22][2] = {
 // SET PINS Y1 - Y4 DIRECTLY ON MCU
 
 
+// in scene mode, use cc64 to trigger all scenes, momentary
+
+// in parts mode, use cc0 and 127 to trigger on or off - latch
+
+
+
+
+// Mux { s0, s1, s2, s3, sig}
+// Mux 1 {15, 16, 17, 18, 36}// Keys Input cols[blue], buttons x
+// Mux 2 {42, 41, 40, 39, 38}// 0utput rows
+// Mux 3 {4, 7, 6, 7 37}// buttons y
+// Mux 4 {8, 3, 46, 9, ADS1115 a3}// buttons y
+// Buttons z {13, 12, 11, 10}
+
+
+// Buttons X ( mux 2 [1 - 8]) = [15, 14, 13, 12, 11, 10, 9, 8]
+// Buttons Y ( mux 3 [1 - 6]) = [15, 14, 13, 12, 11, 10]
+// Keys Output kps[blue] (mux 1) = [0, 1, 2, 3, 4, 5, 6, 7]
+// Keys Output kpe[blue] (mux 1) = [8, 9, 10, 11, 12, 13, 14, 15]
+// Keys Input cols[blue] (mux 2 [1 - 8]) = [0, 1, 2, 3, 4, 5, 6, 7]
+// Faders 1- 9 (mux 4) = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+// Knobs 1- 7 (mux 4) = [9, 10, 11, 12, 13, 14, 15]
+
+
 #endif

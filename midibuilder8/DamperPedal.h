@@ -1,24 +1,28 @@
 #pragma once
 
 #include "MIDIHelper.h"
+#include "MuxHelper.h"
 
-uint8_t susPin = 42;  // This pin is connected directly to the MCU board, not a multiplexer
-uint8_t susState, susPrevState;
-uint8_t damperDebounceTime;
-unsigned long lastUpdatedTime = 0;
+// A Struct is created in order to avoid the possibility of conflicting locals
+struct Damper_Pedal {
+  uint8_t susPin;  // This pin is connected to Mux1 (INPUT_PULLUP)
+  uint8_t susState = 0;
+  uint8_t susPrevState = 0;
+  uint8_t damperDebounceTime = 100;  // 100ms
+  unsigned long lastUpdatedTime = millis();
+};
 
-void INITIALIZE_SUSTAIN_PEDAL() {
-  pinMode(susPin, INPUT_PULLUP);
-}
+Damper_Pedal damperPedal = { 15 };
 
 void updateSustainPedal() {
-  if (millis() - lastUpdatedTime >= damperDebounceTime) {
-    susState = map(digitalRead(susPin), 0, 1, 0, 127);
+  if (millis() - damperPedal.lastUpdatedTime >= damperPedal.damperDebounceTime) {
+    uint16_t storer = !Mux1.readChannel(damperPedal.susPin);
+    damperPedal.susState = map(!Mux1.readChannel(damperPedal.susPin), 0, 1, 0, 127);
 
-    if (susState != susPrevState) {
-      controlChange(KEYS_CHANNEL, 64, susState);
-      susPrevState = susState;
-      lastUpdatedTime = millis();
+    if (damperPedal.susState != damperPedal.susPrevState) {
+      controlChange(KEYS_CHANNEL, 64, damperPedal.susState);
+      damperPedal.susPrevState = damperPedal.susState;
+      damperPedal.lastUpdatedTime = millis();
     }
   }
 }

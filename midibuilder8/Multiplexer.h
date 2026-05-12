@@ -23,8 +23,8 @@ public:
   // Getters
 
   // Setters
-  void setType();
-  void setMode();
+  void setType(uint8_t type);
+  void setMode(uint8_t mode);
 
   // Methods
   void validate();

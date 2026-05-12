@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <stdint.h>
 #include "Multiplexer.h"
 
 // Constructors
@@ -16,10 +18,12 @@ Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint
 // Getters
 
 // Setters
-void Mux::setType() {
+void Mux::setType(uint8_t type) {
 }
 
-void Mux::setMode() {
+void Mux::setMode(uint8_t mode) {
+  _mode = mode;
+  pinMode(_signalPin, _mode);
 }
 
 // Methods
@@ -37,7 +41,7 @@ void Mux::shiftSignalTo(uint8_t channel) {
   digitalWrite(_S1, (channel >> 1) & 0x01);
   digitalWrite(_S2, (channel >> 2) & 0x01);
   digitalWrite(_S3, (channel >> 3) & 0x01);
-  delayMicroseconds(10);  // for signal stabilization
+  delayMicroseconds(5);  // for signal stabilization
 }
 
 uint16_t Mux::read() {
@@ -46,9 +50,9 @@ uint16_t Mux::read() {
       return digitalRead(_signalPin);
     } else if (_type == ANALOG) {
       return analogRead(_signalPin);
-    } else {
-      Serial.println("Error on Mux : invalid mux type");
     }
+  } else {
+    Serial.println("Error: Attempting to read from an output Mux!");
   }
 }
 
@@ -58,7 +62,7 @@ void Mux::write(uint8_t state) {
     digitalWrite(_signalPin, state);
   } else {
     Serial.println("Invalid Mux operation: attempting digitalWrite on an Input mux");
-    #warning "Invalid Mux operation: attempting digitalWrite on an Input mux";
+#warning "Invalid Mux operation: attempting digitalWrite on an Input mux";
   }
 }
 

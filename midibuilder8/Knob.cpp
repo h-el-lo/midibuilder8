@@ -78,7 +78,7 @@ void Knob::readKnob() {
 }
 
 void Knob::validateAnalogRead() {
-  _potState = (_potState >= 0 && _potState <= 1023) ? _potState : constrain(_potState, _minAnalogValue, _maxAnalogValue);
+  _potState = (_potState >= _minAnalogValue && _potState <= _maxAnalogValue) ? _potState : constrain(_potState, _minAnalogValue, _maxAnalogValue);
   // The ternary operator is used for ease of conditional error logging OUT_OF_RANGE_ERROR -- Knob X
   // We'd otherwise just use constrain(_potState, 0, 1023) alone
 }

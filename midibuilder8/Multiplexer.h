@@ -2,6 +2,7 @@
 #define MULTIPLEXER_H
 
 #include <Arduino.h>
+#include "ADSManager.h"
 
 #define ANALOG 0X1
 #define DIGITAL 0X2
@@ -18,7 +19,7 @@ private:
 
 public:
   // Constructors
-  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode);  // INPUT, INPUT_PULLUP and OUTPUT
+  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode);                         // INPUT, INPUT_PULLUP and OUTPUT
 
   // Getters
 
@@ -34,5 +35,10 @@ public:
   void write(uint8_t state);
   void writeToChannel(uint8_t channel, uint8_t state);
 };
+
+extern Mux Mux1;  // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
+extern Mux Mux2;  // Mux 2 (Outputs (keys), KPS AND KPE (rows))
+extern Mux Mux3;  // Mux 3 (Digital output of buttons)
+extern Mux Mux4;  // Mux 4 (Analog Input, Knobs and Faders)
 
 #endif

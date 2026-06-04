@@ -3,18 +3,21 @@
 #include "Multiplexer.h"
 
 // Constructors
-
-Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode)
+Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode, bool usesADS, uint8_t pinOnADS)
   : _S0(S0), _S1(S1), _S2(S2), _S3(S3), _signalPin(signalPin), _type(type), _mode(mode) {
-
   pinMode(_S0, OUTPUT);
   pinMode(_S1, OUTPUT);
   pinMode(_S2, OUTPUT);
   pinMode(_S3, OUTPUT);
   pinMode(_signalPin, _mode);
-
   Mux::validate();
 }
+
+Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode)
+  : Mux(S0, S1, S2, S3, signalPin, type, mode, false, 255) {
+}
+
+
 
 // Getters
 
@@ -46,25 +49,22 @@ void Mux::shiftSignalTo(uint8_t channel) {
 }
 
 uint16_t Mux::read() {
-  // if (_ads) {
-  //   if (_mode == INPUT || _mode == INPUT_PULLUP) {
-  //     if (_ads.selecedChannel != muxADSChannel) {
-  //       _ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, /*continuous*/ true);
-  //     }
-  //     _ads.getLastConversionResult();
-  //   }
-
-  // } else {
-  //   if (_mode == INPUT || _mode == INPUT_PULLUP) {
-  //     if (_type == DIGITAL) {
-  //       return digitalRead(_signalPin);
-  //     } else if (_type == ANALOG) {
-  //       return analogRead(_signalPin);
-  //     }
-  //   } else {
-  //     Serial.println("Error: Attempting to read from an output Mux!");
-  //   }
-  // }
+  if (_usesADS) {
+    if (_mode == INPUT && _type == ANALOG) {
+      ADSManager.selectChannel(_pinOnADS);
+      return ADSManager.read();
+    }
+  } else {
+    if (_mode == INPUT) {
+      if (_type == DIGITAL) {
+        return digitalRead(_signalPin);
+      } else if (_type == ANALOG) {
+        return analogRead(_signalPin);
+      }
+    } else {
+      Serial.println("Error: Attempting to read from an output Mux!");
+    }
+  }
 }
 
 void Mux::write(uint8_t state) {

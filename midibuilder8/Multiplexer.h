@@ -14,12 +14,15 @@ private:
   uint8_t _S2;
   uint8_t _S3;
   uint8_t _signalPin;
+  bool _usesADS = false;
+  uint8_t _pinOnADS = 255;  // 255 as "unset" sentinel
   uint8_t _type;
   uint8_t _mode;
 
 public:
   // Constructors
-  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode);                         // INPUT, INPUT_PULLUP and OUTPUT
+  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode, bool usesADS, uint8_t pinOnADS);  // INPUT, INPUT_PULLUP and OUTPUT
+  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode);                                  // INPUT, INPUT_PULLUP and OUTPUT
 
   // Getters
 

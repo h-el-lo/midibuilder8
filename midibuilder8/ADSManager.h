@@ -16,7 +16,7 @@
 class ADS_Manager {
 private:
   Adafruit_ADS1115 _ads;
-  uint16_t _selectedChannel = 255;
+  uint16_t _selectedChannel = 255;  // 255 as "unset" sentinel
 
   static constexpr uint16_t _muxChannels[4] = {
     ADS1X15_REG_CONFIG_MUX_SINGLE_0,  ///< Single-ended AIN0
@@ -48,7 +48,15 @@ public:
     if (_selectedChannel != channel) {
       _selectedChannel = channel;
       _convReady = false;
-      _ads.startADCReading(_muxChannels[_selectedChannel], /*continuous*/ true);
+      if (_selectedChannel == 255) {
+        // OutOfRangeError guard for when Multiplexers set their "pinOnADS" number to 255
+        return;
+      } else if (_selectedChannel > 4 || _selectedChannel < 0) {
+        // Prevents any other out of range error
+        return;
+      } else {
+        _ads.startADCReading(_muxChannels[_selectedChannel], /*continuous*/ true);
+      }
     }
   }
 
@@ -68,8 +76,9 @@ public:
     return read();
   };
 
-  bool isReady(){ return _convReady ;}
-
+  bool isReady() {
+    return _convReady;
+  }
 };
 
 // Declare an ADS Manager instance

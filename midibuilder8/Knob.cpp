@@ -78,9 +78,15 @@ void Knob::readKnob() {
 }
 
 void Knob::validateAnalogRead() {
+  if (_potState == -1) {
+    // -1 is returned from the ADS Manager if conversion not ready
+    // if conversion not read, use last correct reading 
+    _potState = _potPState;
+    return;
+  }
   _potState = (_potState >= _minAnalogValue && _potState <= _maxAnalogValue) ? _potState : constrain(_potState, _minAnalogValue, _maxAnalogValue);
-  // The ternary operator is used for ease of conditional error logging OUT_OF_RANGE_ERROR -- Knob X
-  // We'd otherwise just use constrain(_potState, 0, 1023) alone
+  // The ternary operator allows for conditional error logging OUT_OF_RANGE_ERROR should need be in future
+  // else, the statement "_potState = constrain(_potState, _minAnalogValue, _maxAnalogValue)" would suffice
 }
 
 void Knob::update() {
@@ -88,7 +94,7 @@ void Knob::update() {
     readKnob();
     validateAnalogRead();
     _midiState = map(_potState, _minAnalogValue, _maxAnalogValue, _minCCValue, _maxCCValue);
-    _potIncrement = abs(_potState - _potPState);
+    _potIncrement = abs(_midiState - _midiPState);
 
     if (_potIncrement > _potThreshold) {
       snapshot = millis();
@@ -97,11 +103,8 @@ void Knob::update() {
     _potTimer = millis() - snapshot;
 
     if (_potTimer < POT_TIMEOUT) {
-      if (_midiState != _midiPState) {
-        controlChange(_channel, _CCNumber, _midiState);
-        _midiPState = _midiState;
-      }
-      _potPState = _potState;
+      controlChange(_channel, _CCNumber, _midiState);
+      _midiPState = _midiState;
     }
   }
 }

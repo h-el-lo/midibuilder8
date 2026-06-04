@@ -18,7 +18,7 @@ protected:
   uint8_t _CCNumber;
   uint8_t _channel;
   uint16_t _minAnalogValue = 0;     // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
-  uint16_t _maxAnalogValue = 1023;  // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
+  uint16_t _maxAnalogValue = 4096;  // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
   uint8_t _minCCValue = 0;          // Minimum CC value
   uint8_t _maxCCValue = 127;        // Maximum CC value
   uint16_t _potState, _potPState;

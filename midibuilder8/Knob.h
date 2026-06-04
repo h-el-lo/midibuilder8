@@ -24,6 +24,8 @@ protected:
   uint16_t _potState, _potPState;
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
+  bool _usesADS = false;
+  uint8_t _pinOnADS = 255;
 
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
@@ -40,6 +42,7 @@ public:
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
   Knob(uint8_t potPin, uint8_t CCNumber);
+  Knob(uint8_t potPin, uint8_t CCNumber, bool usesADS, uint8_t pinOnADS);
 
   struct MinMax {
     uint8_t min, max;

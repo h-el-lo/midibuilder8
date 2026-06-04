@@ -26,7 +26,13 @@ Knob::Knob(uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCVa
 }
 
 Knob::Knob(uint8_t potPin, uint8_t CCNumber)
-  : Knob(potPin, CCNumber, 0, 127) {
+  : Knob(potPin, CCNumber, (uint8_t)0, (uint8_t)127) {
+}
+
+Knob::Knob(uint8_t potPin, uint8_t CCNumber, bool usesADS, uint8_t pinOnADS)
+  : Knob(potPin, CCNumber) {
+  _usesADS = usesADS;
+  _pinOnADS = pinOnADS;
 }
 
 // Getters
@@ -74,13 +80,18 @@ void Knob::disable() {
 }
 
 void Knob::readKnob() {
-  _potState = analogRead(_potPin);
+  if (_usesADS) {
+    ADSManager.selectChannel(_pinOnADS);
+    _potState = ADSManager.read();
+  } else {
+    _potState = analogRead(_potPin);
+  }
 }
 
 void Knob::validateAnalogRead() {
   if (_potState == -1) {
     // -1 is returned from the ADS Manager if conversion not ready
-    // if conversion not read, use last correct reading 
+    // if conversion not read, use last correct reading
     _potState = _potPState;
     return;
   }

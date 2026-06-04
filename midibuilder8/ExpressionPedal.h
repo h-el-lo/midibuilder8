@@ -9,7 +9,7 @@ struct Expression_Pedal {
   bool isConnected;
 };
 
-Expression_Pedal Pedal = { Knob(2, 11), 42, false };
+Expression_Pedal Pedal = { Knob(2, 11, /*usesADS*/ true, /*pinOnADS*/ ADS_EXPR_CHANNEL), 42, false };
 
 void INITIALIZE_EXPRESSION_PEDAL() {
   Pedal.knob.disable();

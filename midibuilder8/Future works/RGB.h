@@ -2,9 +2,6 @@
 #define RGB_H
 
 #include <Arduino.h>
-#include <LiquidCrystal_I2C.h>
-
-LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -21,8 +18,20 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 cha
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
+class RGB_Strip {
+    private:
+    Adafruit_NeoPixel _strip;
+    uint8_t _brightness;
+    uint8_t _LED_COUNT
+    public:
+    void begin() {
+_strip.begin();
+    };
 
+    void show() {_strip.show();};
+};
 
-
+extern RGB_Strip BUTTON_STRIP;  
+extern RGB_Strip INDICATOR_STRIP;
 
 #endif

@@ -1,1 +1,4 @@
 #include "RGB.h"
+
+RGB_Strip BUTTON_STRIP;  
+RGB_Strip INDICATOR_STRIP;

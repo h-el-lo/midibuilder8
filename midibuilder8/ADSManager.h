@@ -10,7 +10,7 @@
 #define ADS_SLIDER_CHANNEL 1
 #define ADS_EXPR_CHANNEL 2
 #define ADS_MUX4_CHANNEL 3
-
+  
 #define ADS_RAW_MAX 26400
 
 class ADS_Manager {

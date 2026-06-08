@@ -18,6 +18,7 @@ private:
   uint8_t _pinOnADS = 255;  // 255 as "unset" sentinel
   uint8_t _type;
   uint8_t _mode;
+  uint8_t _selectedChannel = 255;
 
 public:
   // Constructors
@@ -32,7 +33,7 @@ public:
 
   // Methods
   void validate();
-  void shiftSignalTo(uint8_t channel);
+  void selectChannel(uint8_t channel);
   uint16_t read();
   uint16_t readChannel(uint8_t channel);
   void write(uint8_t state);

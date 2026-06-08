@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MIDIHelper.h"
-#include "MuxHelper.h"
+#include "Multiplexer.h"
 
 // A Struct is created in order to avoid the possibility of conflicting locals
 struct Damper_Pedal {
@@ -12,7 +12,7 @@ struct Damper_Pedal {
   unsigned long lastUpdatedTime = millis();
 };
 
-Damper_Pedal damperPedal = { 15 };
+Damper_Pedal damperPedal = { 15 }; // on Mux1
 
 void updateSustainPedal() {
   if (millis() - damperPedal.lastUpdatedTime >= damperPedal.damperDebounceTime) {

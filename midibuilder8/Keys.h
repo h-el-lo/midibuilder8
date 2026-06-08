@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MuxHelper.h"
+#include "Multiplexer.h"
 #include "MIDIHelper.h"
 
 #define GET_BIT(array, row, col) ((array[row] >> col) & 0x01)

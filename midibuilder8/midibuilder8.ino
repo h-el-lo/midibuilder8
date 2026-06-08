@@ -12,7 +12,7 @@ void loop() {}
 #include "ADSManager.h"
 #include "Keys.h"
 #include "DamperPedal.h"
-// #include "ExpressionPedal.h"
+#include "ExpressionPedal.h"
 // #include "PitchWheel.h"
 #include "General.h"
 
@@ -45,10 +45,9 @@ void setup() {
 
 
   // initialize LCD Screen
-  lcd.init();
+  // lcd.init();
 
-  INITIALIZE_SUSTAIN_PEDAL();
-  // INITIALIZE_EXPRESSION_PEDAL();
+  INITIALIZE_EXPRESSION_PEDAL();
 
 
   // delay(2000);  //WDT Stabilization delay
@@ -64,22 +63,22 @@ void loop() {
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   updateSustainPedal();
-  // updateExpressionPedal();
+  updateExpressionPedal();
   // updatePitchWheel();
-  // slider.update();
+  slider.update();
   // joystick.update();
   // ========================================================================================
 
   // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
-  // if (cycleCount == 0) {
-  //   updateKnobs();
-  // }
-  // cycleCount++;
+  if (cycleCount == 0) {
+    updateKnobs();
+  }
+  cycleCount++;
 
-  // // Reset cycle count
-  // if (cycleCount >= 5) {
-  //   cycleCount = 0;
-  // }
+  // Reset cycle count
+  if (cycleCount >= 5) {
+    cycleCount = 0;
+  }
   // ========================================================================================
 
   // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
@@ -92,51 +91,3 @@ void loop() {
 }
 
 #endif
-
-
-
-
-
-// mux 1 (Reader)
-// gpio 4, 5, 6, 7, 15             DONE
-
-// mux 4 (Knobs and faders)
-// gpio 16, 17, 18, 8, 3             DONE
-
-// expression pedal
-// connection checker pin gpio 46
-// adc reader pin gpio 9
-
-// pitch wheel gpio
-// 10                                DONE
-
-
-
-
-// joystick xy,
-// gpio 1, 2 adc1ch0, ch1
-
-// sustain pedal
-// gpio 42                           DONE
-
-// LCD Screen sda, scl
-// gpio 41, 40
-
-// mux 2 (keys)
-// gpio 39, 38, 37, 36, 35           DONE
-
-// mux3 (buttons)
-// gpio 0, 45, 48, 47, 21            DONE
-
-
-
-// joystick 2
-// mux 1,2 10
-// mux 3 4
-// screen 2
-// rgb led 1
-// expression pedal checker pin
-// damper pedal 1
-
-// ina battery management i2c, screen, ads 1115 2
-// ads1115 [mux 3 signal, pitch wheel, slider, expression pedal analog pin]

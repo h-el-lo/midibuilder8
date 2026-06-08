@@ -1,0 +1,107 @@
+// Keys Output kps[blue] (mux 1) = [0, 1, 2, 3, 4, 5, 6, 7]
+// Keys Output kpe[blue] (mux 1) = [8, 9, 10, 11, 12, 13, 14, 15]
+// Keys Input cols[blue] (mux 2 [1 - 8]) = [0, 1, 2, 3, 4, 5, 6, 7]
+
+
+
+// Mux { s0, s1, s2, s3, sig}
+// Mux 1 {15, 16, 17, 18, 36}// Keys Input cols[blue], buttons x
+// Mux 2 {42, 41, 40, 39, 38}// 0utput rows
+// Mux 3 {4, 7, 6, 7 37}// buttons y
+// Mux 4 {8, 3, 46, 9, ADS1115 a3}// buttons y
+// Buttons z {13, 12, 11, 10}
+
+
+// Buttons X ( mux 2 [1 - 8]) = [15, 14, 13, 12, 11, 10, 9, 8]
+// Buttons Y ( mux 3 [1 - 6]) = [15, 14, 13, 12, 11, 10]
+// Faders 1- 9 (mux 4) = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+// Knobs 1- 7 (mux 4) = [9, 10, 11, 12, 13, 14, 15]
+
+
+
+
+
+
+
+// mux 1 (Reader)
+// gpio 4, 5, 6, 7, 15             DONE
+
+// mux 4 (Knobs and faders)
+// gpio 16, 17, 18, 8, 3             DONE
+
+// expression pedal
+// connection checker pin gpio 46
+// adc reader pin gpio 9
+
+// pitch wheel gpio
+// 10                                DONE
+
+
+
+
+// joystick xy,
+// gpio 1, 2 adc1ch0, ch1
+
+// sustain pedal
+// gpio 42                           DONE
+
+// LCD Screen sda, scl
+// gpio 41, 40
+
+// mux 2 (keys)
+// gpio 39, 38, 37, 36, 35           DONE
+
+// mux3 (buttons)
+// gpio 0, 45, 48, 47, 21            DONE
+
+
+
+// joystick 2
+// mux 1,2 10
+// mux 3 4
+// screen 2
+// rgb led 1
+// expression pedal checker pin
+// damper pedal 1
+
+// ina battery management i2c, screen, ads 1115 2
+// ads1115 [mux 3 signal, pitch wheel, slider, expression pedal analog pin]
+
+
+
+
+
+
+Knobs 7, 14, 15, 16, 17, 18, 19
+fader 1, 20, 21, 22, 23, 24, 25, 26, 27, 28
+Expression pedal 11
+
+80, 81, 82, 82 General Purpose Buttons
+
+Group of 8 buttons
+102, 103, 104, 105, 106, 107, 108, 109, 
+110, 111, 112, 113, 114, 115, 116, 117, 
+
+Drone pads
+29, 30, 31,
+35, 41, 46, 
+47, 48, 49, 
+50, 51, 52,
+
+
+3, 9, 85, 86, 87, 89, 90, 
+
+118, 119
+
+52, 53, 54, 55, 56, 57, 58, 59, 
+
+60, 61, 62, 63 
+
+
+class CCButtons
+
+
+
+
+
+

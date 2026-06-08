@@ -46,12 +46,16 @@ struct Button {
 
 class Button {
 private:
-  bool _mode = 0;  // 0 for momentary, 1 for latch
+  bool _momentary = 0;  // 0 for momentary, 1 for latch
   bool _state;
   bool _pState;
-  static const uint8_t debounce_time = 100;
+  bool _isCCButton;
+  bool _hasRGB;
+  static const uint8_t _debounce_time = 100;
+  unsigned long _last_updated_time;
   uint8_t _anodePin;
   uint8_t _cathodePin;
+  uint8_t _RGB_LED_INDEX = 255; //default guard sentinel
 
   enum BUTTON_TYPE {
     XY_BUTTON,
@@ -61,7 +65,9 @@ private:
 
 public:
   // Constructors
-  Button(BUTTON_TYPE buttonType, uint8_t anodePin, uint8_t cathodePin);
+  Button(BUTTON_TYPE buttonType, uint8_t anodePin, uint8_t cathodePin, uint8_t RGB_LED_INDEX) {
+
+  };
 
     // Getters
 
@@ -94,8 +100,17 @@ public:
         pState = state;
         last_updated_time = millis();
       }
+
+      if(_momentary) {
+        
+      }
     }
   };
+
+
+
+
+
   void update();
 };
 

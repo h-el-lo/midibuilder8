@@ -33,6 +33,7 @@ public:
 
   // Setters
   void setBrightness();
+  void setPixelcolor(uint8_t pixel, hex color)
 
   // Methods
   void begin();
@@ -42,7 +43,7 @@ public:
   };
 };
 
-extern RGB_Strip BUTTON_STRIP;
+extern RGB_Strip BUTTON_RGB_STRIP;
 extern RGB_Strip INDICATOR_STRIP;
 
 #endif

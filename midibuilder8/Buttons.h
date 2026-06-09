@@ -14,6 +14,8 @@ class ButtonManager;
 
 
 
+
+
 enum ButtonType {
   XY_BUTTON,  // anode: Mux3, cathode: MCU pin
   XZ_BUTTON,  // anode: Mux3, cathode: Mux1
@@ -31,7 +33,6 @@ protected:
   uint8_t _cathodePin;
   bool _state = false;
   bool _pState = false;
-  bool _momentary = true;  // true = momentary, false = latch
   unsigned long _lastUpdated = 0;
 
   static const uint8_t DEBOUNCE_MS = 20;
@@ -40,67 +41,40 @@ protected:
   bool readHardware();
 
 public:
-  Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin, bool momentary = true);
+  // Constructors
+  Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin);
   virtual ~Button() {}
 
-  // Scans hardware, debounces, calls onPress/onRelease on change
-  void read();
-
+  // Getters
   bool getState() const {
     return _state;
   }
-  bool getMomentary() const {
-    return _momentary;
-  }
+
+  // Setters
+
+  // Methods
+  // Scans hardware, debounces, calls onPress/onRelease on change
+  void read();
 
   // ── Derived classes implement these ──
   virtual void onPress() = 0;
-  virtual void onRelease() = 0;
 };
 
 
-// ─────────────────────────────────────────────
-//  Group of Eight Button
-//  Scene / Preset selector with bank support
-//  Sends MIDI CC, modifies RGB LED strip
-// ─────────────────────────────────────────────
-class SceneSelectorButton : public Button {
-public:
-  enum GroupMode {
-    MODE_SCENE,  // CC64, momentary
-    MODE_PARTS  // CC0/127, latch
-  };
-
-  enum Bank {
-    BANK_A,
-    BANK_B
-  };
-
-private:
-  uint8_t _index;     // 0–7 position within the group
-  uint8_t _rgbIndex;  // index into the LED strip
-  uint8_t _ccNumber;  // assigned CC number
-
-  // Shared group state — all GroupButtons point to the same two variables
-  GroupMode* _groupMode;
-  Bank* _bank;
+class CCButton : public Button {
+protected:
+  _CCNumber;
 
 public:
-  CCButton(ButtonType type,
-           uint8_t anodePin,
-           uint8_t cathodePin,
-           uint8_t index,
-           uint8_t rgbIndex,
-           uint8_t ccNumber,
-           GroupMode* groupMode,
-           Bank* bank,
-           MIDIHelper* midi,
-           RGB* rgb);
+// Constructors
+  CCButton(ButtonType type, uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber);
 
+  // Getters
+
+  // Setters
+
+  // Methods
   void onPress() override;
-  void onRelease() override;
-
-  void updateLED();
 };
 
 
@@ -108,22 +82,14 @@ public:
 //  Numpad Button  (0–9, +, -)
 //  Sends MIDI CC, no RGB
 // ─────────────────────────────────────────────
-class NumpadButton : public Button {
+class NumpadButton : public CCButton {
 private:
-  MIDIHelper* _midi;
   uint8_t _ccNumber;
-  uint8_t _ccValue;
 
 public:
-  NumpadButton(ButtonType type,
-               uint8_t anodePin,
+  NumpadButton(uint8_t anodePin,
                uint8_t cathodePin,
-               uint8_t ccNumber,
-               uint8_t ccValue,
-               MIDIHelper* midi);
-
-  void onPress() override;
-  void onRelease() override;
+               uint8_t ccNumber);
 };
 
 

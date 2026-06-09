@@ -1,23 +1,16 @@
 #include "buttons.h"
 #include "Multiplexer.h"
-
-// ─────────────────────────────────────────────
-//  Extern references to multiplexers
-//  (defined in your Multiplexer.cpp)
-// ─────────────────────────────────────────────
-extern Multiplexer Mux1;  // cathode mux (Z axis)
-extern Multiplexer Mux3;  // anode mux   (X axis)
-
+#include "MIDIHelper.h"
 
 // ═════════════════════════════════════════════
 //  Button (base)
 // ═════════════════════════════════════════════
 
-Button::Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin, bool momentary)
-  : _type(type), _anodePin(anodePin), _cathodePin(cathodePin), _momentary(momentary) {}
+Button::Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin)
+  : _type(type), _anodePin(anodePin), _cathodePin(cathodePin) {}
 
 bool Button::readHardware() {
-  bool reading = false;
+  static bool reading = false;
 
   if (_type == XY_BUTTON) {
     Mux3.writeToChannel(_anodePin, LOW);
@@ -43,111 +36,42 @@ bool Button::readHardware() {
 void Button::read() {
   if (millis() - _lastUpdated < DEBOUNCE_MS) return;
 
-  bool reading = readHardware();
+  _state = readHardware();
 
-  if (reading == _pState) return;  // no change
+  if (_state == _pState) return;  // no change
 
-  _pState = reading;
   _lastUpdated = millis();
+  _pState = _state;
 
-  if (_momentary) {
-    _state = reading;
-    if (_state) onPress();
-    else onRelease();
-
+  if (_state) {
+    onPress();
   } else {
-    // Latch: toggle on press only
-    if (reading) {
-      _state = !_state;
-      if (_state) onPress();
-      else onRelease();
-    }
+    // Do nothing
   }
 }
+
 
 
 // ═════════════════════════════════════════════
-//  SelectorButton
+//  CCButton
 // ═════════════════════════════════════════════
+// Constructors
+CCButton::CCButton(ButtonType type, uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber)
+  : Button(type, anodePin, cathodePin), _CCNumber(CCNumber) {}
 
-SceneSelectorButton::SceneSelectorButton(
-                         uint8_t anodePin,
-                         uint8_t cathodePin,
-                         uint8_t index,
-                         uint8_t rgbIndex,
-                         uint8_t ccNumber,
-                         GroupMode* groupMode,
-                         Bank* bank,
-                         RGB* rgb)
-  : Button(XY_BUTTON, anodePin, cathodePin),
-    _index(index),
-    _rgbIndex(rgbIndex),
-    _ccNumber(ccNumber),
-    _groupMode(groupMode),
-    _bank(bank),
-    _midi(midi),
-    _rgb(rgb) {
-
-  // Momentary in scene mode, latch in preset mode
-  _momentary = (*_groupMode == MODE_SCENE);
+void CCButton::onPress() {
+  controlChange(GLOBAL_MIDI_CHANNEL, _CCNumber, 64);
 }
 
-void SceneSelectorButton::onPress() {
-  // Offset CC by bank: bank B shifts by 8
-  uint8_t bankOffset = (*_bank == BANK_B) ? 8 : 0;
-
-  if (*_groupMode == MODE_SCENE) {
-    // Scene mode: momentary CC64
-    _midi->sendCC(64, 127, _index + bankOffset);
-  } else {
-    // Preset mode: latch CC0/127
-    _midi->sendCC(_ccNumber, 127, _index + bankOffset);
-  }
-
-  updateLED();
-}
-
-void SceneSelectorButton::onRelease() {
-  if (*_groupMode == MODE_SCENE) {
-    uint8_t bankOffset = (*_bank == BANK_B) ? 8 : 0;
-    _midi->sendCC(64, 0, _index + bankOffset);
-  }
-  // Preset mode holds its LED state — no LED change on release
-}
-
-void SceneSelectorButton::updateLED() {
-  if (_rgbIndex == 255) return;  // sentinel: no LED assigned
-
-  if (*_groupMode == MODE_SCENE) {
-    _rgb->setColor(_rgbIndex, _state ? 0x00FF00 : 0x000000);  // green when active
-  } else {
-    _rgb->setColor(_rgbIndex, _state ? 0x0000FF : 0x000000);  // blue when selected
-  }
-}
 
 
 // ═════════════════════════════════════════════
 //  NumpadButton
 // ═════════════════════════════════════════════
-
-NumpadButton::NumpadButton(ButtonType type,
-                           uint8_t anodePin,
+NumpadButton::NumpadButton(uint8_t anodePin,
                            uint8_t cathodePin,
-                           uint8_t ccNumber,
-                           uint8_t ccValue,
-                           MIDIHelper* midi)
-  : Button(type, anodePin, cathodePin, true),  // always momentary
-    _ccNumber(ccNumber),
-    _ccValue(ccValue),
-    _midi(midi) {}
-
-void NumpadButton::onPress() {
-  _midi->sendCC(_ccNumber, _ccValue);
-}
-
-void NumpadButton::onRelease() {
-  // No action on release for numpad
-}
+                           uint8_t CCNumber)
+  : CCButton(YZ_BUTTON, anodePin, cathodePin, CCNumber) {}
 
 
 // ═════════════════════════════════════════════
@@ -168,13 +92,10 @@ void TransposeButton::onPress() {
   else _keys->transposeDown();
 }
 
-void TransposeButton::onRelease() {}
-
 
 // ═════════════════════════════════════════════
 //  OctaveButton
 // ═════════════════════════════════════════════
-
 OctaveButton::OctaveButton(ButtonType type,
                            uint8_t anodePin,
                            uint8_t cathodePin,
@@ -189,13 +110,10 @@ void OctaveButton::onPress() {
   else _keys->octaveDown();
 }
 
-void OctaveButton::onRelease() {}
-
 
 // ═════════════════════════════════════════════
 //  ActionButton
 // ═════════════════════════════════════════════
-
 ActionButton::ActionButton(ButtonType type,
                            uint8_t anodePin,
                            uint8_t cathodePin,
@@ -225,6 +143,10 @@ void ButtonManager::scan() {
   for (uint8_t i = 0; i < _count; i++) {
     _buttons[i]->read();
   }
+
+  // when scene select is changed to part mode,
+  update the rgb strip according to the saved values of the states of each button
+    consider creating an array of these states.
 }
 
 

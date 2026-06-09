@@ -17,8 +17,6 @@ Mux::Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint
   : Mux(S0, S1, S2, S3, signalPin, type, mode, false, 255) {
 }
 
-
-
 // Getters
 
 // Setters

@@ -4,196 +4,222 @@
 #include <Arduino.h>
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
+#include "keys.h"
+#include "rgb.h"
 
-
-uint8_t GROUP_OF_EIGHT[2][8] = { 0 };
-bool grouup_of_eight_selector = 0;
-
-struct Button {
-  enum BUTTON_TYPE {
-    XY_BUTTON,
-    XZ_BUTTON,
-    YZ_BUTTON,
-  };
+// ─────────────────────────────────────────────
+//  Forward declarations
+// ─────────────────────────────────────────────
+class ButtonManager;
 
 
 
-  enum BUTTON_NAME {
-
-  };
-
-  uint8_t pin;
-  BUTTON_TYPE type;
-  bool mode = 0;  // 0 for momentary, 1 for latch
-  static const uint8_t debounce_time = 100;
-  unsigned long last_updated_time;
-  bool state, pState;
-  uint8_t color1on[3] = { 0, 0, 0 };
-  uint8_t color2on[3] = { 0 };
-  uint8_t color1off[3] = { 0 };
-  uint8_t color2off[3] = { 0 };
-
-  uint
+enum ButtonType {
+  XY_BUTTON,  // anode: Mux3, cathode: MCU pin
+  XZ_BUTTON,  // anode: Mux3, cathode: Mux1
+  YZ_BUTTON   // anode: MCU pin, cathode: Mux1
 };
 
 
-
-// scan for current state,
-// save state of all buttons
-
-// read all button states and carry out corresonding action
-
-
+// ─────────────────────────────────────────────
+//  Abstract Base Class
+// ─────────────────────────────────────────────
 class Button {
-private:
-  bool _momentary = 0;  // 0 for momentary, 1 for latch
-  bool _state;
-  bool _pState;
-  bool _isCCButton;
-  bool _hasRGB;
-  static const uint8_t _debounce_time = 100;
-  unsigned long _last_updated_time;
+protected:
+  ButtonType _type;
   uint8_t _anodePin;
   uint8_t _cathodePin;
-  uint8_t _RGB_LED_INDEX = 255; //default guard sentinel
+  bool _state = false;
+  bool _pState = false;
+  bool _momentary = true;  // true = momentary, false = latch
+  unsigned long _lastUpdated = 0;
 
-  enum BUTTON_TYPE {
-    XY_BUTTON,
-    XZ_BUTTON,
-    YZ_BUTTON,
-  };
+  static const uint8_t DEBOUNCE_MS = 20;
+
+  // Hardware read — shared by all button types
+  bool readHardware();
 
 public:
-  // Constructors
-  Button(BUTTON_TYPE buttonType, uint8_t anodePin, uint8_t cathodePin, uint8_t RGB_LED_INDEX) {
+  Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin, bool momentary = true);
+  virtual ~Button() {}
 
+  // Scans hardware, debounces, calls onPress/onRelease on change
+  void read();
+
+  bool getState() const {
+    return _state;
+  }
+  bool getMomentary() const {
+    return _momentary;
+  }
+
+  // ── Derived classes implement these ──
+  virtual void onPress() = 0;
+  virtual void onRelease() = 0;
+};
+
+
+// ─────────────────────────────────────────────
+//  Group of Eight Button
+//  Scene / Preset selector with bank support
+//  Sends MIDI CC, modifies RGB LED strip
+// ─────────────────────────────────────────────
+class SceneSelectorButton : public Button {
+public:
+  enum GroupMode {
+    MODE_SCENE,  // CC64, momentary
+    MODE_PARTS  // CC0/127, latch
   };
 
-    // Getters
-
-    // Setters
-
-
-    // Methods
-    void read() {
-    if (millis() - last_updated_time <= debounce_time) {
-      if (buttonType == XY_BUTTON) {
-        Mux3.writeToChannel(anodePin, LOW);
-        pinMode(cathodePin, INPUT_PULLUP);
-        state = !digitalRead(cathodePin);
-        Mux3.writeToChannel(anodePin, HIGH);
-
-      } else if (buttonType == XZ_BUTTON) {
-        Mux3.writeToChannel(anodePin, LOW);
-        state = !Mux1.readChannel(cathodePin);
-        Mux3.writeToChannel(anodePin, HIGH);
-
-      } else if (buttonType == YZ_BUTTON) {
-        pinMode(cathodePin, OUTPUT);
-        digitalWrite(cathodePin, LOW);
-        state = !Mux1.readChannel(cathodePin);
-        digitalWrite(cathodePin, HIGH);
-      }
-
-      if (state != pState) {
-        // Carry out action
-        pState = state;
-        last_updated_time = millis();
-      }
-
-      if(_momentary) {
-        
-      }
-    }
+  enum Bank {
+    BANK_A,
+    BANK_B
   };
 
+private:
+  uint8_t _index;     // 0–7 position within the group
+  uint8_t _rgbIndex;  // index into the LED strip
+  uint8_t _ccNumber;  // assigned CC number
 
+  // Shared group state — all GroupButtons point to the same two variables
+  GroupMode* _groupMode;
+  Bank* _bank;
 
+public:
+  CCButton(ButtonType type,
+           uint8_t anodePin,
+           uint8_t cathodePin,
+           uint8_t index,
+           uint8_t rgbIndex,
+           uint8_t ccNumber,
+           GroupMode* groupMode,
+           Bank* bank,
+           MIDIHelper* midi,
+           RGB* rgb);
 
+  void onPress() override;
+  void onRelease() override;
 
-  void update();
+  void updateLED();
 };
 
 
-uint8_t XY_array[23][2] = {
-  { 1, 4 },  // M1
-  { 1, 3 },  // M2
-  { 1, 2 },  // DEFAULT A
-  { 1, 1 },  // DEFAULT B
-  { 2, 4 },  // TRANSPOSE +
-  { 2, 3 },  // TRANSPOSE -
-  { 2, 1 },  // FADE IN/OUT 8
-  { 3, 4 },  // TOUCH 15
-  { 3, 3 },  // SUSTAIN 11
-  { 3, 2 },  // VIBRATION 12
-  { 3, 1 },  // DRUM 16
-  { 4, 1 },  // INTRO/END 7
-  { 5, 4 },  // SYNC 1
-  { 5, 3 },  // START/STOP
-  { 5, 1 },  // FILL-IN 6
-  { 6, 4 },  // CHORD OFF 2
-  { 6, 3 },  // SINGLE 3
-  { 6, 2 },  // FINGER 4
-  { 6, 1 },  // FULL CHORD 5
-  { 7, 4 },  // TEMPO UP
-  { 7, 3 },  // TEMPO DOWN
-  { 8, 2 },  // RHYTHM VOL +
-  { 8, 1 },  // RHYTHM VOL -
-};
+// ─────────────────────────────────────────────
+//  Numpad Button  (0–9, +, -)
+//  Sends MIDI CC, no RGB
+// ─────────────────────────────────────────────
+class NumpadButton : public Button {
+private:
+  MIDIHelper* _midi;
+  uint8_t _ccNumber;
+  uint8_t _ccValue;
 
-uint8_t XZ_array[1][2] = {
-  { 4, 1 },  // MEMORY
-};
+public:
+  NumpadButton(ButtonType type,
+               uint8_t anodePin,
+               uint8_t cathodePin,
+               uint8_t ccNumber,
+               uint8_t ccValue,
+               MIDIHelper* midi);
 
-uint8_t YZ_array[22][2] = {
-  { 3, 1 },  // TONE
-  { 2, 1 },  // RHYTHM
-  { 1, 1 },  // SONG
-  { 4, 2 },  // 1
-  { 3, 2 },  // 2
-  { 2, 2 },  // 3
-  { 1, 2 },  // 4
-  { 4, 3 },  // 5
-  { 3, 3 },  // 6
-  { 2, 3 },  // 7
-  { 1, 3 },  // 8
-  { 4, 4 },  // 9
-  { 3, 4 },  // 0
-  { 2, 4 },  // +
-  { 1, 4 },  // -
-  { 4, 5 },  // DEMO
-  { 3, 5 },  // LESSON A 13
-  { 2, 5 },  // LESSON B 14
-  { 4, 6 },  // RECORD
-  { 3, 6 },  // R-PLAY
-  { 2, 6 },  // PROG
-  { 1, 6 },  // P-PLAY
+  void onPress() override;
+  void onRelease() override;
 };
 
 
-// SET PINS Y1 - Y4 DIRECTLY ON MCU
+// ─────────────────────────────────────────────
+//  Transpose Button
+//  Modifies global transpose in Keys
+// ─────────────────────────────────────────────
+class TransposeButton : public Button {
+public:
+  enum Direction { UP,
+                   DOWN };
 
-// in scene mode, use cc64 to trigger all scenes, momentary
-// in parts mode, use cc0 and 127 to trigger on or off - latch
+private:
+  Keys* _keys;
+  Direction _direction;
 
+public:
+  TransposeButton(ButtonType type,
+                  uint8_t anodePin,
+                  uint8_t cathodePin,
+                  Direction direction,
+                  Keys* keys);
+
+  void onPress() override;
+  void onRelease() override;
+};
+
+
+// ─────────────────────────────────────────────
+//  Octave Button
+//  Modifies global octave in Keys
+// ─────────────────────────────────────────────
+class OctaveButton : public Button {
+public:
+  enum Direction { UP,
+                   DOWN };
+
+private:
+  Keys* _keys;
+  Direction _direction;
+
+public:
+  OctaveButton(ButtonType type,
+               uint8_t anodePin,
+               uint8_t cathodePin,
+               Direction direction,
+               Keys* keys);
+
+  void onPress() override;
+  void onRelease() override;
+};
+
+
+// ─────────────────────────────────────────────
+//  Action Button
+//  Home, Settings, Exit etc. — no MIDI, no RGB
+//  Accepts a plain function pointer as its action
+// ─────────────────────────────────────────────
+class ActionButton : public Button {
+private:
+  void (*_onPressCallback)();    // injected at construction
+  void (*_onReleaseCallback)();  // optional, can be nullptr
+
+public:
+  ActionButton(ButtonType type,
+               uint8_t anodePin,
+               uint8_t cathodePin,
+               void (*onPressCallback)(),
+               void (*onReleaseCallback)() = nullptr);
+
+  void onPress() override;
+  void onRelease() override;
+};
+
+
+// ─────────────────────────────────────────────
+//  Button Manager
+//  Owns nothing — just scans an array of Button*
+// ─────────────────────────────────────────────
+class ButtonManager {
+private:
+  Button** _buttons;
+  uint8_t _count;
+
+public:
+  ButtonManager(Button** buttons, uint8_t count);
+
+  // Call this in loop()
+  void scan();
+};
+
+
+// ─────────────────────────────────────────────
+//  Composition root — call once in setup()
+// ─────────────────────────────────────────────
+void initButtons(MIDIHelper* midi, RGB* rgb, Keys* keys);
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-// X (anode 8 Mux3)
-// Y (MCU 4)
-// Z (cathode 6 Mux1)
-
-// at construction, if in group of 8, set default colors c1, c2, c3, c4,
-// at construction, if in group of 6, set default colors c1, c2

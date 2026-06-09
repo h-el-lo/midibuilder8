@@ -60,7 +60,9 @@ unsigned long timeOfStart[ROW_NUM][COL_NUM] = { 0 };  // time of keypress start 
 unsigned long timeOfEnd[ROW_NUM][COL_NUM] = { 0 };    // time of keypress end kpe[x][y]
 int16_t keyTravelTime;
 
-uint8_t transpose = 0;
+int8_t transpose = 0;
+int8_t transposeLowerLimit = -24;
+int8_t transposeUpperLimit = 24;
 uint8_t note, velocity;
 uint8_t vel_min = 0;
 uint8_t vel_max = 45;
@@ -84,7 +86,41 @@ enum KeyErrorCode {
 };
 //  ===========================================================================
 
+void channelUp() {
+  if (GLOBAL_MIDI_CHANNEL < 16 ) {
+    GLOBAL_MIDI_CHANNEL++;
+  }
+}
 
+void channelDown() {
+  if (GLOBAL_MIDI_CHANNEL > 1 ) {
+    GLOBAL_MIDI_CHANNEL--;
+  }
+}
+
+void transposeUp() {
+    if (transpose < transposeUpperLimit ) {
+    transpose++;
+  }
+}
+
+void transposeDown() {
+    if (transpose > transposeLowerLimit ) {
+    transpose--;
+  }
+}
+
+void octaveUp() {
+    if (transpose < transposeUpperLimit ) {
+    transpose+=12;
+  }
+}
+
+void octaveDown() {
+    if (transpose > transposeLowerLimit ) {
+    transpose-=12;
+  }
+}
 
 void setKeysChannel(uint8_t channel) {
   allNotesOff();

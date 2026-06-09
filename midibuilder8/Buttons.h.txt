@@ -1,0 +1,200 @@
+#ifndef BUTTONS_H
+#define BUTTONS_H
+
+#include <Arduino.h>
+#include "Multiplexer.h"
+#include "MIDIHelper.h"
+
+
+uint8_t GROUP_OF_EIGHT[2][8] = { 0 };
+bool grouup_of_eight_selector = 0;
+
+struct Button {
+  enum BUTTON_TYPE {
+    XY_BUTTON,
+    XZ_BUTTON,
+    YZ_BUTTON,
+  };
+
+
+
+  enum BUTTON_NAME {
+
+  };
+
+  uint8_t pin;
+  BUTTON_TYPE type;
+  bool mode = 0;  // 0 for momentary, 1 for latch
+  static const uint8_t debounce_time = 100;
+  unsigned long last_updated_time;
+  bool state, pState;
+  uint8_t color1on[3] = { 0, 0, 0 };
+  uint8_t color2on[3] = { 0 };
+  uint8_t color1off[3] = { 0 };
+  uint8_t color2off[3] = { 0 };
+
+  uint
+};
+
+
+
+// scan for current state,
+// save state of all buttons
+
+// read all button states and carry out corresonding action
+
+
+class Button {
+private:
+  bool _momentary = 0;  // 0 for momentary, 1 for latch
+  bool _state;
+  bool _pState;
+  bool _isCCButton;
+  bool _hasRGB;
+  static const uint8_t _debounce_time = 100;
+  unsigned long _last_updated_time;
+  uint8_t _anodePin;
+  uint8_t _cathodePin;
+  uint8_t _RGB_LED_INDEX = 255; //default guard sentinel
+
+  enum BUTTON_TYPE {
+    XY_BUTTON,
+    XZ_BUTTON,
+    YZ_BUTTON,
+  };
+
+public:
+  // Constructors
+  Button(BUTTON_TYPE buttonType, uint8_t anodePin, uint8_t cathodePin, uint8_t RGB_LED_INDEX) {
+
+  };
+
+    // Getters
+
+    // Setters
+
+
+    // Methods
+    void read() {
+    if (millis() - last_updated_time <= debounce_time) {
+      if (buttonType == XY_BUTTON) {
+        Mux3.writeToChannel(anodePin, LOW);
+        pinMode(cathodePin, INPUT_PULLUP);
+        state = !digitalRead(cathodePin);
+        Mux3.writeToChannel(anodePin, HIGH);
+
+      } else if (buttonType == XZ_BUTTON) {
+        Mux3.writeToChannel(anodePin, LOW);
+        state = !Mux1.readChannel(cathodePin);
+        Mux3.writeToChannel(anodePin, HIGH);
+
+      } else if (buttonType == YZ_BUTTON) {
+        pinMode(cathodePin, OUTPUT);
+        digitalWrite(cathodePin, LOW);
+        state = !Mux1.readChannel(cathodePin);
+        digitalWrite(cathodePin, HIGH);
+      }
+
+      if (state != pState) {
+        // Carry out action
+        pState = state;
+        last_updated_time = millis();
+      }
+
+      if(_momentary) {
+        
+      }
+    }
+  };
+
+
+
+
+
+  void update();
+};
+
+
+uint8_t XY_array[23][2] = {
+  // { anodePin, cathodePin, RGBIndex }
+  { 1, 4 },  // M1
+  { 1, 3 },  // M2
+  { 1, 2 },  // DEFAULT A
+  { 1, 1 },  // DEFAULT B
+  { 2, 4 },  // TRANSPOSE +
+  { 2, 3 },  // TRANSPOSE -
+  { 2, 1 },  // FADE IN/OUT 8
+  { 3, 4 },  // TOUCH 15
+  { 3, 3 },  // SUSTAIN 11
+  { 3, 2 },  // VIBRATION 12
+  { 3, 1 },  // DRUM 16
+  { 4, 1 },  // INTRO/END 7
+  { 5, 4 },  // SYNC 1
+  { 5, 3 },  // START/STOP
+  { 5, 1 },  // FILL-IN 6
+  { 6, 4 },  // CHORD OFF 2
+  { 6, 3 },  // SINGLE 3
+  { 6, 2 },  // FINGER 4
+  { 6, 1 },  // FULL CHORD 5
+  { 7, 4 },  // TEMPO UP
+  { 7, 3 },  // TEMPO DOWN
+  { 8, 2 },  // RHYTHM VOL +
+  { 8, 1 },  // RHYTHM VOL -
+};
+
+uint8_t XZ_array[1][2] = {
+  { 4, 1 },  // MEMORY
+};
+
+uint8_t YZ_array[22][2] = {
+  { 3, 1 },  // TONE
+  { 2, 1 },  // RHYTHM
+  { 1, 1 },  // SONG
+  { 4, 2 },  // 1
+  { 3, 2 },  // 2
+  { 2, 2 },  // 3
+  { 1, 2 },  // 4
+  { 4, 3 },  // 5
+  { 3, 3 },  // 6
+  { 2, 3 },  // 7
+  { 1, 3 },  // 8
+  { 4, 4 },  // 9
+  { 3, 4 },  // 0
+  { 2, 4 },  // +
+  { 1, 4 },  // -
+  { 4, 5 },  // DEMO
+  { 3, 5 },  // LESSON A 13
+  { 2, 5 },  // LESSON B 14
+  { 4, 6 },  // RECORD
+  { 3, 6 },  // R-PLAY
+  { 2, 6 },  // PROG
+  { 1, 6 },  // P-PLAY
+};
+
+
+// SET PINS Y1 - Y4 DIRECTLY ON MCU
+
+// in scene mode, use cc64 to trigger all scenes, momentary
+// in parts mode, use cc0 and 127 to trigger on or off - latch
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+// X (anode 8 Mux3)
+// Y (MCU 4)
+// Z (cathode 6 Mux1)
+
+// at construction, if in group of 8, set default colors c1, c2, c3, c4,
+// at construction, if in group of 6, set default colors c1, c2

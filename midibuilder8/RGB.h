@@ -19,19 +19,30 @@
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 class RGB_Strip {
-    private:
-    Adafruit_NeoPixel _strip;
-    uint8_t _brightness;
-    uint8_t _LED_COUNT
-    public:
-    void begin() {
-_strip.begin();
-    };
+private:
+  Adafruit_NeoPixel _strip;
+  uint8_t _brightness;
+  uint8_t _LED_COUNT public : void begin() {
+    _strip.begin();
+  };
 
-    void show() {_strip.show();};
+public:
+  // Constructors
+
+  // Getters
+
+  // Setters
+  void setBrightness();
+
+  // Methods
+  void begin();
+
+  void update(uint8_t rgbIndex) {
+    _strip.show();
+  };
 };
 
-extern RGB_Strip BUTTON_STRIP;  
+extern RGB_Strip BUTTON_STRIP;
 extern RGB_Strip INDICATOR_STRIP;
 
 #endif

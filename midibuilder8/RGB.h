@@ -38,7 +38,7 @@ public:
     Adafruit_NeoPixel::setPixelColor(rgbIndex, Adafruit_NeoPixel::Color(0, 0, 0));
     Adafruit_NeoPixel::show();
   }
-  
+
   void update(uint8_t rgbIndex, ColorStruct color) {
     Adafruit_NeoPixel::setPixelColor(rgbIndex, Adafruit_NeoPixel::Color(color.r, color.g, color.b));
     Adafruit_NeoPixel::show();

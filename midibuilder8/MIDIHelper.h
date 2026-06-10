@@ -11,6 +11,18 @@ extern uint8_t KEYS_CHANNEL;
 // These functions are defined as inline to prevent multiple definition errors when
 // header is called in different files
 
+inline void channelUp() {
+  if (GLOBAL_MIDI_CHANNEL < 16) {
+    GLOBAL_MIDI_CHANNEL++;
+  }
+}
+
+inline void channelDown() {
+  if (GLOBAL_MIDI_CHANNEL > 1) {
+    GLOBAL_MIDI_CHANNEL--;
+  }
+}
+
 inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
   usbmidi.noteOn(note, velocity, channel);
 }
@@ -41,6 +53,11 @@ inline void allNotesOff() {
   controlChange(KEYS_CHANNEL, 123, 127);
   // Set CC123 back to 0
   controlChange(KEYS_CHANNEL, 123, 0);
+}
+
+inline void allSoundsOff() {
+  allNotesOff();
+  controlChange(KEYS_CHANNEL, 120, 64);
 }
 
 // Maybe in future versions, implement a special function for sendMIDI.

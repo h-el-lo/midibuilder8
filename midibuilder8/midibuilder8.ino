@@ -56,14 +56,14 @@ void loop() {
   // wdt_reset();
 
   // ================================  READ THROUGH KEYS  ===================================
-  updateKeys();
+  keys.updateKeys();
   // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   DamperPedal.update();
   ExpressionPedal.update();
   // updatePitchWheel();
-  slider.update();
+  Slider.update();
   // joystick.update();
   // ========================================================================================
 

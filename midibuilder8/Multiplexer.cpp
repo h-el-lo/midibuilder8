@@ -40,12 +40,12 @@ void Mux::validate() {
 
 void Mux::selectChannel(uint8_t channel) {
   if (channel != _selectedChannel) {
-  digitalWrite(_S0, channel & 0x01);
-  digitalWrite(_S1, (channel >> 1) & 0x01);
-  digitalWrite(_S2, (channel >> 2) & 0x01);
-  digitalWrite(_S3, (channel >> 3) & 0x01);
-  delayMicroseconds(5);  // for signal stabilization
-  _selectedChannel = channel;
+    digitalWrite(_S0, channel & 0x01);
+    digitalWrite(_S1, (channel >> 1) & 0x01);
+    digitalWrite(_S2, (channel >> 2) & 0x01);
+    digitalWrite(_S3, (channel >> 3) & 0x01);
+    delayMicroseconds(5);  // for signal stabilization
+    _selectedChannel = channel;
   }
 }
 

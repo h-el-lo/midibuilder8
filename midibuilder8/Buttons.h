@@ -187,7 +187,7 @@ public:
 //  Accepts a plain function pointer as its action
 // ─────────────────────────────────────────────
 class ActionButton : public Button {
-private:
+protected:
   void (*_onPressCallback)();  // injected at construction
 
 public:
@@ -197,6 +197,22 @@ public:
                void (*onPressCallback)());
 
   void onPress() override;
+};
+
+
+class RGBActionButton: public ActionButton {
+  private:
+  uint8_t _rgbIndex;
+  ColorStruct _color;
+
+  public:
+    RGBActionButton(ButtonType type,
+               uint8_t anodePin,
+               uint8_t cathodePin,
+               uint8_t rgbIndex,
+               ColorStruct color,
+               void (*onPressCallback)());
+
 };
 
 

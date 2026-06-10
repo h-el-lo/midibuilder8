@@ -34,7 +34,7 @@ public:
       Serial.println("ADS not found... retrying.");
       delay(500);
     }
-    
+
     pinMode(ADS_ALRT_MCU_PIN, INPUT_PULLUP);
 
     _ads.setGain(GAIN_ONE);

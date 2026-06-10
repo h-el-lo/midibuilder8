@@ -183,8 +183,6 @@ void GeneralPurposeCCButton::updateRGB() {
 }
 
 
-
-
 // ═════════════════════════════════════════════
 //  ActionButton
 // ═════════════════════════════════════════════
@@ -197,6 +195,22 @@ ActionButton::ActionButton(ButtonType type,
 
 void ActionButton::onPress() {
   if (_onPressCallback) _onPressCallback();
+}
+
+
+// ═════════════════════════════════════════════
+//  RGBActionButton
+// Regular Action buttons but with RGB
+// ═════════════════════════════════════════════
+RGBActionButton::RGBActionButton(ButtonType type,
+                                 uint8_t anodePin,
+                                 uint8_t cathodePin,
+                                 uint8_t rgbIndex,
+                                 ColorStruct color,
+                                 void (*onPressCallback)())
+  : ActionButton(type, anodePin, cathodePin, onPressCallback),
+    _rgbIndex(rgbIndex), _color(color) {
+  BUTTON_RGB_STRIP.update(_rgbIndex, _color);
 }
 
 
@@ -280,10 +294,9 @@ void initButtons() {
 
   // ── GeneralPurposeCC (YZ buttons, 4 buttons: 0–9, +, -) ──
   // { anodePin, cathodePin, CCNumber, rgbIndex, color}
-
-  // An array is incapable of handling a different type than was specified at initialization
-  // Thus, a struct is more suitable for passing this type of data
   struct GeneralPurposeCCStruct {
+    // An array is incapable of handling a different type than was specified at initialization
+    // Thus, a struct is more suitable for passing this type of data
     uint8_t anodePin, cathodePin, CCNumber, rgbIndex;
     ColorStruct color;
   };
@@ -307,15 +320,16 @@ void initButtons() {
   // ── XZ Button (Memory) ──
   buttonArray[i++] = new ActionButton(
     XZ_BUTTON, 4, 1,
-    []() { /* TODO: memory press action  */ },
-    []() { /* TODO: memory release action */ });
+    []() { /* TODO: memory press action  */ });
 
   // ── Remaining XY action buttons ──
   // Add yours here following the same pattern:
-  // buttonArray[i++] = new ActionButton(Button::XY_BUTTON, anodePin, cathodePin, onPress, onRelease);
+  // buttonArray[i++] = new ActionButton(type, anodePin, cathodePin, onPress);
+  // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 
-  // ── RGB strip buttons ──
-  // buttonArray[i++] = new RGBButton(Button::XY_BUTTON, anodePin, cathodePin, rgbIndex, rgb);
+  // buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 15, { 20, 30, 40 }, keys.transposeUp());  // Transpose +
+  // buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 16, { 20, 30, 40 }, keys.transposeUp);  // Transpose -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 40 }, channelUp);  // Transpose -
 
   manager = new ButtonManager(buttonArray, i);
 }

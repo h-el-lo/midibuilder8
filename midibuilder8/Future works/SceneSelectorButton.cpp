@@ -1,9 +1,6 @@
 #include "SceneSelectorButton.h"
 
 
-// ═════════════════════════════════════════════
-//  SelectorButton
-// ═════════════════════════════════════════════
 
 SceneSelectorButton::SceneSelectorButton(
   uint8_t anodePin,
@@ -39,7 +36,7 @@ void SceneSelectorButton::onPress() {
 
   if (_groupMode == MODE_SCENE) {
     SET_SCENE_BIT(sceneState, _bank, _index);
-    CLEAR_BYTE(sceneState, ((_bank == BANK_A)? BANK_B: BANK_A));
+    CLEAR_BYTE(sceneState, ((_bank == BANK_A) ? BANK_B : BANK_A));
     controlChange(GLOBAL_MIDI_CHANNEL, _SCENE_CC[_bank], 64);
     updateRGBSection();
   } else {

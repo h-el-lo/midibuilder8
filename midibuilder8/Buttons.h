@@ -7,11 +7,6 @@
 #include "keys.h"
 #include "RGB.h"
 
-// ─────────────────────────────────────────────
-//  Forward declarations
-// ─────────────────────────────────────────────
-class ButtonManager;
-
 
 enum ButtonType {
   XY_BUTTON,  // anode: Mux3, cathode: MCU pin
@@ -67,11 +62,122 @@ private:
   uint8_t _CCNumber;
 
 public:
-// Constructors
+  // Constructors
   NumpadButton(uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber);
 
   // Methods
   void onPress() override;
+};
+
+
+#define GET_BIT(BYTE, BIT) ((BYTE >> BIT) & 0x01)
+#define CLEAR_BYTE(BYTE) (BYTE &= 0X00)
+#define INVERT_BIT(BYTE, BIT) (BYTE ^= (1 << BIT))
+#define SET_SCENE_BIT(BYTE, BIT) (BYTE = (1 << BIT))
+
+class SceneSelectorButton : public Button {
+public:
+  enum GroupMode {
+    MODE_SCENE,  // CC64, momentary
+    MODE_PARTS,  // CC0/127, latch
+  };
+
+  enum Bank {
+    BANK_A,
+    BANK_B,
+  };
+
+private:
+  uint8_t _index;
+  uint8_t _rgbIndex;  // index into the LED strip
+
+  // Shared group state — all SceneSelectorButtons point to the same two variables
+  inline static GroupMode _groupMode = MODE_SCENE;
+  inline static Bank _bank = BANK_A;
+
+  inline static uint8_t _SCENE_CC[2] = { 0 };
+  inline static uint8_t _PARTS_CC[2] = { 0 };
+
+
+  // Rather than use an 8x2 uint8_t matrix, consuming 16 bytes, we shall employ bit packing.
+  // Using an array of 8 bytes, 1 byte per item, every bit within every byte shall represent a data point
+  // The macros GET_BIT, SET_SCENE_BIT, CLEAR_BYTE and INVERT_BIT shall then be used to manipulate the byte arrays
+  // This method consumes 8 bytes alone per 8x2 matrix
+
+  // Arrays to keep track of present states of kps and kpe data for all keys
+  // Shared scene and parts arrays.
+  inline static byte sceneState[2]{
+    0b10000000,
+    0b00000000,
+  };
+
+  inline static byte partsState[2]{
+    0b00000000,
+    0b00000000,
+  };
+
+  // Shared color variables
+  inline static ColorStruct partsOnColor[2] = {
+    { 200, 230, 160 },  // BANK_A
+    { 200, 230, 160 },  // BANK_B
+  };
+  inline static ColorStruct partsOffColor[2] = {
+    { 0, 0, 0 },  // BANK_A
+    { 0, 0, 0 },  // BANK_B
+  };
+  inline static ColorStruct sceneSelectedColor[2] = {
+    { 0, 0, 0 },  // BANK_A
+    { 0, 0, 0 },  // BANK_B
+  };
+  inline static ColorStruct sceneUnselectedColor[2] = {
+    { 0, 0, 0 },  // BANK_A
+    { 0, 0, 0 },  // BANK_B
+  };
+
+
+public:
+  // Constructors
+  SceneSelectorButton(
+    uint8_t anodePin,
+    uint8_t cathodePin,
+    uint8_t index,
+    uint8_t BANK_A_SCENE_CC,
+    uint8_t BANK_B_SCENE_CC,
+    uint8_t BANK_A_PARTS_CC,
+    uint8_t BANK_B_PARTS_CC,
+    uint8_t rgbIndex);
+
+  // Getters
+
+  // Setters
+  void toggleGroupMode();
+  void setBank(Bank bank);
+
+  // Methods
+  void onPress() override;
+  void clearallparts();
+
+  void updateRGB(uint8_t rgbIndex);
+  void updateRGBSection();
+};
+
+
+class GeneralPurposeCCButton : public Button {
+private:
+  uint8_t _CCNumber;
+  uint8_t _rgbIndex;
+  ColorStruct _color;
+
+public:
+  GeneralPurposeCCButton(uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber, uint8_t rgbIndex, ColorStruct color);
+  void onPress() override;
+  void updateRGB();
+};
+
+
+class PresetSelectorButton {
+private:
+public:
 };
 
 
@@ -82,18 +188,15 @@ public:
 // ─────────────────────────────────────────────
 class ActionButton : public Button {
 private:
-  void (*_onPressCallback)();    // injected at construction
-  void (*_onReleaseCallback)();  // optional, can be nullptr
+  void (*_onPressCallback)();  // injected at construction
 
 public:
   ActionButton(ButtonType type,
                uint8_t anodePin,
                uint8_t cathodePin,
-               void (*onPressCallback)(),
-               void (*onReleaseCallback)() = nullptr);
+               void (*onPressCallback)());
 
   void onPress() override;
-  void onRelease() override;
 };
 
 
@@ -117,7 +220,7 @@ public:
 // ─────────────────────────────────────────────
 //  Composition root — call once in setup()
 // ─────────────────────────────────────────────
-void initButtons(MIDIHelper* midi, RGB* rgb, Keys* keys);
+void initButtons();
 
 
 #endif

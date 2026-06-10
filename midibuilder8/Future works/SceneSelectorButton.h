@@ -8,11 +8,6 @@
 #define INVERT_BIT(array, row, col) (array[row] ^= (1 << col))
 #define SET_SCENE_BIT(array, row, index) (array[row] = (1 << col))
 
-// ─────────────────────────────────────────────
-//  Group of Eight Button
-//  Scene / Preset selector with bank support
-//  Sends MIDI CC, modifies RGB LED strip
-// ─────────────────────────────────────────────
 class SceneSelectorButton : public Button {
 public:
   enum GroupMode {
@@ -33,8 +28,8 @@ private:
   inline static GroupMode _groupMode = MODE_SCENE;
   inline static Bank _bank = BANK_A;
 
-  inline static uint8_t _SCENE_CC[2] = { 0 };
-  inline static uint8_t _PARTS_CC[2] = { 0 };
+  static constexpr uint8_t _SCENE_CC[2] = { 0 };
+  static constexpr uint8_t _PARTS_CC[2] = { 0 };
 
 
   // Rather than use an 8x2 uint8_t matrix, consuming 64 bytes per matrix, we shall employ bit packing.
@@ -55,19 +50,19 @@ private:
   };
 
   // Shared color variables
-  static constexpr uint8_t partOnColor[2][3] = {
+  inline static uint8_t partOnColor[2][3] = {
     { 200, 230, 160 },  // BANK_A
     { 200, 230, 160 },  // BANK_B
   };
-  static constexpr uint8_t partOffColor[2][3] = {
+  inline static uint8_t partOffColor[2][3] = {
     { 0, 0, 0 },  // BANK_A
     { 0, 0, 0 },  // BANK_B
   };
-  static constexpr uint8_t sceneSelectedColor[2][3] = {
+  inline static uint8_t sceneSelectedColor[2][3] = {
     { 0, 0, 0 },  // BANK_A
     { 0, 0, 0 },  // BANK_B
   };
-  static constexpr uint8_t sceneUnselectedColor[2][3] = {
+  inline static uint8_t sceneUnselectedColor[2][3] = {
     { 0, 0, 0 },  // BANK_A
     { 0, 0, 0 },  // BANK_B
   };
@@ -91,7 +86,7 @@ private:
   // Getters
 
   // Setters
-   void toggleGroupMode();
+  void toggleGroupMode();
   void setBank();
 
   // Methods
@@ -101,25 +96,6 @@ private:
   void updateRGB();
   void updateRGBSection();
 };
-
-
-
-// ─────────────────────────────────────────────
-//  Scene Selector Handler
-//  Owns nothing — just scans an array of Button*
-// ─────────────────────────────────────────────
-class ButtonManager {
-private:
-  SceneSelectorButton** _buttons;
-  uint8_t _count;
-
-public:
-  ButtonManager(Button** buttons, uint8_t count);
-
-  // Call this in loop()
-  void scan();
-};
-
 
 
 #endif

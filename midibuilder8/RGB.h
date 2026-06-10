@@ -2,53 +2,50 @@
 #define RGB_H
 
 #include <Arduino.h>
-
 #include <Adafruit_NeoPixel.h>
+
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
 #endif
 
-// Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN 14
+struct ColorStruct {
+  uint8_t r, g, b;
+};
 
-// How many NeoPixels are attached to the Arduino?
-#define LED_COUNT 29
-
-// Declare our NeoPixel strip object:
-Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-
-class RGB_Strip {
+class RGBStrip : public Adafruit_NeoPixel {
 private:
-  Adafruit_NeoPixel _strip;
+  uint8_t _LED_PIN;
+  uint8_t _LED_COUNT;
   uint8_t _brightness;
-  uint8_t _LED_COUNT public : void begin() {
-    _strip.begin();
-  };
+
 
 public:
   // Constructors
+  RGBStrip(uint8_t LED_COUNT, uint8_t LED_PIN, uint8_t brightness)
+    : Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800), _brightness(brightness) {
 
+    Adafruit_NeoPixel::begin();
+    Adafruit_NeoPixel::setBrightness(_brightness);
+    Adafruit_NeoPixel::clear();  // INITIALIZE NeoPixel strip object (REQUIRED)
+    Adafruit_NeoPixel::show();   // Turn OFF all pixels ASAP
+  };
   // Getters
 
   // Setters
-  void setBrightness();
-  void setPixelcolor(uint8_t pixel, hex color)
 
   // Methods
-  void begin();
+  void clearPixel(uint8_t rgbIndex) {
+    Adafruit_NeoPixel::setPixelColor(rgbIndex, Adafruit_NeoPixel::Color(0, 0, 0));
+    Adafruit_NeoPixel::show();
+  }
   
-void clearPixel() {
-  _strip.setPixelColor(rgbIndex, pixels.Color(0, 0, 0));
-       _strip.show();
-}
-  void update(uint8_t rgbIndex, uint8_t (&color)[3]) {
-    _strip.setPixelColor(rgbIndex, pixels.Color(color[0], color[1], color[2]));
-    _strip.show();
+  void update(uint8_t rgbIndex, ColorStruct color) {
+    Adafruit_NeoPixel::setPixelColor(rgbIndex, Adafruit_NeoPixel::Color(color.r, color.g, color.b));
+    Adafruit_NeoPixel::show();
   };
 };
 
-extern RGB_Strip BUTTON_RGB_STRIP;
-extern RGB_Strip INDICATOR_STRIP;
+extern RGBStrip BUTTON_RGB_STRIP;
+extern RGBStrip INDICATOR_STRIP;
 
 #endif

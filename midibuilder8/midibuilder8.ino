@@ -39,9 +39,7 @@ void setup() {
 
   // Begin ADS Manager
   ADSManager.begin();
-  pinMode(ADS_ALRT_MCU_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
-
 
 
   // initialize LCD Screen

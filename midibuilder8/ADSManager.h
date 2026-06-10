@@ -10,7 +10,7 @@
 #define ADS_SLIDER_CHANNEL 1
 #define ADS_EXPR_CHANNEL 2
 #define ADS_MUX4_CHANNEL 3
-  
+
 #define ADS_RAW_MAX 26400
 
 class ADS_Manager {
@@ -34,6 +34,9 @@ public:
       Serial.println("ADS not found... retrying.");
       delay(500);
     }
+    
+    pinMode(ADS_ALRT_MCU_PIN, INPUT_PULLUP);
+
     _ads.setGain(GAIN_ONE);
     _ads.setDataRate(RATE_ADS1115_860SPS);
     Serial.println("ADS1115 Ready");

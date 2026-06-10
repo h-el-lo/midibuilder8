@@ -192,7 +192,7 @@ ActionButton::ActionButton(ButtonType type,
                            uint8_t anodePin,
                            uint8_t cathodePin,
                            void (*onPressCallback)())
-  : Button(type, anodePin, cathodePin, true),
+  : Button(type, anodePin, cathodePin),
     _onPressCallback(onPressCallback) {}
 
 void ActionButton::onPress() {
@@ -251,7 +251,7 @@ void initButtons() {
       sceneSelectorDefs[g][0], sceneSelectorDefs[g][1],
       sceneSelectorDefs[g][2], sceneSelectorDefs[g][3],
       sceneSelectorDefs[g][4], sceneSelectorDefs[g][5],
-      sceneSelectorDefs[g][6], sceneSelectorDefs[g][7], );
+      sceneSelectorDefs[g][6], sceneSelectorDefs[g][7]);
   }
 
   // ── Numpad (YZ buttons, 12 keys: 0–9, +, -) ──

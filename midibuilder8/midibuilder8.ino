@@ -45,7 +45,7 @@ void setup() {
   // initialize LCD Screen
   // lcd.init();
 
-  INITIALIZE_EXPRESSION_PEDAL();
+  ExpressionPedal.init();
 
 
   // delay(2000);  //WDT Stabilization delay
@@ -60,8 +60,8 @@ void loop() {
   // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
-  updateSustainPedal();
-  updateExpressionPedal();
+  DamperPedal.update();
+  ExpressionPedal.update();
   // updatePitchWheel();
   slider.update();
   // joystick.update();

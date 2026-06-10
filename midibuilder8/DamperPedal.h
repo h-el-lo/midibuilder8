@@ -10,19 +10,22 @@ struct Damper_Pedal {
   uint8_t susPrevState = 0;
   uint8_t damperDebounceTime = 100;  // 100ms
   unsigned long lastUpdatedTime = millis();
-};
 
-Damper_Pedal damperPedal = { 15 }; // on Mux1
+void update() {
+  if (millis() - lastUpdatedTime >= damperDebounceTime) {
+    uint16_t storer = !Mux1.readChannel(susPin);
+    susState = map(!Mux1.readChannel(susPin), 0, 1, 0, 127);
 
-void updateSustainPedal() {
-  if (millis() - damperPedal.lastUpdatedTime >= damperPedal.damperDebounceTime) {
-    uint16_t storer = !Mux1.readChannel(damperPedal.susPin);
-    damperPedal.susState = map(!Mux1.readChannel(damperPedal.susPin), 0, 1, 0, 127);
-
-    if (damperPedal.susState != damperPedal.susPrevState) {
-      controlChange(KEYS_CHANNEL, 64, damperPedal.susState);
-      damperPedal.susPrevState = damperPedal.susState;
-      damperPedal.lastUpdatedTime = millis();
+    if (susState != susPrevState) {
+      controlChange(KEYS_CHANNEL, 64, susState);
+      susPrevState = susState;
+      lastUpdatedTime = millis();
     }
   }
 }
+
+};
+
+Damper_Pedal DamperPedal = { 15 }; // on Mux1
+
+

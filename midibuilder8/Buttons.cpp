@@ -279,18 +279,27 @@ void initButtons() {
 
 
   // ── GeneralPurposeCC (YZ buttons, 4 buttons: 0–9, +, -) ──
-  // { anodePin, cathodePin, ccNumber, color}
-  uint8_t GeneralPurposeCCDefs[4][5] = {
-    { 4, 2, 29, 1, { 0, 150, 220 } },  // 1
-    { 3, 2, 30, 2, { 0, 150, 220 } },  // 2
-    { 2, 2, 31, 3, { 0, 150, 220 } },  // 3
-    { 1, 2, 62, 4, { 0, 150, 220 } },  // 4
+  // { anodePin, cathodePin, CCNumber, rgbIndex, color}
+
+  // An array is incapable of handling a different type than was specified at initialization
+  // Thus, a struct is more suitable for passing this type of data
+  struct GeneralPurposeCCStruct {
+    uint8_t anodePin, cathodePin, CCNumber, rgbIndex;
+    ColorStruct color;
+  };
+
+  GeneralPurposeCCStruct GeneralPurposeCCDefs[4] = {
+    { 2, 6, 29, 3, { 0, 150, 220 } },  // 1
+    { 1, 6, 30, 2, { 0, 150, 220 } },  // 2
+    { 4, 6, 31, 1, { 0, 150, 220 } },  // 3
+    { 3, 6, 62, 0, { 0, 150, 220 } },  // 4
   };
 
   for (uint8_t n = 0; n < 4; n++) {
     buttonArray[i++] = new GeneralPurposeCCButton(
-      GeneralPurposeCCDefs[n][0], GeneralPurposeCCDefs[n][1],
-      GeneralPurposeCCDefs[n][2]);
+      GeneralPurposeCCDefs[n].anodePin, GeneralPurposeCCDefs[n].cathodePin,
+      GeneralPurposeCCDefs[n].CCNumber, GeneralPurposeCCDefs[n].rgbIndex,
+      GeneralPurposeCCDefs[n].color);
   }
 
 

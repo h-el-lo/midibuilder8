@@ -37,8 +37,13 @@ public:
 
   // Methods
   void begin();
-
-  void update(uint8_t rgbIndex) {
+  
+void clearPixel() {
+  _strip.setPixelColor(rgbIndex, pixels.Color(0, 0, 0));
+       _strip.show();
+}
+  void update(uint8_t rgbIndex, uint8_t (&color)[3]) {
+    _strip.setPixelColor(rgbIndex, pixels.Color(color[0], color[1], color[2]));
     _strip.show();
   };
 };

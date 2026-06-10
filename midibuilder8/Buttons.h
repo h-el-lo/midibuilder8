@@ -5,15 +5,12 @@
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
 #include "keys.h"
-#include "rgb.h"
+#include "RGB.h"
 
 // ─────────────────────────────────────────────
 //  Forward declarations
 // ─────────────────────────────────────────────
 class ButtonManager;
-
-
-
 
 
 enum ButtonType {
@@ -61,85 +58,20 @@ public:
 };
 
 
-class CCButton : public Button {
-protected:
-  _CCNumber;
-
-public:
-// Constructors
-  CCButton(ButtonType type, uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber);
-
-  // Getters
-
-  // Setters
-
-  // Methods
-  void onPress() override;
-};
-
-
 // ─────────────────────────────────────────────
 //  Numpad Button  (0–9, +, -)
 //  Sends MIDI CC, no RGB
 // ─────────────────────────────────────────────
 class NumpadButton : public CCButton {
 private:
-  uint8_t _ccNumber;
+  uint8_t _CCNumber;
 
 public:
-  NumpadButton(uint8_t anodePin,
-               uint8_t cathodePin,
-               uint8_t ccNumber);
-};
+// Constructors
+  NumpadButton(uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber);
 
-
-// ─────────────────────────────────────────────
-//  Transpose Button
-//  Modifies global transpose in Keys
-// ─────────────────────────────────────────────
-class TransposeButton : public Button {
-public:
-  enum Direction { UP,
-                   DOWN };
-
-private:
-  Keys* _keys;
-  Direction _direction;
-
-public:
-  TransposeButton(ButtonType type,
-                  uint8_t anodePin,
-                  uint8_t cathodePin,
-                  Direction direction,
-                  Keys* keys);
-
+  // Methods
   void onPress() override;
-  void onRelease() override;
-};
-
-
-// ─────────────────────────────────────────────
-//  Octave Button
-//  Modifies global octave in Keys
-// ─────────────────────────────────────────────
-class OctaveButton : public Button {
-public:
-  enum Direction { UP,
-                   DOWN };
-
-private:
-  Keys* _keys;
-  Direction _direction;
-
-public:
-  OctaveButton(ButtonType type,
-               uint8_t anodePin,
-               uint8_t cathodePin,
-               Direction direction,
-               Keys* keys);
-
-  void onPress() override;
-  void onRelease() override;
 };
 
 

@@ -51,63 +51,14 @@ void Button::read() {
 }
 
 
-
-// ═════════════════════════════════════════════
-//  CCButton
-// ═════════════════════════════════════════════
-// Constructors
-CCButton::CCButton(ButtonType type, uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber)
-  : Button(type, anodePin, cathodePin), _CCNumber(CCNumber) {}
-
-void CCButton::onPress() {
-  controlChange(GLOBAL_MIDI_CHANNEL, _CCNumber, 64);
-}
-
-
-
 // ═════════════════════════════════════════════
 //  NumpadButton
 // ═════════════════════════════════════════════
-NumpadButton::NumpadButton(uint8_t anodePin,
-                           uint8_t cathodePin,
-                           uint8_t CCNumber)
-  : CCButton(YZ_BUTTON, anodePin, cathodePin, CCNumber) {}
+NumpadButton::NumpadButton(uint8_t anodePin, uint8_t cathodePin, uint8_t CCNumber)
+  : Button(YZ_BUTTON, anodePin, cathodePin), _CCNumber(CCNumber) {}
 
-
-// ═════════════════════════════════════════════
-//  TransposeButton
-// ═════════════════════════════════════════════
-
-TransposeButton::TransposeButton(ButtonType type,
-                                 uint8_t anodePin,
-                                 uint8_t cathodePin,
-                                 Direction direction,
-                                 Keys* keys)
-  : Button(type, anodePin, cathodePin, true),  // momentary
-    _direction(direction),
-    _keys(keys) {}
-
-void TransposeButton::onPress() {
-  if (_direction == UP) _keys->transposeUp();
-  else _keys->transposeDown();
-}
-
-
-// ═════════════════════════════════════════════
-//  OctaveButton
-// ═════════════════════════════════════════════
-OctaveButton::OctaveButton(ButtonType type,
-                           uint8_t anodePin,
-                           uint8_t cathodePin,
-                           Direction direction,
-                           Keys* keys)
-  : Button(type, anodePin, cathodePin, true),
-    _direction(direction),
-    _keys(keys) {}
-
-void OctaveButton::onPress() {
-  if (_direction == UP) _keys->octaveUp();
-  else _keys->octaveDown();
+void NumpadButton::onPress() {
+  controlChange(GLOBAL_MIDI_CHANNEL, _CCNumber, 64);
 }
 
 

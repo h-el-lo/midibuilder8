@@ -4,9 +4,8 @@
 #include "Buttons.h"
 
 #define GET_BIT(array, row, col) ((array[row] >> col) & 0x01)
-#define SET_BIT(array, row, col) (array[row] |= (1 << col))
-#define CLEAR_BIT(array, row, col) (array[row] &= ~(1 << col))
-#define INVERT_PARTS_BIT(array, row, col) (array[row] ^= (1 << col))
+#define CLEAR_BYTE(array, row) (array[row] &= 0X00)
+#define INVERT_BIT(array, row, col) (array[row] ^= (1 << col))
 #define SET_SCENE_BIT(array, row, index) (array[row] = (1 << col))
 
 // ─────────────────────────────────────────────
@@ -21,24 +20,21 @@ public:
     MODE_PARTS,  // CC0/127, latch
   };
 
-  GroupMode operator!(GroupMode groupMode) {
-    return (mode == MODE_PARTS) ? MODE_SCENE : MODE_PARTS;
-  }
-
   enum Bank {
     BANK_A,
     BANK_B,
   };
 
 private:
-  inline static uint8_t _SCENE_CC[2] = { 0 };
-  inline static uint8_t _PARTS_CC[2] = { 0 };
   uint8_t _index;
   uint8_t _rgbIndex;  // index into the LED strip
 
   // Shared group state — all SceneSelectorButtons point to the same two variables
   inline static GroupMode _groupMode = MODE_SCENE;
   inline static Bank _bank = BANK_A;
+
+  inline static uint8_t _SCENE_CC[2] = { 0 };
+  inline static uint8_t _PARTS_CC[2] = { 0 };
 
 
   // Rather than use an 8x2 uint8_t matrix, consuming 64 bytes per matrix, we shall employ bit packing.
@@ -95,11 +91,12 @@ private:
   // Getters
 
   // Setters
-  static void toggleGroupMode();
+   void toggleGroupMode();
   void setBank();
 
   // Methods
   void onPress() override;
+  void clearallparts();
 
   void updateRGB();
   void updateRGBSection();

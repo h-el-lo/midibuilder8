@@ -62,7 +62,7 @@ public:
 //  Numpad Button  (0–9, +, -)
 //  Sends MIDI CC, no RGB
 // ─────────────────────────────────────────────
-class NumpadButton : public CCButton {
+class NumpadButton : public Button {
 private:
   uint8_t _CCNumber;
 

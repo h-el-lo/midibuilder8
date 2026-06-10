@@ -25,49 +25,68 @@ SceneSelectorButton::SceneSelectorButton(
 
 // Setters
 void SceneSelectorButton::toggleGroupMode() {
-  _groupMode = !_groupMode;
-
-  if (_groupMode == MODE_SCENE) {
-    // LOAD SCENE ARRAY, BANK A AND BANK B
-    // UPDATE THE RGB ACCORDING TO SELECTED BANK
-  } else if (_groupMode == MODE_PARTS) {
-    // LOAD PARTS ARRAY, BANK A AND BANK B
-    // UPDATE THE RGB ACCORDING TO SELECTED BANK
-  }
+  SceneSelectorButton::_groupMode = (SceneSelectorButton::_groupMode == MODE_SCENE) ? MODE_PARTS : MODE_SCENE;
+  updateRGBSection();
 }
 
 void SceneSelectorButton::setBank(Bank bank) {
-  _bank = bank;
+  SceneSelectorButton::_bank = bank;
+  updateRGBSection();
 }
 
 // Methods
 void SceneSelectorButton::onPress() {
-  // Offset CC by bank: bank B shifts by 8
-  uint8_t bankOffset = (_bank == BANK_B) ? 8 : 0;
 
   if (_groupMode == MODE_SCENE) {
-    SET_SCENE_BIT(partsState, _bank, _index);
-    controlChange(GLOBAL_MIDI_CHANNEL, SCENE_CC[_bank], 64);
+    SET_SCENE_BIT(sceneState, _bank, _index);
+    CLEAR_BYTE(sceneState, ((_bank == BANK_A)? BANK_B: BANK_A));
+    controlChange(GLOBAL_MIDI_CHANNEL, _SCENE_CC[_bank], 64);
+    updateRGBSection();
   } else {
-    INVERT_PARTS_BIT(partsState, _bank, _index);
+    INVERT_BIT(partsState, _bank, _index);
     uint8_t value = map(GET_BIT(partsState, _bank, _index), 0, 1, 0, 127);
     controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[_bank], value);
+    updateRGB(_rgbIndex);
   }
-
-  updateRGB();
 }
 
 
-void clearallparts() {}
+void SceneSelectorButton::clearallparts() {
+  CLEAR_BYTE(partsState, BANK_A);
+  for (uint8_t i = 0; i < 8; i++) {
+    controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[BANK_A], 0);
+  }
+
+  CLEAR_BYTE(partsState, BANK_B);
+  for (uint8_t i = 0; i < 8; i++) {
+    controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[BANK_B], 0);
+  }
+}
 
 
-void SceneSelectorButton::updateRGB() {
-    if(_groupMode == MODE_SCENE) {
-        for (uint8_t i= 0; i< 8; i++) {
+void SceneSelectorButton::updateRGBSection() {
+  // the correct rgb index for entire strip must correctly be derived before anything
+  // There are 8 scene selector buttons on the midi keyboard.
+  // _rgbindex of button calling the method - its _index [indexing starts at 0]
+  uint8_t startIndex = _rgbIndex - _index;
 
-        }
-
-    } else
+  if (_groupMode == MODE_SCENE) {
+    for (uint8_t i = 0; i < 8; i++) {
+      if (GET_BIT(sceneState, _bank, i)) {
+        BUTTON_RGB_STRIP.update(startIndex + i, sceneSelectedColorColor[_bank]);
+      } else {
+        BUTTON_RGB_STRIP.update(startIndex + i, sceneUnselectedColor[_bank]);
+      }
+    }
+  } else {
+    for (uint8_t i = 0; i < 8; i++) {
+      if (GET_BIT(partsState, _bank, i)) {
+        BUTTON_RGB_STRIP.update(startIndex + i, partOnColorColor[_bank]);
+      } else {
+        BUTTON_RGB_STRIP.update(startIndex + i, partOffColor[_bank]);
+      }
+    }
+  }
 }
 
 void SceneSelectorButton::updateRGB(_rgbIndex) {
@@ -75,9 +94,7 @@ void SceneSelectorButton::updateRGB(_rgbIndex) {
     if GET_BIT (partsState, _bank, _index) {
       BUTTON_RGB_STRIP.update(_rgbIndex, partsOnColor[_bank]);
     } else {
-        BUTTON_RGB_STRIP.update(_rgbIndex, partsOffColor[_bank]);
+      BUTTON_RGB_STRIP.update(_rgbIndex, partsOffColor[_bank]);
     }
-  } else {
-
   }
 }

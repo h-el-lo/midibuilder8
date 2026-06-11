@@ -1,4 +1,4 @@
-#include "buttons.h"
+#include "Buttons.h"
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
 
@@ -81,6 +81,7 @@ SceneSelectorButton::SceneSelectorButton(
   _SCENE_CC[BANK_B] = BANK_B_SCENE_CC;
   _PARTS_CC[BANK_A] = BANK_A_PARTS_CC;
   _PARTS_CC[BANK_B] = BANK_B_PARTS_CC;
+  uint8_t _rgbStartIndex = _rgbIndex - _index;
 }
 
 // Setters
@@ -89,8 +90,13 @@ void SceneSelectorButton::toggleGroupMode() {
   updateRGBSection();
 }
 
-void SceneSelectorButton::setBank(Bank bank) {
-  SceneSelectorButton::_bank = bank;
+void SceneSelectorButton::setBankTo_A() {
+  SceneSelectorButton::_bank = BANK_A;
+  updateRGBSection();
+}
+
+void SceneSelectorButton::setBankTo_B() {
+  SceneSelectorButton::_bank = BANK_B;
   updateRGBSection();
 }
 
@@ -126,34 +132,29 @@ void SceneSelectorButton::clearallparts() {
 void SceneSelectorButton::updateRGB(uint8_t rgbIndex) {
   if (_groupMode == MODE_PARTS) {
     if GET_BIT (partsState[_bank], _index) {
-      BUTTON_RGB_STRIP.update(_rgbIndex, partsOnColor[_bank]);
+      BUTTON_STRIP.update(_rgbIndex, partsOnColor[_bank]);
     } else {
-      BUTTON_RGB_STRIP.update(_rgbIndex, partsOffColor[_bank]);
+      BUTTON_STRIP.update(_rgbIndex, partsOffColor[_bank]);
     }
   }
 }
 
 
 void SceneSelectorButton::updateRGBSection() {
-  // the correct rgb index for entire strip must correctly be derived before anything
-  // There are 8 scene selector buttons on the midi keyboard.
-  // _rgbindex of button calling the method - its _index [indexing starts at 0]
-  uint8_t startIndex = _rgbIndex - _index;
-
   if (_groupMode == MODE_SCENE) {
     for (uint8_t i = 0; i < 8; i++) {
       if (GET_BIT(sceneState[_bank], i)) {
-        BUTTON_RGB_STRIP.update(startIndex + i, sceneSelectedColor[_bank]);
+        BUTTON_STRIP.update(_rgbStartIndex + i, sceneSelectedColor[_bank]);
       } else {
-        BUTTON_RGB_STRIP.update(startIndex + i, sceneUnselectedColor[_bank]);
+        BUTTON_STRIP.update(_rgbStartIndex + i, sceneUnselectedColor[_bank]);
       }
     }
   } else {
     for (uint8_t i = 0; i < 8; i++) {
       if (GET_BIT(partsState[_bank], i)) {
-        BUTTON_RGB_STRIP.update(startIndex + i, partsOnColor[_bank]);
+        BUTTON_STRIP.update(_rgbStartIndex + i, partsOnColor[_bank]);
       } else {
-        BUTTON_RGB_STRIP.update(startIndex + i, partsOffColor[_bank]);
+        BUTTON_STRIP.update(_rgbStartIndex + i, partsOffColor[_bank]);
       }
     }
   }
@@ -179,7 +180,7 @@ void GeneralPurposeCCButton::onPress() {
 }
 
 void GeneralPurposeCCButton::updateRGB() {
-  BUTTON_RGB_STRIP.update(_rgbIndex, _color);
+  BUTTON_STRIP.update(_rgbIndex, _color);
 }
 
 
@@ -210,7 +211,7 @@ RGBActionButton::RGBActionButton(ButtonType type,
                                  void (*onPressCallback)())
   : ActionButton(type, anodePin, cathodePin, onPressCallback),
     _rgbIndex(rgbIndex), _color(color) {
-  BUTTON_RGB_STRIP.update(_rgbIndex, _color);
+  BUTTON_STRIP.update(_rgbIndex, _color);
 }
 
 
@@ -233,10 +234,6 @@ void ButtonManager::scan() {
 //  All button instances live here
 //  Called once from setup()
 // ═════════════════════════════════════════════
-
-// ── Shared group context ──
-static SceneSelectorButton::GroupMode groupMode = SceneSelectorButton::MODE_PARTS;
-static SceneSelectorButton::Bank groupBank = SceneSelectorButton::BANK_A;
 
 // ── Button instance storage ──
 static const uint8_t BUTTON_COUNT = 46;
@@ -327,9 +324,17 @@ void initButtons() {
   // buttonArray[i++] = new ActionButton(type, anodePin, cathodePin, onPress);
   // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 
-  // buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 15, { 20, 30, 40 }, keys.transposeUp());  // Transpose +
-  // buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 16, { 20, 30, 40 }, keys.transposeUp);  // Transpose -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 40 }, channelUp);  // Transpose -
+  buttonArray[i++] = new ActionButton(XZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);     // Togggle parts/scene
+  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 4, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
+  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 3, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
+  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 15, { 20, 30, 40 }, keys.transposeUp);  // Transpose +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 16, { 20, 30, 40 }, keys.transposeUp);  // Transpose -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 40 }, channelUp);         // Channel +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 18, { 20, 30, 40 }, channelDown);       // Channel -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 19, { 20, 30, 40 }, keys.octaveUp);     // Octave +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 20, { 20, 30, 40 }, keys.octaveDown);   // Octave -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 21, { 20, 30, 40 }, allSoundsOff);      // Octave -
 
   manager = new ButtonManager(buttonArray, i);
 }

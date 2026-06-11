@@ -62,9 +62,9 @@ struct Keys {
   unsigned long timeOfEnd[ROW_NUM][COL_NUM] = { 0 };    // time of keypress end kpe[x][y]
   int16_t keyTravelTime;
 
-  int8_t transpose = 0;
-  int8_t transposeLowerLimit = -24;
-  int8_t transposeUpperLimit = 24;
+  inline static int8_t transpose = 0;
+  static constexpr int8_t transposeLowerLimit = -24;
+  static constexpr uint8_t transposeUpperLimit = 24;
   uint8_t note, velocity;
   uint8_t vel_min = 0;
   uint8_t vel_max = 45;
@@ -89,25 +89,25 @@ struct Keys {
   //  ===========================================================================
 
 
-  void transposeUp() {
+  inline static void transposeUp() {
     if (transpose < transposeUpperLimit) {
       transpose++;
     }
   }
 
-  void transposeDown() {
+  inline static void transposeDown() {
     if (transpose > transposeLowerLimit) {
       transpose--;
     }
   }
 
-  void octaveUp() {
+  inline static void octaveUp() {
     if (transpose < transposeUpperLimit) {
       transpose += 12;
     }
   }
 
-  void octaveDown() {
+  inline static void octaveDown() {
     if (transpose > transposeLowerLimit) {
       transpose -= 12;
     }

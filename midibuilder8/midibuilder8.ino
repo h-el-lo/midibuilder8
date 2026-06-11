@@ -8,13 +8,13 @@ void loop() {}
 
 // 64 KEYS, VELOCITY SENSITIVE, 4 MUXS, SUSTAIN PEDAL, EXPRESSION PEDAL, 16 KNOBS, 46 BUTTONS, PITCHWHEEL, SLIDER(MODWHEEL)
 
-// #include <avr/wdt.h>
 #include "ADSManager.h"
 #include "Keys.h"
 #include "DamperPedal.h"
 #include "ExpressionPedal.h"
 // #include "PitchWheel.h"
 #include "General.h"
+#include "Buttons.h"
 
 // ============================  PROGRAM VARIABLES  ===========================
 uint8_t cycleCount = 0;
@@ -33,7 +33,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(921600);
 
-  // wdt_enable(WDTO_250MS);
+  // Begin MIDI
   USB.begin();
   usbmidi.begin();
 
@@ -41,14 +41,14 @@ void setup() {
   ADSManager.begin();
   attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
+  // Initialize Button manager and buttons
+  initButtons();
+
 
   // initialize LCD Screen
   // lcd.init();
 
   ExpressionPedal.init();
-
-
-  // delay(2000);  //WDT Stabilization delay
 }
 
 void loop() {
@@ -84,7 +84,7 @@ void loop() {
   // ========================================================================================
 
   // ==============================  READ THROUGH BUTTONS  ==================================
-
+  scanButtons();
   // ========================================================================================
 }
 

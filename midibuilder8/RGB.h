@@ -45,7 +45,7 @@ public:
   };
 };
 
-extern RGBStrip BUTTON_RGB_STRIP;
+extern RGBStrip BUTTON_STRIP;
 extern RGBStrip INDICATOR_STRIP;
 
 #endif

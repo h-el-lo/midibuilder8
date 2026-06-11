@@ -37,13 +37,6 @@ public:
   Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin);
   virtual ~Button() {}
 
-  // Getters
-  bool getState() const {
-    return _state;
-  }
-
-  // Setters
-
   // Methods
   // Scans hardware, debounces, calls onPress/onRelease on change
   void read();
@@ -90,6 +83,11 @@ public:
 private:
   uint8_t _index;
   uint8_t _rgbIndex;  // index into the LED strip
+
+  // the correct rgb index for entire strip must correctly be derived before anything
+  // There are 8 scene selector buttons on the midi keyboard.
+  // _rgbindex of button calling the method - its _index [indexing starts at 0]
+  static uint8_t _rgbStartIndex;
 
   // Shared group state — all SceneSelectorButtons point to the same two variables
   inline static GroupMode _groupMode = MODE_SCENE;
@@ -150,15 +148,16 @@ public:
   // Getters
 
   // Setters
-  void toggleGroupMode();
-  void setBank(Bank bank);
+  static void toggleGroupMode();
+  static void setBankTo_A();
+  static void setBankTo_B();
 
   // Methods
   void onPress() override;
-  void clearallparts();
+  static void clearallparts();
 
   void updateRGB(uint8_t rgbIndex);
-  void updateRGBSection();
+  static void updateRGBSection();
 };
 
 
@@ -200,19 +199,18 @@ public:
 };
 
 
-class RGBActionButton: public ActionButton {
-  private:
+class RGBActionButton : public ActionButton {
+private:
   uint8_t _rgbIndex;
   ColorStruct _color;
 
-  public:
-    RGBActionButton(ButtonType type,
-               uint8_t anodePin,
-               uint8_t cathodePin,
-               uint8_t rgbIndex,
-               ColorStruct color,
-               void (*onPressCallback)());
-
+public:
+  RGBActionButton(ButtonType type,
+                  uint8_t anodePin,
+                  uint8_t cathodePin,
+                  uint8_t rgbIndex,
+                  ColorStruct color,
+                  void (*onPressCallback)());
 };
 
 
@@ -237,6 +235,8 @@ public:
 //  Composition root — call once in setup()
 // ─────────────────────────────────────────────
 void initButtons();
+// Call in loop()
+void scanButtons();
 
 
 #endif

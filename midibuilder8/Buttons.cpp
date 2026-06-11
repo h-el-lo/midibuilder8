@@ -7,7 +7,8 @@
 // ═════════════════════════════════════════════
 
 Button::Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin)
-  : _type(type), _anodePin(anodePin), _cathodePin(cathodePin) {}
+  : _type(type), _anodePin(anodePin), _cathodePin(cathodePin) {
+}
 
 bool Button::readHardware() {
   static bool reading = false;
@@ -81,7 +82,7 @@ SceneSelectorButton::SceneSelectorButton(
   _SCENE_CC[BANK_B] = BANK_B_SCENE_CC;
   _PARTS_CC[BANK_A] = BANK_A_PARTS_CC;
   _PARTS_CC[BANK_B] = BANK_B_PARTS_CC;
-  uint8_t _rgbStartIndex = _rgbIndex - _index;
+  _rgbStartIndex = _rgbIndex - _index;
 }
 
 // Setters
@@ -116,7 +117,6 @@ void SceneSelectorButton::onPress() {
   }
 }
 
-
 void SceneSelectorButton::clearallparts() {
   CLEAR_BYTE(partsState[BANK_A]);
   for (uint8_t i = 0; i < 8; i++) {
@@ -138,7 +138,6 @@ void SceneSelectorButton::updateRGB(uint8_t rgbIndex) {
     }
   }
 }
-
 
 void SceneSelectorButton::updateRGBSection() {
   if (_groupMode == MODE_SCENE) {
@@ -200,8 +199,8 @@ void ActionButton::onPress() {
 
 
 // ═════════════════════════════════════════════
-//  RGBActionButton
-// Regular Action buttons but with RGB
+// RGBActionButton
+// RGB-capable Action Buttons
 // ═════════════════════════════════════════════
 RGBActionButton::RGBActionButton(ButtonType type,
                                  uint8_t anodePin,
@@ -218,7 +217,6 @@ RGBActionButton::RGBActionButton(ButtonType type,
 // ═════════════════════════════════════════════
 //  ButtonManager
 // ═════════════════════════════════════════════
-
 ButtonManager::ButtonManager(Button** buttons, uint8_t count)
   : _buttons(buttons), _count(count) {}
 

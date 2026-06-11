@@ -87,7 +87,7 @@ private:
   // the correct rgb index for entire strip must correctly be derived before anything
   // There are 8 scene selector buttons on the midi keyboard.
   // _rgbindex of button calling the method - its _index [indexing starts at 0]
-  static uint8_t _rgbStartIndex;
+  inline static uint8_t _rgbStartIndex = 23;
 
   // Shared group state — all SceneSelectorButtons point to the same two variables
   inline static GroupMode _groupMode = MODE_SCENE;

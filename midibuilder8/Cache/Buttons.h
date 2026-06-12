@@ -2,9 +2,6 @@
 #define BUTTONS_H
 
 #include <Arduino.h>
-#include "Multiplexer.h"
-#include "MIDIHelper.h"
-#include "keys.h"
 #include "RGB.h"
 
 
@@ -63,7 +60,7 @@ public:
 };
 
 
-#define GET_BIT(BYTE, BIT) ((BYTE >> BIT) & 0x01)
+#define GET_SCENE_PART_BIT(BYTE, BIT) ((BYTE >> BIT) & 0x01)
 #define CLEAR_BYTE(BYTE) (BYTE &= 0X00)
 #define INVERT_BIT(BYTE, BIT) (BYTE ^= (1 << BIT))
 #define SET_SCENE_BIT(BYTE, BIT) (BYTE = (1 << BIT))

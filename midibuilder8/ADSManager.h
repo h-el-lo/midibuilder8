@@ -30,7 +30,7 @@ private:
 public:
   void begin() {
     Wire.begin(21, 47);
-    while (!_ads.begin(0x49, &Wire)) {
+    while (!_ads.begin(0x48, &Wire)) {
       Serial.println("ADS not found... retrying.");
       delay(500);
     }

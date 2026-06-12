@@ -18,7 +18,6 @@ private:
   uint8_t _LED_COUNT;
   uint8_t _brightness;
 
-
 public:
   // Constructors
   RGBStrip(uint8_t LED_COUNT, uint8_t LED_PIN, uint8_t brightness)

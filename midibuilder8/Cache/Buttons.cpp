@@ -1,6 +1,8 @@
 #include "Buttons.h"
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
+#include "Keys.h"
+#include "Actions.h"
 
 // ═════════════════════════════════════════════
 //  Button (base)
@@ -111,7 +113,7 @@ void SceneSelectorButton::onPress() {
     updateRGBSection();
   } else {
     INVERT_BIT(partsState[_bank], _index);
-    uint8_t value = map(GET_BIT(partsState[_bank], _index), 0, 1, 0, 127);
+    uint8_t value = map(GET_SCENE_PART_BIT(partsState[_bank], _index), 0, 1, 0, 127);
     controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[_bank], value);
     updateRGB(_rgbIndex);
   }
@@ -131,7 +133,7 @@ void SceneSelectorButton::clearallparts() {
 
 void SceneSelectorButton::updateRGB(uint8_t rgbIndex) {
   if (_groupMode == MODE_PARTS) {
-    if GET_BIT (partsState[_bank], _index) {
+    if GET_SCENE_PART_BIT (partsState[_bank], _index) {
       BUTTON_STRIP.update(_rgbIndex, partsOnColor[_bank]);
     } else {
       BUTTON_STRIP.update(_rgbIndex, partsOffColor[_bank]);
@@ -142,7 +144,7 @@ void SceneSelectorButton::updateRGB(uint8_t rgbIndex) {
 void SceneSelectorButton::updateRGBSection() {
   if (_groupMode == MODE_SCENE) {
     for (uint8_t i = 0; i < 8; i++) {
-      if (GET_BIT(sceneState[_bank], i)) {
+      if (GET_SCENE_PART_BIT(sceneState[_bank], i)) {
         BUTTON_STRIP.update(_rgbStartIndex + i, sceneSelectedColor[_bank]);
       } else {
         BUTTON_STRIP.update(_rgbStartIndex + i, sceneUnselectedColor[_bank]);
@@ -150,7 +152,7 @@ void SceneSelectorButton::updateRGBSection() {
     }
   } else {
     for (uint8_t i = 0; i < 8; i++) {
-      if (GET_BIT(partsState[_bank], i)) {
+      if (GET_SCENE_PART_BIT(partsState[_bank], i)) {
         BUTTON_STRIP.update(_rgbStartIndex + i, partsOnColor[_bank]);
       } else {
         BUTTON_STRIP.update(_rgbStartIndex + i, partsOffColor[_bank]);
@@ -245,14 +247,14 @@ void initButtons() {
   // ── Group of Eight (XY buttons, indices 0–7) ──
   // { anodePin, cathodePin, index, rgbIndex, BANK_A_SCENE_CC, BANK_B_SCENE_CC, BANK_A_PARTS_CC, BANK_B_PARTS_CC, rgbIndex}
   uint8_t sceneSelectorDefs[8][8] = {
-    { 5, 4, 0, 46, 54, 102, 110, 22 },
-    { 6, 4, 1, 47, 55, 103, 111, 23 },
-    { 6, 3, 2, 48, 56, 104, 112, 24 },
-    { 6, 2, 3, 49, 57, 105, 113, 25 },
-    { 6, 1, 4, 50, 58, 106, 114, 26 },
-    { 5, 1, 5, 51, 59, 107, 115, 27 },
-    { 4, 1, 6, 52, 60, 108, 116, 28 },
-    { 2, 1, 7, 53, 61, 109, 117, 29 },
+    { 5, 4, 0, 46, 54, 102, 110, 21 },
+    { 6, 4, 1, 47, 55, 103, 111, 22 },
+    { 6, 3, 2, 48, 56, 104, 112, 23 },
+    { 6, 2, 3, 49, 57, 105, 113, 24 },
+    { 6, 1, 4, 50, 58, 106, 114, 25 },
+    { 5, 1, 5, 51, 59, 107, 115, 26 },
+    { 4, 1, 6, 52, 60, 108, 116, 27 },
+    { 2, 1, 7, 53, 61, 109, 117, 28 },
   };
 
   for (uint8_t g = 0; g < 8; g++) {
@@ -326,13 +328,17 @@ void initButtons() {
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 4, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 3, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 15, { 20, 30, 40 }, keys.transposeUp);  // Transpose +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 16, { 20, 30, 40 }, keys.transposeUp);  // Transpose -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 40 }, channelUp);         // Channel +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 18, { 20, 30, 40 }, channelDown);       // Channel -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 19, { 20, 30, 40 }, keys.octaveUp);     // Octave +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 20, { 20, 30, 40 }, keys.octaveDown);   // Octave -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 21, { 20, 30, 40 }, allSoundsOff);      // Octave -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 6, { 20, 30, 40 }, keys.transposeUp);  // Transpose +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 3, 5, { 20, 30, 40 }, keys.transposeDown);  // Transpose -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 56 }, channelUp);         // Channel +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 20, { 20, 30, 40 }, channelDown);       // Channel -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 18, { 20, 30, 40 }, keys.octaveUp);     // Octave +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 19, { 20, 30, 40 }, keys.octaveDown);   // Octave -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 16, { 20, 30, 40 }, allSoundsOff);      // Octave -
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 20, 30, 40 }, home);      // Octave -
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 20, 30, 40 }, settings);      // Octave -
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 20, 30, 40 }, exit);      // Octave -
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 20, 30, 40 }, enter);      // Octave -
 
   manager = new ButtonManager(buttonArray, i);
 }

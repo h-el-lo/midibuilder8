@@ -68,7 +68,7 @@ void loop() {
   // Reset watchdog timer
   // wdt_reset();
 
-  Serial.println("Mainloop runnning!");
+  // Serial.println("Mainloop runnning!");
 
   // ================================  READ THROUGH KEYS  ===================================
   keys.updateKeys();

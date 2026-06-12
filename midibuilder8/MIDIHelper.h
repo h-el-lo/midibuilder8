@@ -45,19 +45,19 @@ inline void pitchBend(uint8_t channel, int16_t value) {
 
 inline void centerPitchWheel() {
   uint8_t value = 0;
-  pitchBend(KEYS_CHANNEL, value);
+  pitchBend(GLOBAL_MIDI_CHANNEL, value);
 }
 
 inline void allNotesOff() {
   // Set all notes of on selected channel
-  controlChange(KEYS_CHANNEL, 123, 127);
+  controlChange(GLOBAL_MIDI_CHANNEL, 123, 127);
   // Set CC123 back to 0
-  controlChange(KEYS_CHANNEL, 123, 0);
+  controlChange(GLOBAL_MIDI_CHANNEL, 123, 0);
 }
 
 inline void allSoundsOff() {
   allNotesOff();
-  controlChange(KEYS_CHANNEL, 120, 64);
+  controlChange(GLOBAL_MIDI_CHANNEL, 120, 64);
 }
 
 // Maybe in future versions, implement a special function for sendMIDI.

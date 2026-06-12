@@ -15,22 +15,33 @@ Button::Button(ButtonType type, uint8_t anodePin, uint8_t cathodePin)
 bool Button::readHardware() {
   static bool reading = false;
 
+  uint8_t x_pins[8] = { 15, 14, 13, 12, 11, 10, 9, 8 };
+  uint8_t y_pins[4] = { 13, 12, 11, 10 };
+  uint8_t z_pins[6] = { 0, 1, 2, 3, 4, 5 };
+
   if (_type == XY_BUTTON) {
-    Mux3.writeToChannel(_anodePin, LOW);
-    pinMode(_cathodePin, INPUT_PULLUP);
-    reading = !digitalRead(_cathodePin);
-    Mux3.writeToChannel(_anodePin, HIGH);
+    pinMode(y_pins[_cathodePin - 1], OUTPUT);
+    digitalWrite(y_pins[_cathodePin - 1], LOW);
+    reading = !Mux1.readChannel(x_pins[_anodePin - 1]);
+    digitalWrite(y_pins[_cathodePin - 1], HIGH);
 
   } else if (_type == XZ_BUTTON) {
-    Mux3.writeToChannel(_anodePin, LOW);
-    reading = !Mux1.readChannel(_cathodePin);
-    Mux3.writeToChannel(_anodePin, HIGH);
+    Mux3.writeToChannel(x_pins[_anodePin - 1], LOW);
+    reading = !Mux1.readChannel(z_pins[_cathodePin - 1]);
+    Mux3.writeToChannel(x_pins[_anodePin - 1], HIGH);
+
+
+    // Mux1.setMode(INPUT_PULLUP);
+    // Mux3.writeToChannel(x_pins[_anodePin - 1], LOW);
+    // reading = !Mux1.readChannel(z_pins[_cathodePin - 1]);
+    // Mux3.writeToChannel(x_pins[_anodePin - 1], HIGH);
 
   } else if (_type == YZ_BUTTON) {
-    pinMode(_anodePin, OUTPUT);
-    digitalWrite(_anodePin, LOW);
-    reading = !Mux1.readChannel(_cathodePin);
-    digitalWrite(_anodePin, HIGH);
+    // Mux1.setMode(INPUT_PULLUP);
+    pinMode(y_pins[_anodePin - 1], OUTPUT);
+    digitalWrite(y_pins[_anodePin - 1], LOW);
+    reading = !Mux3.readChannel(z_pins[_cathodePin - 1]);
+    digitalWrite(y_pins[_anodePin - 1], HIGH);
   }
 
   return reading;
@@ -85,6 +96,11 @@ SceneSelectorButton::SceneSelectorButton(
   _PARTS_CC[BANK_A] = BANK_A_PARTS_CC;
   _PARTS_CC[BANK_B] = BANK_B_PARTS_CC;
   _rgbStartIndex = _rgbIndex - _index;
+
+  _CC_All[0][0][_index] = BANK_A_SCENE_CC;
+  _CC_All[0][1][_index] = BANK_B_SCENE_CC;
+  _CC_All[1][0][_index] = BANK_A_PARTS_CC;
+  _CC_All[1][1][_index] = BANK_B_PARTS_CC;
 }
 
 // Setters
@@ -122,12 +138,12 @@ void SceneSelectorButton::onPress() {
 void SceneSelectorButton::clearallparts() {
   CLEAR_BYTE(partsState[BANK_A]);
   for (uint8_t i = 0; i < 8; i++) {
-    controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[BANK_A], 0);
+    controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][BANK_A][i], 0);
   }
 
   CLEAR_BYTE(partsState[BANK_B]);
   for (uint8_t i = 0; i < 8; i++) {
-    controlChange(GLOBAL_MIDI_CHANNEL, _PARTS_CC[BANK_B], 0);
+    controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][BANK_B][i], 0);
   }
 }
 
@@ -265,6 +281,14 @@ void initButtons() {
       sceneSelectorDefs[g][6], sceneSelectorDefs[g][7]);
   }
 
+  if (SceneSelectorButton::_groupMode == SceneSelectorButton::MODE_SCENE) {
+    SceneSelectorButton::toggleGroupMode();
+  }
+
+  SceneSelectorButton::updateRGBSection();
+  SceneSelectorButton::setBankTo_A();
+
+
   // ── Numpad (YZ buttons, 12 keys: 0–9, +, -) ──
   // { anodePin, cathodePin, ccNumber}
   uint8_t numpadDefs[12][4] = {
@@ -277,9 +301,9 @@ void initButtons() {
     { 2, 3, 86 },   // 7
     { 1, 3, 87 },   // 8
     { 4, 4, 89 },   // 9
-    { 3, 4, 90 },   // 0
-    { 2, 4, 102 },  // +
-    { 1, 4, 103 },  // -
+    { 1, 4, 90 },   // -
+    { 3, 4, 102 },  // 0
+    { 2, 4, 103 },  // +
   };
 
   for (uint8_t n = 0; n < 12; n++) {
@@ -299,10 +323,10 @@ void initButtons() {
   };
 
   GeneralPurposeCCStruct GeneralPurposeCCDefs[4] = {
-    { 2, 6, 29, 3, { 0, 150, 220 } },  // 1
-    { 1, 6, 30, 2, { 0, 150, 220 } },  // 2
-    { 4, 6, 31, 1, { 0, 150, 220 } },  // 3
-    { 3, 6, 62, 0, { 0, 150, 220 } },  // 4
+    { 2, 6, 80, 3, { 0, 150, 220 } },  // 1
+    { 1, 6, 81, 2, { 0, 150, 220 } },  // 2
+    { 4, 6, 82, 1, { 0, 150, 220 } },  // 3
+    { 3, 6, 83, 0, { 0, 150, 220 } },  // 4
   };
 
   for (uint8_t n = 0; n < 4; n++) {
@@ -315,9 +339,9 @@ void initButtons() {
 
 
   // ── XZ Button (Memory) ──
-  buttonArray[i++] = new ActionButton(
-    XZ_BUTTON, 4, 1,
-    []() { /* TODO: memory press action  */ });
+  // buttonArray[i++] = new ActionButton(
+  //   XZ_BUTTON, 4, 1,
+  //   []() { /* TODO: memory press action  */ });
 
   // ── Remaining XY action buttons ──
   // Add yours here following the same pattern:
@@ -328,17 +352,17 @@ void initButtons() {
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 4, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 3, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
   buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 6, { 20, 30, 40 }, keys.transposeUp);  // Transpose +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 3, 5, { 20, 30, 40 }, keys.transposeDown);  // Transpose -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 20, 30, 56 }, channelUp);         // Channel +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 20, { 20, 30, 40 }, channelDown);       // Channel -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 18, { 20, 30, 40 }, keys.octaveUp);     // Octave +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 19, { 20, 30, 40 }, keys.octaveDown);   // Octave -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 16, { 20, 30, 40 }, allSoundsOff);      // Octave -
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 20, 30, 40 }, home);      // Octave -
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 20, 30, 40 }, settings);      // Octave -
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 20, 30, 40 }, exit);      // Octave -
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 20, 30, 40 }, enter);      // Octave -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 6, { 0, 0, 255 }, keys.transposeUp);    // Transpose +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 3, 5, { 0, 0, 255 }, keys.transposeDown);  // Transpose -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 0, 0, 255 }, channelUp);          // Channel +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 20, { 0, 0, 255 }, channelDown);        // Channel -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 18, { 0, 0, 255 }, keys.octaveUp);      // Octave +
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 19, { 0, 0, 255 }, keys.octaveDown);    // Octave -
+  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 16, { 0, 0, 255 }, allSoundsOff);       // All sounds off
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                // Home
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);          // Settings
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);              // Exit
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);               // Enter
 
   manager = new ButtonManager(buttonArray, i);
 }

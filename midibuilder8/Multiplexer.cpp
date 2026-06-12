@@ -86,8 +86,8 @@ void Mux::write(uint8_t state) {
   if (_mode == OUTPUT) {
     digitalWrite(_signalPin, state);
   } else {
-    Serial.println("Invalid Mux operation: attempting digitalWrite on an Input mux");
-#warning "Invalid Mux operation: attempting digitalWrite on an Input mux";
+//     Serial.println("Invalid Mux operation: attempting digitalWrite on an Input mux");
+// #warning "Invalid Mux operation: attempting digitalWrite on an Input mux";
   }
 }
 

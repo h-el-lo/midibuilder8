@@ -77,6 +77,8 @@ public:
     BANK_B,
   };
 
+  inline static GroupMode _groupMode = MODE_SCENE;
+
 private:
   uint8_t _index;
   uint8_t _rgbIndex;  // index into the LED strip
@@ -87,12 +89,11 @@ private:
   inline static uint8_t _rgbStartIndex = 23;
 
   // Shared group state — all SceneSelectorButtons point to the same two variables
-  inline static GroupMode _groupMode = MODE_SCENE;
+
   inline static Bank _bank = BANK_A;
 
-  inline static uint8_t _SCENE_CC[2] = { 0 };
-  inline static uint8_t _PARTS_CC[2] = { 0 };
-
+  uint8_t _SCENE_CC[2] = { 0 };
+  uint8_t _PARTS_CC[2] = { 0 };
 
   // Rather than use an 8x2 uint8_t matrix, consuming 16 bytes, we shall employ bit packing.
   // Using an array of 8 bytes, 1 byte per item, every bit within every byte shall represent a data point
@@ -102,7 +103,7 @@ private:
   // Arrays to keep track of present states of kps and kpe data for all keys
   // Shared scene and parts arrays.
   inline static byte sceneState[2]{
-    0b10000000,
+    0b00000001,
     0b00000000,
   };
 
@@ -111,20 +112,33 @@ private:
     0b00000000,
   };
 
+  inline static uint8_t _CC_All[2][2][8] = {
+    {
+      // Scene Mode
+      { 0 },  // BANK_A
+      { 0 },  // BANK_B
+    },
+    {
+      // Parts Mode
+      { 0 },  // BANK_A
+      { 0 },  // BANK_B
+    },
+  };
+
   // Shared color variables
-  inline static ColorStruct partsOnColor[2] = {
-    { 200, 230, 160 },  // BANK_A
+  inline static ColorStruct sceneSelectedColor[2] = {
+    { 0, 150, 255 },    // BANK_A
     { 200, 230, 160 },  // BANK_B
   };
-  inline static ColorStruct partsOffColor[2] = {
-    { 0, 0, 0 },  // BANK_A
-    { 0, 0, 0 },  // BANK_B
-  };
-  inline static ColorStruct sceneSelectedColor[2] = {
-    { 0, 0, 0 },  // BANK_A
-    { 0, 0, 0 },  // BANK_B
-  };
   inline static ColorStruct sceneUnselectedColor[2] = {
+    { 0, 50, 255 },  // BANK_A
+    { 255, 50, 0},      // BANK_B
+  };
+  inline static ColorStruct partsOnColor[2] = {
+    { 255, 0, 125 },   // BANK_A
+    { 255, 0, 125 },  // BANK_B
+  };
+  inline static ColorStruct partsOffColor[2] = {
     { 0, 0, 0 },  // BANK_A
     { 0, 0, 0 },  // BANK_B
   };

@@ -92,24 +92,28 @@ struct Keys {
   inline static void transposeUp() {
     if (transpose < transposeUpperLimit) {
       transpose++;
+      Serial.println("Transpose Up");
     }
   }
 
   inline static void transposeDown() {
     if (transpose > transposeLowerLimit) {
       transpose--;
+      Serial.println("Transpose Down");
     }
   }
 
   inline static void octaveUp() {
     if (transpose < transposeUpperLimit) {
       transpose += 12;
+      Serial.println("Octave Up");
     }
   }
 
   inline static void octaveDown() {
     if (transpose > transposeLowerLimit) {
       transpose -= 12;
+      Serial.println("Octave Down");
     }
   }
 

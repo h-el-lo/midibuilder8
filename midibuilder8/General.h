@@ -16,7 +16,7 @@ uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
 // ==============================  MUX VARIABLES  =============================
 Mux Mux1(15, 16, 17, 18, 36, DIGITAL, INPUT_PULLUP);                                        // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
 Mux Mux2(42, 41, 40, 39, 38, DIGITAL, OUTPUT);                                              // Mux 2 (Outputs (keys), KPS AND KPE (rows))
-Mux Mux3(7, 6, 5, 4, 37, DIGITAL, OUTPUT);                                                  // Mux 3 (Digital output of buttons)
+Mux Mux3(7, 6, 5, 4, 37, DIGITAL, INPUT_PULLUP);                                                  // Mux 3 (Digital output of buttons)
 Mux Mux4(8, 3, 46, 9, 10, ANALOG, INPUT, /*usesADS*/ true, /*pinOnADS*/ ADS_MUX4_CHANNEL);  // Mux 4 (Analog Input, Knobs and Faders)
 // ============================================================================
 

@@ -20,7 +20,7 @@ void loop() {}
 // #include "Buttons.h"
 
 // ============================  PROGRAM VARIABLES  ===========================
-// uint8_t cycleCount = 0;
+uint8_t cycleCount = 0;
 // ============================================================================
 
 // =============================  KEYS VARIABLES  =============================
@@ -34,7 +34,7 @@ void IRAM_ATTR onConvReady() {
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(921600);
+  // Serial.begin(921600);
 
   // Begin MIDI
   usbmidi.begin();

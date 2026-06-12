@@ -4,7 +4,7 @@
 #include <Adafruit_ADS1X15.h>
 #include <Wire.h>
 
-#define ADS_ALRT_MCU_PIN 4
+#define ADS_ALRT_MCU_PIN 35
 
 #define ADS_PITCH_CHANNEL 0
 #define ADS_SLIDER_CHANNEL 1
@@ -63,13 +63,23 @@ public:
     }
   }
 
+  // uint16_t read() {
+  //   if (!_convReady) {
+  //     return -1;
+  //   } else {
+  //     return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
+  //   }
+  // };
+
   uint16_t read() {
-    if (!_convReady) {
+    if (!_ads.conversionComplete()) {
       return -1;
     } else {
       return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
     }
   };
+
+
 
   // Blocking read — waits for conversion (use sparingly)
   uint16_t readBlocking(uint8_t channel) {

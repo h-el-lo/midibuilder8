@@ -63,21 +63,21 @@ public:
     }
   }
 
-  // uint16_t read() {
-  //   if (!_convReady) {
-  //     return -1;
-  //   } else {
-  //     return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
-  //   }
-  // };
-
   uint16_t read() {
-    if (!_ads.conversionComplete()) {
+    if (!_convReady) {
       return -1;
     } else {
       return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
     }
   };
+
+  // uint16_t read() {
+  //   if (!_ads.conversionComplete()) {
+  //     return -1;
+  //   } else {
+  //     return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
+  //   }
+  // };
 
 
 

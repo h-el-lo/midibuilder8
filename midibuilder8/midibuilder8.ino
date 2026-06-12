@@ -17,7 +17,8 @@ void loop() {}
 #include "DamperPedal.h"
 // #include "ExpressionPedal.h"
 // #include "PitchWheel.h"
-// #include "Buttons.h"
+#include "Buttons.h"
+#include "RGB.h"
 
 // ============================  PROGRAM VARIABLES  ===========================
 uint8_t cycleCount = 0;
@@ -34,11 +35,12 @@ void IRAM_ATTR onConvReady() {
 
 void setup() {
   // put your setup code here, to run once:
-  // Serial.begin(921600);
+  Serial.begin(921600);
 
   // Begin MIDI
   usbmidi.begin();
   USB.begin();
+
   Serial.println("Hello, world!");
   delay(2000);
 
@@ -46,14 +48,18 @@ void setup() {
   ADSManager.begin();
   attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
-  // Initialize Button manager and buttons
-  // initButtons();
+  // // Initialize Button manager and buttons
+  BUTTON_STRIP.begin();
+  // INDICATOR_STRIP.begin();
+  initButtons();
 
 
   // initialize LCD Screen
   // lcd.init();
 
   // ExpressionPedal.init();
+
+
 
   Serial.println("Let's get started!");
 }
@@ -88,12 +94,12 @@ void loop() {
   // }
   // // ========================================================================================
 
-  // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
-  // updateTouchSensors();
+  // ==============================  READ THROUGH BUTTONS  ==================================
+  scanButtons();
   // ========================================================================================
 
-  // ==============================  READ THROUGH BUTTONS  ==================================
-  // scanButtons();
+  // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
+  // updateTouchSensors();
   // ========================================================================================
 }
 

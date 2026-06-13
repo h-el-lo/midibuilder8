@@ -78,26 +78,27 @@ uint16_t Mux::read() {
       Serial.println("Error: Attempting to read from an output Mux!");
     }
   } else {
-    Serial.print("Reverting to MUX analog read: ");
+    // Serial.print("Reverting to MUX analog read: ");
     if (_mode == INPUT) {
-      Serial.print("MODE=INPUT, ");
+      // Serial.print("MODE=INPUT, ");
       if (_type == DIGITAL) {
-        Serial.print("TYPE=DIGITAL, ");
+        // Serial.print("TYPE=DIGITAL, ");
         return digitalRead(_signalPin);
       } else if (_type == ANALOG) {
-        Serial.print("TYPE=ANALOG, ");
-        Serial.println(analogRead(_signalPin));
+        // Serial.print("TYPE=ANALOG, ");
+        // Serial.println(analogRead(_signalPin));
         return analogRead(_signalPin);
       } else {
         Serial.print("Error: Mux type cannot be determined");
       }
     } else if (_mode == INPUT_PULLUP) {
-      Serial.print("MODE=INPUT_PULLUP ");
+      // Serial.print("MODE=INPUT_PULLUP ");
+      // Serial.println(digitalRead(_signalPin));
       return digitalRead(_signalPin);
     } else {
       Serial.println("Error: Attempting to read from an output Mux!");
     }
-    Serial.println(".");
+    // Serial.println(".");
   }
 }
 

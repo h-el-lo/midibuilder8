@@ -4,21 +4,15 @@ void setup() {}
 void loop() {}
 #else
 
-// #include "USB.h"
-// #include "USBMIDI.h"
-
-// USBMIDI MIDI("SWEETBOX-SYNTHAGE");  // Creates the MIDI device with specific descriptor
-// USBMIDI MIDI("ESP MIDI Device");
-
 // 64 KEYS, VELOCITY SENSITIVE, 4 MUXS, SUSTAIN PEDAL, EXPRESSION PEDAL, 16 KNOBS, 46 BUTTONS, PITCHWHEEL, SLIDER(MODWHEEL)
 
 #include "ADSManager.h"
 #include "General.h"
-// #include "DamperPedal.h"
+#include "DamperPedal.h"
 // #include "ExpressionPedal.h"
 // #include "PitchWheel.h"
-// #include "Buttons.h"
-// #include "RGB.h"
+#include "Buttons.h"
+#include "RGB.h"
 
 // ============================  PROGRAM VARIABLES  ===========================
 uint8_t cycleCount = 0;
@@ -48,24 +42,16 @@ void setup() {
   ADSManager.begin();
   // attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
-  // // // Initialize Button manager and buttons
-  // BUTTON_STRIP.begin();
-  // // INDICATOR_STRIP.begin();
-  // initButtons();
+  // Initialize Button manager and buttons
+  BUTTON_STRIP.begin();
+  // INDICATOR_STRIP.begin();
+  initButtons();
 
 
   // initialize LCD Screen
   // lcd.init();
 
   // ExpressionPedal.init();
-  Serial.print("Mux1 mode:");
-  Serial.println(Mux1.getMode());
-  Serial.print("Mux2 mode:");
-  Serial.println(Mux2.getMode());
-  Serial.print("Mux3 mode:");
-  Serial.println(Mux3.getMode());
-  Serial.print("Mux4 mode:");
-  Serial.println(Mux4.getMode());
 
   Serial.println("Let's get started!");
   delay(2000);
@@ -78,11 +64,11 @@ void loop() {
   // Serial.println("Mainloop runnning!");
 
   // // ================================  READ THROUGH KEYS  ===================================
-  // keys.updateKeys();
+  keys.updateKeys();
   // // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
-  // DamperPedal.update();
+  DamperPedal.update();
   // ExpressionPedal.update();
   // updatePitchWheel();
   // Slider.update();
@@ -101,9 +87,9 @@ void loop() {
   }
   // ========================================================================================
 
-  // // ==============================  READ THROUGH BUTTONS  ==================================
-  // scanButtons();
-  // // ========================================================================================
+  // ==============================  READ THROUGH BUTTONS  ==================================
+  scanButtons();
+  // ========================================================================================
 
   // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
   // updateTouchSensors();

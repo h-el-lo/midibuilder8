@@ -19,25 +19,27 @@ bool Button::readHardware() {
   uint8_t y_pins[4] = { 13, 12, 11, 10 };
   uint8_t z_pins[6] = { 0, 1, 2, 3, 4, 5 };
 
-  if (_type == XY_BUTTON) {
-    pinMode(y_pins[_cathodePin - 1], OUTPUT);
-    digitalWrite(y_pins[_cathodePin - 1], LOW);
-    reading = !Mux1.readChannel(x_pins[_anodePin - 1]);
-    digitalWrite(y_pins[_cathodePin - 1], HIGH);
+  if (_type == YX_BUTTON) {
+    pinMode(y_pins[_anodePin - 1], OUTPUT);
+    digitalWrite(y_pins[_anodePin - 1], LOW);
+    reading = !Mux1.readChannel(x_pins[_cathodePin - 1]);
+    digitalWrite(y_pins[_anodePin - 1], HIGH);
 
   } else if (_type == XZ_BUTTON) {
-    Mux3.writeToChannel(x_pins[_anodePin - 1], LOW);
-    reading = !Mux1.readChannel(z_pins[_cathodePin - 1]);
-    Mux3.writeToChannel(x_pins[_anodePin - 1], HIGH);
+    // Mux3.setMode(OUTPUT);
+    // Mux3.writeToChannel(z_pins[_cathodePin - 1], LOW);
+    // reading = !Mux1.readChannel(x_pins[_anodePin - 1]);
+    // Mux3.writeToChannel(z_pins[_cathodePin - 1], HIGH);
+    // Mux3.setMode(INPUT_PULLUP);
 
 
-    // Mux1.setMode(INPUT_PULLUP);
-    // Mux3.writeToChannel(x_pins[_anodePin - 1], LOW);
-    // reading = !Mux1.readChannel(z_pins[_cathodePin - 1]);
-    // Mux3.writeToChannel(x_pins[_anodePin - 1], HIGH);
+    Mux1.setMode(OUTPUT);
+    Mux1.writeToChannel(x_pins[_anodePin - 1], LOW);
+    reading = !Mux3.readChannel(z_pins[_cathodePin - 1]);
+    Mux1.writeToChannel(x_pins[_anodePin - 1], HIGH);
+    Mux1.setMode(INPUT_PULLUP);
 
   } else if (_type == YZ_BUTTON) {
-    // Mux1.setMode(INPUT_PULLUP);
     pinMode(y_pins[_anodePin - 1], OUTPUT);
     digitalWrite(y_pins[_anodePin - 1], LOW);
     reading = !Mux3.readChannel(z_pins[_cathodePin - 1]);
@@ -88,7 +90,7 @@ SceneSelectorButton::SceneSelectorButton(
   uint8_t BANK_A_PARTS_CC,
   uint8_t BANK_B_PARTS_CC,
   uint8_t rgbIndex)
-  : Button(XY_BUTTON, anodePin, cathodePin),
+  : Button(YX_BUTTON, anodePin, cathodePin),
     _index(index),
     _rgbIndex(rgbIndex) {
   _SCENE_CC[BANK_A] = BANK_A_SCENE_CC;
@@ -145,6 +147,7 @@ void SceneSelectorButton::clearallparts() {
   for (uint8_t i = 0; i < 8; i++) {
     controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][BANK_B][i], 0);
   }
+  updateRGBSection();
 }
 
 void SceneSelectorButton::updateRGB(uint8_t rgbIndex) {
@@ -263,14 +266,14 @@ void initButtons() {
   // ── Group of Eight (XY buttons, indices 0–7) ──
   // { anodePin, cathodePin, index, rgbIndex, BANK_A_SCENE_CC, BANK_B_SCENE_CC, BANK_A_PARTS_CC, BANK_B_PARTS_CC, rgbIndex}
   uint8_t sceneSelectorDefs[8][8] = {
-    { 5, 4, 0, 46, 54, 102, 110, 21 },
-    { 6, 4, 1, 47, 55, 103, 111, 22 },
-    { 6, 3, 2, 48, 56, 104, 112, 23 },
-    { 6, 2, 3, 49, 57, 105, 113, 24 },
-    { 6, 1, 4, 50, 58, 106, 114, 25 },
-    { 5, 1, 5, 51, 59, 107, 115, 26 },
-    { 4, 1, 6, 52, 60, 108, 116, 27 },
-    { 2, 1, 7, 53, 61, 109, 117, 28 },
+    { 4, 5, 0, 46, 54, 102, 110, 21 },
+    { 4, 6, 1, 47, 55, 103, 111, 22 },
+    { 3, 6, 2, 48, 56, 104, 112, 23 },
+    { 2, 6, 3, 49, 57, 105, 113, 24 },
+    { 1, 6, 4, 50, 58, 106, 114, 25 },
+    { 1, 5, 5, 51, 59, 107, 115, 26 },
+    { 1, 4, 6, 52, 60, 108, 116, 27 },
+    { 1, 2, 7, 53, 61, 109, 117, 28 },
   };
 
   for (uint8_t g = 0; g < 8; g++) {
@@ -281,7 +284,7 @@ void initButtons() {
       sceneSelectorDefs[g][6], sceneSelectorDefs[g][7]);
   }
 
-  if (SceneSelectorButton::_groupMode == SceneSelectorButton::MODE_SCENE) {
+  if (SceneSelectorButton::_groupMode == SceneSelectorButton::MODE_PARTS) {
     SceneSelectorButton::toggleGroupMode();
   }
 
@@ -349,16 +352,16 @@ void initButtons() {
   // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 
   buttonArray[i++] = new ActionButton(XZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);     // Togggle parts/scene
-  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 4, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
-  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 3, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
-  buttonArray[i++] = new ActionButton(XY_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 4, 6, { 0, 0, 255 }, keys.transposeUp);    // Transpose +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 2, 3, 5, { 0, 0, 255 }, keys.transposeDown);  // Transpose -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 2, 17, { 0, 0, 255 }, channelUp);          // Channel +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 8, 1, 20, { 0, 0, 255 }, channelDown);        // Channel -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 4, 18, { 0, 0, 255 }, keys.octaveUp);      // Octave +
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 19, { 0, 0, 255 }, keys.octaveDown);    // Octave -
-  buttonArray[i++] = new RGBActionButton(XY_BUTTON, 7, 3, 16, { 0, 0, 255 }, allSoundsOff);       // All sounds off
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 4, 1, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 3, 1, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);    // Transpose +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);  // Transpose -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, keys.octaveUp);      // Octave +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, keys.octaveDown);    // Octave -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, channelUp);          // Channel +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);        // Channel -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 0, 0, 255 }, allSoundsOff);       // All sounds off
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                // Home
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);          // Settings
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);              // Exit

@@ -9,23 +9,24 @@
 
 class Mux {
 private:
-  uint8_t _S0;
-  uint8_t _S1;
-  uint8_t _S2;
-  uint8_t _S3;
+  uint8_t _S0;  // Connected to MCU
+  uint8_t _S1;  // Connected to MCU
+  uint8_t _S2;  // Connected to MCU
+  uint8_t _S3;  // Connected to MCU
   uint8_t _signalPin;
   bool _usesADS = false;
-  uint8_t _pinOnADS = 255;  // 255 as "unset" sentinel
   uint8_t _type;
   uint8_t _mode;
   uint8_t _selectedChannel = 255;
 
 public:
   // Constructors
-  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode, bool usesADS, uint8_t pinOnADS);  // INPUT, INPUT_PULLUP and OUTPUT
-  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t type, uint8_t mode);                                  // INPUT, INPUT_PULLUP and OUTPUT
+  Mux(bool usesADS, uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, /* Pin on ADS */ uint8_t signalPin, uint8_t mode, uint8_t type);  // INPUT, INPUT_PULLUP and OUTPUT
+  Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t mode, uint8_t type);                                 // INPUT, INPUT_PULLUP and OUTPUT
 
   // Getters
+  uint8_t getType();
+  uint8_t getMode();
 
   // Setters
   void setType(uint8_t type);

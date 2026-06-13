@@ -106,17 +106,18 @@ void Knob::update() {
     validateAnalogRead();
     _midiState = map(_potState, _minAnalogValue, _maxAnalogValue, _minCCValue, _maxCCValue);
     _potIncrement = abs(_midiState - _midiPState);
+    controlChange(_channel, _CCNumber, _midiState);
 
-    if (_potIncrement > _potThreshold) {
-      snapshot = millis();
-    }
+    // if (_potIncrement > _potThreshold) {
+    //   snapshot = millis();
+    // }
 
-    _potTimer = millis() - snapshot;
+    // _potTimer = millis() - snapshot;
 
-    if (_potTimer < POT_TIMEOUT) {
-      controlChange(_channel, _CCNumber, _midiState);
-      _midiPState = _midiState;
-    }
+    // if (_potTimer < POT_TIMEOUT) {
+    //   controlChange(_channel, _CCNumber, _midiState);
+    //   _midiPState = _midiState;
+    // }
   }
 }
 // ======================================================================================================

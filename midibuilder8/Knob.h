@@ -32,7 +32,7 @@ protected:
   uint16_t _potTimer = 0;
   static constexpr uint8_t _potThreshold = 4;
   static constexpr uint16_t POT_TIMEOUT = 300;
-  static constexpr uint16_t ADC_MAX = 1023;
+  static constexpr uint16_t ADC_MAX = 26400;
 
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled, bool configurablePin);
 

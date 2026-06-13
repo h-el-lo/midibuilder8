@@ -14,11 +14,11 @@ void loop() {}
 
 #include "ADSManager.h"
 #include "General.h"
-#include "DamperPedal.h"
+// #include "DamperPedal.h"
 // #include "ExpressionPedal.h"
 // #include "PitchWheel.h"
-#include "Buttons.h"
-#include "RGB.h"
+// #include "Buttons.h"
+// #include "RGB.h"
 
 // ============================  PROGRAM VARIABLES  ===========================
 uint8_t cycleCount = 0;
@@ -46,22 +46,29 @@ void setup() {
 
   // Begin ADS Manager
   ADSManager.begin();
-  attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
-  // // Initialize Button manager and buttons
-  BUTTON_STRIP.begin();
-  // INDICATOR_STRIP.begin();
-  initButtons();
+  // // // Initialize Button manager and buttons
+  // BUTTON_STRIP.begin();
+  // // INDICATOR_STRIP.begin();
+  // initButtons();
 
 
   // initialize LCD Screen
   // lcd.init();
 
   // ExpressionPedal.init();
-
-
+  Serial.print("Mux1 mode:");
+  Serial.println(Mux1.getMode());
+  Serial.print("Mux2 mode:");
+  Serial.println(Mux2.getMode());
+  Serial.print("Mux3 mode:");
+  Serial.println(Mux3.getMode());
+  Serial.print("Mux4 mode:");
+  Serial.println(Mux4.getMode());
 
   Serial.println("Let's get started!");
+  delay(2000);
 }
 
 void loop() {
@@ -70,33 +77,33 @@ void loop() {
 
   // Serial.println("Mainloop runnning!");
 
-  // ================================  READ THROUGH KEYS  ===================================
-  keys.updateKeys();
-  // ========================================================================================
+  // // ================================  READ THROUGH KEYS  ===================================
+  // keys.updateKeys();
+  // // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
-  DamperPedal.update();
+  // DamperPedal.update();
   // ExpressionPedal.update();
   // updatePitchWheel();
   // Slider.update();
   // joystick.update();
   // ========================================================================================
 
-  // // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
-  // if (cycleCount == 0) {
-  //   updateKnobs();
-  // }
-  // cycleCount++;
+  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
+  if (cycleCount == 0) {
+    updateKnobs();
+  }
+  cycleCount++;
 
-  // // Reset cycle count
-  // if (cycleCount >= 5) {
-  //   cycleCount = 0;
-  // }
-  // // ========================================================================================
-
-  // ==============================  READ THROUGH BUTTONS  ==================================
-  scanButtons();
+  // Reset cycle count
+  if (cycleCount >= 5) {
+    cycleCount = 0;
+  }
   // ========================================================================================
+
+  // // ==============================  READ THROUGH BUTTONS  ==================================
+  // scanButtons();
+  // // ========================================================================================
 
   // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
   // updateTouchSensors();

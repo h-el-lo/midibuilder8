@@ -39,7 +39,7 @@ void setup() {
   delay(2000);
 
   // Begin ADS Manager
-  ADSManager.begin();
+  // ADSManager.begin();
   // attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
   // Initialize Button manager and buttons

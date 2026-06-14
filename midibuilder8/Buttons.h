@@ -185,7 +185,7 @@ public:
 };
 
 
-class PresetSelectorButton {
+class PresetButton {
 private:
 public:
 };

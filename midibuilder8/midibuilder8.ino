@@ -53,6 +53,15 @@ void setup() {
 
   // ExpressionPedal.init();
 
+  // Serial.print("Mux1 mode is ");
+  // Serial.println(Mux1.getMode());
+  // Serial.print("Mux2 mode is ");
+  // Serial.println(Mux2.getMode());
+  // Serial.print("Mux3 mode is ");
+  // Serial.println(Mux3.getMode());
+  // Serial.print("Mux4 mode is ");
+  // Serial.println(Mux4.getMode());
+
   Serial.println("Let's get started!");
   delay(2000);
 }
@@ -63,9 +72,9 @@ void loop() {
 
   // Serial.println("Mainloop runnning!");
 
-  // // ================================  READ THROUGH KEYS  ===================================
+  // ================================  READ THROUGH KEYS  ===================================
   keys.updateKeys();
-  // // ========================================================================================
+  // ========================================================================================
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   DamperPedal.update();
@@ -73,7 +82,7 @@ void loop() {
   // updatePitchWheel();
   // Slider.update();
   // joystick.update();
-  // ========================================================================================
+  // // ========================================================================================
 
   // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
   if (cycleCount == 0) {

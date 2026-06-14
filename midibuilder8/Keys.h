@@ -262,6 +262,7 @@ struct Keys {
       // Serial.print("Note ");
       // Serial.print(note);
       // Serial.println(" released (Note Off)");
+
       keyState[x][y] = KEY_IDLE;
       timeOfStart[x][y] = 0;
       timeOfEnd[x][y] = 0;
@@ -271,6 +272,8 @@ struct Keys {
   void updateKey(uint8_t x, uint8_t y) {
 
     note = pgm_read_byte(&nums[x][y]) + transpose;
+    // Serial.print("key selected is ");
+    // Serial.println(note);
     scanKey(x, y);
     checkPressLevel(x, y);
 

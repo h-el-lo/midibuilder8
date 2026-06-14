@@ -16,6 +16,7 @@ bool Button::readHardware() {
   static bool reading = false;
 
   uint8_t x_pins[8] = { 15, 14, 13, 12, 11, 10, 9, 8 };
+  // uint8_t x_pins[8] = { 7, 6, 5, 4, 3, 2, 1, 0 };
   uint8_t y_pins[4] = { 13, 12, 11, 10 };
   uint8_t z_pins[6] = { 0, 1, 2, 3, 4, 5 };
 
@@ -24,20 +25,6 @@ bool Button::readHardware() {
     digitalWrite(y_pins[_anodePin - 1], LOW);
     reading = !Mux1.readChannel(x_pins[_cathodePin - 1]);
     digitalWrite(y_pins[_anodePin - 1], HIGH);
-
-  } else if (_type == XZ_BUTTON) {
-    // Mux3.setMode(OUTPUT);
-    // Mux3.writeToChannel(z_pins[_cathodePin - 1], LOW);
-    // reading = !Mux1.readChannel(x_pins[_anodePin - 1]);
-    // Mux3.writeToChannel(z_pins[_cathodePin - 1], HIGH);
-    // Mux3.setMode(INPUT_PULLUP);
-
-
-    Mux1.setMode(OUTPUT);
-    Mux1.writeToChannel(x_pins[_anodePin - 1], LOW);
-    reading = !Mux3.readChannel(z_pins[_cathodePin - 1]);
-    Mux1.writeToChannel(x_pins[_anodePin - 1], HIGH);
-    Mux1.setMode(INPUT_PULLUP);
 
   } else if (_type == YZ_BUTTON) {
     pinMode(y_pins[_anodePin - 1], OUTPUT);
@@ -351,7 +338,7 @@ void initButtons() {
   // buttonArray[i++] = new ActionButton(type, anodePin, cathodePin, onPress);
   // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 
-  buttonArray[i++] = new ActionButton(XZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);     // Togggle parts/scene
+  buttonArray[i++] = new ActionButton(YZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);     // Togggle parts/scene
   buttonArray[i++] = new ActionButton(YX_BUTTON, 4, 1, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
   buttonArray[i++] = new ActionButton(YX_BUTTON, 3, 1, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
   buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts

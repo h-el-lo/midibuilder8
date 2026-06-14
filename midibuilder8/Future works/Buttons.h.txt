@@ -25,11 +25,8 @@ uint8_t XY_array[23][2] = {
   { 8, 1 },  // RHYTHM VOL - CHANNELDOWN
 };
 
-uint8_t XZ_array[1][2] = {
-  { 4, 1 },  // MEMORY SCENESELECTORMODECHANGE
-};
-
 uint8_t YZ_array[22][2] = {
+  { 4, 1 },  // MEMORY SCENESELECTORMODECHANGE
   { 3, 1 },  // TONE
   { 2, 1 },  // RHYTHM
   { 1, 1 },  // SONG

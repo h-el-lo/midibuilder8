@@ -25,8 +25,8 @@ public:
   Mux(uint8_t S0, uint8_t S1, uint8_t S2, uint8_t S3, uint8_t signalPin, uint8_t mode, uint8_t type);                                 // INPUT, INPUT_PULLUP and OUTPUT
 
   // Getters
-  uint8_t getType();
-  uint8_t getMode();
+  uint8_t getType() const;
+  uint8_t getMode() const;
 
   // Setters
   void setType(uint8_t type);

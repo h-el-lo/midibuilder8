@@ -14,14 +14,14 @@ uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
 // ============================================================================
 
 // ==============================  MUX VARIABLES  =============================
-Mux Mux1(38, 37, 36, 35, 9, INPUT_PULLUP, DIGITAL);  // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
-Mux Mux2(42, 41, 40, 39, 3, OUTPUT, DIGITAL);        // Mux 2 (Outputs (keys), KPS AND KPE (rows))
-Mux Mux3(7, 6, 5, 4, 46, INPUT_PULLUP, DIGITAL);     // Mux 3 (Digital output of buttons)
+Mux Mux1(38, 37, 36, 35, 46, INPUT_PULLUP, DIGITAL);  // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
+Mux Mux2(42, 41, 40, 39, 8, OUTPUT, DIGITAL);        // Mux 2 (Outputs (keys), KPS AND KPE (rows))
+Mux Mux3(7, 6, 5, 4, 3, INPUT_PULLUP, DIGITAL);     // Mux 3 (Digital output of buttons)
 // Mux Mux4(/* usesADS */ true, 8, 3, 46, 9, /* Pin on ADS */ ADS_MUX4_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
 // Mux Mux4(/* usesADS */ true, 8, 3, 46, 9, /* Pin on ADS */ ADS_PITCH_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
 // Mux Mux4(/* usesADS */ true, 8, 3, 46, 9, /[* Pin on ADS */ ADS_SLIDER_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
 // Mux Mux4(/* usesADS */ true, 8, 3, 46, 9, /* Pin on ADS */ ADS_EXPR_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
-Mux Mux4(15, 16, 17, 18, 8, INPUT, ANALOG);  // Mux 4 (Analog Input, Knobs and Faders)
+Mux Mux4(15, 16, 17, 18, 9, INPUT, ANALOG);  // Mux 4 (Analog Input, Knobs and Faders)
 // ============================================================================
 
 // ===============================  KEYS  ==================================

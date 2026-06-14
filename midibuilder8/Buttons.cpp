@@ -348,7 +348,7 @@ void initButtons() {
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, keys.octaveDown);    // Octave -
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, channelUp);          // Channel +
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);        // Channel -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 0, 0, 255 }, allSoundsOff);       // All sounds off
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 13, 0, 6 }, allSoundsOff);        // All sounds off
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                // Home
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);          // Settings
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);              // Exit

@@ -7,7 +7,6 @@
 
 enum ButtonType {
   YX_BUTTON,  // anode: Mux3, cathode: MCU pin
-  XZ_BUTTON,  // anode: Mux3, cathode: Mux1
   YZ_BUTTON   // anode: MCU pin, cathode: Mux1
 };
 
@@ -136,11 +135,11 @@ private:
   };
   inline static ColorStruct partsOnColor[2] = {
     { 30, 0, 110 },   // BANK_A
-    { 255, 0, 125 },  // BANK_B
+    { 150, 0, 60 },  // BANK_B
   };
   inline static ColorStruct partsOffColor[2] = {
-    { 0, 0, 0 },  // BANK_A
-    { 0, 0, 0 },  // BANK_B
+    { 3, 0, 11  },  // BANK_A
+    { 7, 0, 7 },  // BANK_B
   };
 
 

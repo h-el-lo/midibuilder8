@@ -12,8 +12,8 @@
 
 class Knob {
 protected:
-  const uint8_t _potPin;  // Mux channel connected to potentiometer
-  bool configurablePin;
+  const uint8_t _potPin;  // Connected to MCU, ADS or MUX
+  bool _configurablePin;
   bool _isEnabled;
   uint8_t _CCNumber;
   uint8_t _channel;
@@ -25,24 +25,33 @@ protected:
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
   bool _usesADS = false;
-  uint8_t _pinOnADS = 255;
 
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
   uint16_t _potTimer = 0;
   static constexpr uint8_t _potThreshold = 4;
   static constexpr uint16_t POT_TIMEOUT = 300;
-  static constexpr uint16_t ADC_MAX = 26400;
 
+  // Constructors
+private:
+  Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled, bool configurablePin);
+protected:
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled, bool configurablePin);
 
 public:
-  // Constructors
+  // Use constructors beginning with "usesADS" only when you intend on using
+  // the knob objects with ADC as there is no fallback of setPinMode
+  Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled);
+  Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel);
+  Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue);
+  Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber);
+  Knob(bool usesADS, uint8_t potPin);
+
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
   Knob(uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
   Knob(uint8_t potPin, uint8_t CCNumber);
-  Knob(uint8_t potPin, uint8_t CCNumber, bool usesADS, uint8_t pinOnADS);
+  Knob(uint8_t potPin);
 
   struct MinMax {
     uint8_t min, max;

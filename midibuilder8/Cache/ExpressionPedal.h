@@ -35,4 +35,4 @@ struct Expression_Pedal {
   }
 };
 
-Expression_Pedal ExpressionPedal = { Knob(2, 11, /*usesADS*/ true, /*pinOnADS*/ ADS_EXPR_CHANNEL), 42, false };
+Expression_Pedal ExpressionPedal = { Knob(/*usesADS*/ true, /*pinOnADS*/ ADS_EXPR_CHANNEL, 11, ), 42, false };

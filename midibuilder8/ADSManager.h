@@ -4,12 +4,13 @@
 #include <Adafruit_ADS1X15.h>
 #include <Wire.h>
 
-#define ADS_ALRT_MCU_PIN 35
+#define ADS_ALRT_MCU_PIN 48
 
-#define ADS_PITCH_CHANNEL 0
-#define ADS_SLIDER_CHANNEL 1
-#define ADS_EXPR_CHANNEL 2
+#define ADS_EXPR_CHANNEL 0
+#define ADS_PITCH_CHANNEL 1
+#define ADS_SLIDER_CHANNEL 2
 #define ADS_MUX4_CHANNEL 3
+
 
 #define ADS_RAW_MAX 26400
 
@@ -19,10 +20,10 @@ private:
   uint16_t _selectedChannel = 255;  // 255 as "unset" sentinel
 
   static constexpr uint16_t _muxChannels[4] = {
-    ADS1X15_REG_CONFIG_MUX_SINGLE_0,  ///< Single-ended AIN0
-    ADS1X15_REG_CONFIG_MUX_SINGLE_1,  ///< Single-ended AIN1
-    ADS1X15_REG_CONFIG_MUX_SINGLE_2,  ///< Single-ended AIN2
-    ADS1X15_REG_CONFIG_MUX_SINGLE_3   ///< Single-ended AIN3
+    ADS1X15_REG_CONFIG_MUX_SINGLE_0,  ///< Single-ended A2
+    ADS1X15_REG_CONFIG_MUX_SINGLE_1,  ///< Single-ended A2
+    ADS1X15_REG_CONFIG_MUX_SINGLE_2,  ///< Single-ended A0
+    ADS1X15_REG_CONFIG_MUX_SINGLE_3   ///< Single-ended A0
   };
 
   volatile bool _convReady = false;
@@ -51,11 +52,9 @@ public:
     if (_selectedChannel != channel) {
       _selectedChannel = channel;
       _convReady = false;
-      if (_selectedChannel == 255) {
-        // OutOfRangeError guard for when Multiplexers set their "pinOnADS" number to 255
-        return;
-      } else if (_selectedChannel > 4 || _selectedChannel < 0) {
+      if (_selectedChannel > 4) {
         // Prevents any other out of range error
+        Serial.println("Selected ADS channel out of range");
         return;
       } else {
         _ads.startADCReading(_muxChannels[_selectedChannel], /*continuous*/ true);
@@ -63,7 +62,7 @@ public:
     }
   }
 
-  uint16_t read() {
+  int16_t read() {
     if (!_convReady) {
       return -1;
     } else {

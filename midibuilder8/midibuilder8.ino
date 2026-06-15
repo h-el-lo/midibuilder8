@@ -38,9 +38,12 @@ void setup() {
   Serial.println("Hello, world!");
   delay(2000);
 
+  // Set analog read resolution to 12 bits
+  analogReadResolution(12);
+
   // Begin ADS Manager
-  // ADSManager.begin();
-  // attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
+  ADSManager.begin();
+  attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
   // Initialize Button manager and buttons
   BUTTON_STRIP.begin();
@@ -80,7 +83,7 @@ void loop() {
   DamperPedal.update();
   // ExpressionPedal.update();
   // updatePitchWheel();
-  // Slider.update();
+  Slider.update();
   // joystick.update();
   // // ========================================================================================
 

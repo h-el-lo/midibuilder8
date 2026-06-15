@@ -30,8 +30,6 @@ uint8_t Mux::getMode() const {
 }
 
 
-
-
 // Setters
 void Mux::setType(uint8_t type) {
 }
@@ -41,7 +39,11 @@ void Mux::setMode(uint8_t mode) {
   pinMode(_signalPin, _mode);
 }
 
+
 // Methods
+bool Mux::usesADS() {
+  return _usesADS;
+}
 void Mux::validate() {
   _mode = (_mode == INPUT) ? INPUT : (_mode == INPUT_PULLUP) ? INPUT_PULLUP
                                    : (_mode == OUTPUT)       ? OUTPUT

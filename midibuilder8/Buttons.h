@@ -131,15 +131,15 @@ private:
   };
   inline static ColorStruct sceneUnselectedColor[2] = {
     { 0, 50, 255 },  // BANK_A
-    { 255, 50, 0},      // BANK_B
+    { 255, 50, 0 },  // BANK_B
   };
   inline static ColorStruct partsOnColor[2] = {
-    { 30, 0, 110 },   // BANK_A
+    { 30, 0, 110 },  // BANK_A
     { 150, 0, 60 },  // BANK_B
   };
   inline static ColorStruct partsOffColor[2] = {
-    { 3, 0, 11  },  // BANK_A
-    { 7, 0, 7 },  // BANK_B
+    { 3, 0, 11 },  // BANK_A
+    { 7, 0, 7 },   // BANK_B
   };
 
 
@@ -186,6 +186,14 @@ public:
 
 class PresetButton {
 private:
+  inline static ColorStruct selectedColor[2] = {
+    { 0, 150, 255 },    // BANK_A
+    { 200, 230, 160 },  // BANK_B
+  };
+  inline static ColorStruct unselectedColor[2] = {
+    { 0, 50, 255 },  // BANK_A
+    { 255, 50, 0 },  // BANK_B
+  };
 public:
 };
 

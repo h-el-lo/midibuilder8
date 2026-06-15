@@ -33,6 +33,7 @@ public:
   void setMode(uint8_t mode);
 
   // Methods
+  bool usesADS();
   void validate();
   void selectChannel(uint8_t channel);
   uint16_t read();

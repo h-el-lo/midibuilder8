@@ -4,6 +4,7 @@
 #include "Multiplexer.h"
 #include "Keys.h"
 #include "Knob.h"
+// #include "Screen.h"
 // #include "Joystick.h"
 // #include "TouchSensor.h"
 
@@ -11,6 +12,10 @@
 USBMIDI usbmidi("ANNIHILO");
 uint8_t GLOBAL_MIDI_CHANNEL = 1;
 uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
+
+// ============================  SCREEN VARIABLES  ============================
+// Screen screen(0x27, 20, 4);
+// Screen screen;
 // ============================================================================
 
 // ==============================  MUX VARIABLES  =============================

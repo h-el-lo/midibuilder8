@@ -45,14 +45,15 @@ void setup() {
   ADSManager.begin();
   attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
+  // initialize LCD Screen
+  // screen.init();
+
   // Initialize Button manager and buttons
   BUTTON_STRIP.begin();
   // INDICATOR_STRIP.begin();
   initButtons();
 
 
-  // initialize LCD Screen
-  // lcd.init();
 
   // ExpressionPedal.init();
 

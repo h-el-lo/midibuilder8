@@ -4,16 +4,14 @@
 #include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
 
-
-LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
-
-class Screen : public LiquidCrystal_I2C {
+class Screen {
 private:
-  uint8_t _SDA_PIN;
-  uint8_t _SCL_PIN;
+  inline static Screen* instance = nullptr;
+  LiquidCrystal_I2C _lcd;
   uint8_t _LCD_ROWS;
   uint8_t _LCD_COLS;
-  uint8_t _LCD_ADDR;
+  uint8_t _SDA_PIN;
+  uint8_t _SCL_PIN;
 
 public:
   // Constructors
@@ -29,7 +27,10 @@ public:
 
   // Methods
   void init();
+  void printHome();
+  static void printHomeHandler();
 };
 
+// extern Screen screen;
 
 #endif

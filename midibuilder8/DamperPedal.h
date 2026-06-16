@@ -13,11 +13,10 @@ struct Damper_Pedal {
 
   void update() {
     if (millis() - lastUpdatedTime >= damperDebounceTime) {
-      uint16_t storer = !Mux1.readChannel(susPin);
-      susState = map(!Mux1.readChannel(susPin), 0, 1, 0, 127);
+      susState = map(!Mux3.readChannel(susPin), 0, 1, 0, 127);
 
       if (susState != susPrevState) {
-        controlChange(KEYS_CHANNEL, 64, susState);
+        controlChange(GLOBAL_MIDI_CHANNEL, 64, susState);
         susPrevState = susState;
         lastUpdatedTime = millis();
       }
@@ -25,4 +24,4 @@ struct Damper_Pedal {
   }
 };
 
-Damper_Pedal DamperPedal = { 15 };  // on Mux1
+Damper_Pedal DamperPedal = { 13 };  // on Mux5

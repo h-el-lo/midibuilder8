@@ -8,7 +8,7 @@
 #define CLEAR_BIT(array, row, col) (array[row] &= ~(1 << col))
 
 struct Keys {
-
+private:
   // ==============================  KEYS VARIABLES  =====================================
   // KEYSCAN MATRIX VARIABLES
   static constexpr uint8_t COL_NUM = 8;
@@ -88,7 +88,7 @@ struct Keys {
   };
   //  ===========================================================================
 
-
+public:
   inline static void transposeUp() {
     if (transpose < transposeUpperLimit) {
       transpose++;
@@ -122,6 +122,7 @@ struct Keys {
     KEYS_CHANNEL = channel;
   }
 
+private:
   bool checkStuckKey(uint8_t x, uint8_t y) {
     if (keyState[x][y] == KEY_HALF_PRESSED) {
       return (millis() - timeOfStart[x][y] >= KEY_STUCK_TIME_THRESHOLD);
@@ -220,7 +221,7 @@ struct Keys {
 
       } else if (!GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
         keyState[x][y] = KEY_ERROR;
-        Serial.println("Error with key " + String(note - 23) + ". kpe before kps");
+        Serial.println("Error with key " + String(note - 36) + ". kpe before kps");
         keyState[x][y] = KEY_AWAITING_RECOVERY;
         // Remember to state the error code, log the error and increment the error counter.
       }
@@ -295,6 +296,7 @@ struct Keys {
     }
   }
 
+public:
   void updateKeys() {
     // READ THROUGH ALL KEYS
     for (uint8_t x = 0; x < ROW_NUM; x++) {

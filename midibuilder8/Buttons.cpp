@@ -3,6 +3,7 @@
 #include "MIDIHelper.h"
 #include "Keys.h"
 #include "Actions.h"
+#include "Screen.h"
 
 // ═════════════════════════════════════════════
 //  Button (base)
@@ -338,21 +339,22 @@ void initButtons() {
   // buttonArray[i++] = new ActionButton(type, anodePin, cathodePin, onPress);
   // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 
-  buttonArray[i++] = new ActionButton(YZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);     // Togggle parts/scene
-  buttonArray[i++] = new ActionButton(YX_BUTTON, 4, 1, SceneSelectorButton::setBankTo_A);         // BANK_A SELECT
-  buttonArray[i++] = new ActionButton(YX_BUTTON, 3, 1, SceneSelectorButton::setBankTo_B);         // BANK_B SELECT
-  buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearallparts);       // Clear all parts
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);    // Transpose +
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);  // Transpose -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, keys.octaveUp);      // Octave +
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, keys.octaveDown);    // Octave -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, channelUp);          // Channel +
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);        // Channel -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 13, 0, 6 }, allSoundsOff);        // All sounds off
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                // Home
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);          // Settings
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);              // Exit
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);               // Enter
+  buttonArray[i++] = new ActionButton(YZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);          // Togggle parts/scene
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 4, 1, SceneSelectorButton::setBankTo_A);              // BANK_A SELECT
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 3, 1, SceneSelectorButton::setBankTo_B);              // BANK_B SELECT
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearallparts);            // Clear all parts
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);         // Transpose +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);       // Transpose -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, keys.octaveUp);           // Octave +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, keys.octaveDown);         // Octave -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, channelUp);               // Channel +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);             // Channel -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 13, 0, 6 }, allSoundsOff);             // All sounds off
+  // buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, screen.printHomeHandler);  // Home
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                     // Home
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);               // Settings
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);                   // Exit
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);                    // Enter
 
   manager = new ButtonManager(buttonArray, i);
 }

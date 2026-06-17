@@ -46,7 +46,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
   // initialize LCD Screen
-  // screen.init();
+  screen.init();
 
   // Initialize Button manager and buttons
   BUTTON_STRIP.begin();

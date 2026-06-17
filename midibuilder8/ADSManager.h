@@ -31,8 +31,20 @@ private:
 public:
   void begin() {
     Wire.begin(21, 47);
-    while (!_ads.begin(0x48, &Wire)) {
-      Serial.println("ADS not found... retrying.");
+    Wire.setClock(400000);
+    bool adsfound = false;
+    if (_ads.begin(0x48, &Wire)) {
+      Serial.println("ADS found on 0x48.");
+      delay(500);
+    } else if (_ads.begin(0x49, &Wire)) {
+      // Serial.println("ADS not found on 0x49... retrying.");
+      Serial.println("ADS found on 0x49.");
+      delay(500);
+    } else if (_ads.begin(0x4A, &Wire)) {
+      Serial.println("ADS found on 0x4A.");
+      delay(500);
+    } else if (_ads.begin(0x4B, &Wire)) {
+      Serial.println("ADS found on 0x4B.");
       delay(500);
     }
 

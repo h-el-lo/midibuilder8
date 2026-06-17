@@ -4,7 +4,7 @@
 #include "Multiplexer.h"
 #include "Keys.h"
 #include "Knob.h"
-// #include "Screen.h"
+#include "Screen.h"
 // #include "Joystick.h"
 // #include "TouchSensor.h"
 
@@ -15,7 +15,7 @@ uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
 
 // ============================  SCREEN VARIABLES  ============================
 // Screen screen(0x27, 20, 4);
-// Screen screen;
+Screen screen;
 // ============================================================================
 
 // ==============================  MUX VARIABLES  =============================

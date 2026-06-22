@@ -1,15 +1,21 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
+
+// start scan
+// once read high, begin timer,
+// when scan released, calculate time spent on press
+// if timer is higher than specific time value, fire abstract interface onLongPress
+// else fire onPress
+
+
 #include <Arduino.h>
 #include "RGB.h"
-
 
 enum ButtonType {
   YX_BUTTON,  // anode: Mux3, cathode: MCU pin
   YZ_BUTTON   // anode: MCU pin, cathode: Mux1
 };
-
 
 // ─────────────────────────────────────────────
 //  Abstract Base Class
@@ -22,6 +28,9 @@ protected:
   bool _state = false;
   bool _pState = false;
   unsigned long _lastUpdated = 0;
+
+  unsigned long _scanStartTime;
+  uint16_t _longPressTriggerTime = 700;  // hold time required to trigger longpress in ms
 
   static const uint8_t DEBOUNCE_MS = 20;
 
@@ -39,6 +48,7 @@ public:
 
   // ── Derived classes implement these ──
   virtual void onPress() = 0;
+  virtual void onLongPress();
 };
 
 
@@ -164,7 +174,8 @@ public:
 
   // Methods
   void onPress() override;
-  static void clearallparts();
+  static void clearAllParts();    // Clears all parts on both banks
+  static void setAllBankParts();  // Turns on all part in selected bank
 
   void updateRGB(uint8_t rgbIndex);
   static void updateRGBSection();

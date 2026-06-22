@@ -1,10 +1,7 @@
 #pragma once
 
 #include "MIDIHelper.h"
-#include "Multiplexer.h"
-#include "Keys.h"
 #include "Knob.h"
-#include "Screen.h"
 // #include "Joystick.h"
 // #include "TouchSensor.h"
 
@@ -12,23 +9,7 @@
 USBMIDI usbmidi("ANNIHILO");
 uint8_t GLOBAL_MIDI_CHANNEL = 1;
 uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
-
-// ============================  SCREEN VARIABLES  ============================
-// Screen screen(0x27, 20, 4);
-Screen screen;
 // ============================================================================
-
-// ==============================  MUX VARIABLES  =============================
-Mux Mux1(38, 37, 36, 35, 46, INPUT_PULLUP, DIGITAL);  // Mux 1 (Digital INPUT_PULLUP (keys[COLS] [0-7]) (buttons[read] [8-15])) digital
-Mux Mux2(42, 41, 40, 39, 8, OUTPUT, DIGITAL);         // Mux 2 (Outputs (keys), KPS AND KPE (rows))
-Mux Mux3(7, 6, 5, 4, 3, INPUT_PULLUP, DIGITAL);       // Mux 3 (Digital output of buttons)
-// Mux Mux4(/* usesADS */ true, 15, 16, 17, 18, /* Pin on ADS */ ADS_MUX4_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
-Mux Mux4(15, 16, 17, 18, 9, INPUT, ANALOG);  // Mux 4 (Analog Input, Knobs and Faders)
-// ============================================================================
-
-// ===============================  KEYS  ==================================
-Keys keys;
-// =========================================================================
 
 // // ==============================  JOYSTICK  ==================================
 // Joystick joystick(1, 2);

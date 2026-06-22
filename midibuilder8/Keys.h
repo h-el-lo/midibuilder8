@@ -2,6 +2,7 @@
 
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
+#include "Screen.h"
 
 #define GET_BIT(array, row, col) ((array[row] >> col) & 0x01)
 #define SET_BIT(array, row, col) (array[row] |= (1 << col))
@@ -74,7 +75,7 @@ private:
   uint8_t pressed_notes[ROW_NUM][COL_NUM] = { 0 };
 
   // A key logs as key_stuck when held past this amount of time in milliseconds.
-  uint16_t KEY_STUCK_TIME_THRESHOLD = 10000;
+  uint16_t KEY_STUCK_TIME_THRESHOLD = 25000;
 
   uint8_t CONSECUTIVE_KEY_STUCK_COUNT[ROW_NUM][COL_NUM] = { 0 };
 
@@ -89,11 +90,16 @@ private:
   //  ===========================================================================
 
 public:
+  inline static int8_t getTranspose() {
+    return transpose;
+  }
+
   inline static void transposeUp() {
     if (transpose < transposeUpperLimit) {
       transpose++;
       // Serial.println("Transpose Up");
     }
+    screen.printTranspose();
   }
 
   inline static void transposeDown() {
@@ -101,20 +107,23 @@ public:
       transpose--;
       // Serial.println("Transpose Down");
     }
+    screen.printTranspose();
   }
 
   inline static void octaveUp() {
-    if (transpose < transposeUpperLimit) {
+    if (transpose + 12 <= transposeUpperLimit) {
       transpose += 12;
-      // Serial.println("Octave Up");
+      // Serial.println(transpose);
     }
+    screen.printTranspose();
   }
 
   inline static void octaveDown() {
-    if (transpose > transposeLowerLimit) {
+    if (transpose - 12 >= transposeLowerLimit) {
       transpose -= 12;
-      // Serial.println("Octave Down");
+      // Serial.println(transpose);
     }
+    screen.printTranspose();
   }
 
   void setKeysChannel(uint8_t channel) {
@@ -224,6 +233,8 @@ private:
         Serial.println("Error with key " + String(note - 36) + ". kpe before kps");
         keyState[x][y] = KEY_AWAITING_RECOVERY;
         // Remember to state the error code, log the error and increment the error counter.
+      } else if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
+        keyState[x][y] = KEY_IDLE;
       }
     }
   }

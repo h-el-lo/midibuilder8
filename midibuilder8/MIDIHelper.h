@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "USB.h"
 #include "USBMIDI.h"
+#include "Screen.h"
 
 extern USBMIDI usbmidi;
 extern uint8_t GLOBAL_MIDI_CHANNEL;
@@ -15,12 +16,14 @@ inline void channelUp() {
   if (GLOBAL_MIDI_CHANNEL < 16) {
     GLOBAL_MIDI_CHANNEL++;
   }
+  screen.printChannel();
 }
 
 inline void channelDown() {
   if (GLOBAL_MIDI_CHANNEL > 1) {
     GLOBAL_MIDI_CHANNEL--;
   }
+  screen.printChannel();
 }
 
 inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {

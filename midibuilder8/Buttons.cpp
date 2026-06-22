@@ -44,16 +44,24 @@ void Button::read() {
 
   if (_state == _pState) return;  // no change
 
+  if (_state) {
+    // once button pressed
+    _scanStartTime = millis();
+
+  } else {
+    // if button released
+    if (millis() - _scanStartTime >= _longPressTriggerTime) {
+      onLongPress();
+    } else {
+      onPress();
+    }
+  }
+
   _lastUpdated = millis();
   _pState = _state;
-
-  if (_state) {
-    onPress();
-  } else {
-    // Do nothing
-  }
 }
 
+void Button::onLongPress() {}
 
 // ═════════════════════════════════════════════
 //  NumpadButton
@@ -125,7 +133,7 @@ void SceneSelectorButton::onPress() {
   }
 }
 
-void SceneSelectorButton::clearallparts() {
+void SceneSelectorButton::clearAllParts() {
   CLEAR_BYTE(partsState[BANK_A]);
   for (uint8_t i = 0; i < 8; i++) {
     controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][BANK_A][i], 0);
@@ -134,6 +142,14 @@ void SceneSelectorButton::clearallparts() {
   CLEAR_BYTE(partsState[BANK_B]);
   for (uint8_t i = 0; i < 8; i++) {
     controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][BANK_B][i], 0);
+  }
+  updateRGBSection();
+}
+
+void SceneSelectorButton::setAllBankParts() {
+  partsState[_bank] |= 0b11111111;
+  for (uint8_t i = 0; i < 8; i++) {
+    controlChange(GLOBAL_MIDI_CHANNEL, _CC_All[1][_bank][i], 127);
   }
   updateRGBSection();
 }
@@ -254,14 +270,14 @@ void initButtons() {
   // ── Group of Eight (XY buttons, indices 0–7) ──
   // { anodePin, cathodePin, index, rgbIndex, BANK_A_SCENE_CC, BANK_B_SCENE_CC, BANK_A_PARTS_CC, BANK_B_PARTS_CC, rgbIndex}
   uint8_t sceneSelectorDefs[8][8] = {
-    { 4, 5, 0, 46, 54, 102, 110, 21 },
-    { 4, 6, 1, 47, 55, 103, 111, 22 },
-    { 3, 6, 2, 48, 56, 104, 112, 23 },
-    { 2, 6, 3, 49, 57, 105, 113, 24 },
-    { 1, 6, 4, 50, 58, 106, 114, 25 },
-    { 1, 5, 5, 51, 59, 107, 115, 26 },
-    { 1, 4, 6, 52, 60, 108, 116, 27 },
-    { 1, 2, 7, 53, 61, 109, 117, 28 },
+    { 4, 5, 0, 46, 54, 104, 112, 21 },
+    { 4, 6, 1, 47, 55, 105, 113, 22 },
+    { 3, 6, 2, 48, 56, 106, 114, 23 },
+    { 2, 6, 3, 49, 57, 107, 115, 24 },
+    { 1, 6, 4, 50, 58, 108, 116, 25 },
+    { 1, 5, 5, 51, 59, 109, 117, 26 },
+    { 1, 4, 6, 52, 60, 110, 118, 27 },
+    { 1, 2, 7, 53, 61, 111, 119, 28 },
   };
 
   for (uint8_t g = 0; g < 8; g++) {
@@ -342,7 +358,8 @@ void initButtons() {
   buttonArray[i++] = new ActionButton(YZ_BUTTON, 4, 1, SceneSelectorButton::toggleGroupMode);          // Togggle parts/scene
   buttonArray[i++] = new ActionButton(YX_BUTTON, 4, 1, SceneSelectorButton::setBankTo_A);              // BANK_A SELECT
   buttonArray[i++] = new ActionButton(YX_BUTTON, 3, 1, SceneSelectorButton::setBankTo_B);              // BANK_B SELECT
-  buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearallparts);            // Clear all parts
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 1, 1, SceneSelectorButton::clearAllParts);            // Clear all parts
+  buttonArray[i++] = new ActionButton(YX_BUTTON, 2, 1, SceneSelectorButton::setAllBankParts);          // Set all bank part
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);         // Transpose +
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);       // Transpose -
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, keys.octaveUp);           // Octave +
@@ -351,10 +368,9 @@ void initButtons() {
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);             // Channel -
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 13, 0, 6 }, allSoundsOff);             // All sounds off
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, screen.printHomeHandler);  // Home
-  // buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, home);                     // Home
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);  // Settings
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);      // Exit
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);       // Enter
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);               // Settings
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);                   // Exit
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);                    // Enter
 
   manager = new ButtonManager(buttonArray, i);
 }

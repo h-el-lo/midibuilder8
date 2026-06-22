@@ -64,8 +64,9 @@
 // ads1115 [mux 3 signal, pitch wheel, slider, expression pedal analog pin]
 
 
-
-
+create a transpose screen
+build logic for updating screen based on _is selected
+_build logic for updating on-screen parameters based on encoder rotation
 
 
 Knobs 7, 14, 15, 16, 17, 18, 19
@@ -76,10 +77,10 @@ Expression pedal 11
 
 Group of 8 buttons
 46, 47, 48, 49, 50, 51, 52, 53, 
-102, 103, 104, 105, 106, 107, 108, 109, 
+104, 105, 106, 107, 108, 109, 110, 111
 
 54, 55, 56, 57, 58, 59, 60, 61, 
-110, 111, 112, 113, 114, 115, 116, 117, 
+112, 113, 114, 115, 116, 117, 118, 119
 
 Numpad buttons
 29, 30, 31,
@@ -89,6 +90,6 @@ Numpad buttons
 
 
 
-3, 9, 35, 41, 102, 103, 118, 119
+3, 9, 35, 41,
 
 

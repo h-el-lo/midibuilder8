@@ -30,8 +30,6 @@ private:
 
 public:
   void begin() {
-    Wire.begin(21, 47);
-    Wire.setClock(400000);
     bool adsfound = false;
     if (_ads.begin(0x48, &Wire)) {
       Serial.println("ADS found on 0x48.");

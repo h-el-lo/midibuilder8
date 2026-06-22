@@ -7,20 +7,29 @@ void loop() {}
 // 64 KEYS, VELOCITY SENSITIVE, 4 MUXS, SUSTAIN PEDAL, EXPRESSION PEDAL, 16 KNOBS, 46 BUTTONS, PITCHWHEEL, SLIDER(MODWHEEL)
 
 #include "ADSManager.h"
-#include "General.h"
+#include "Screen.h"
+
+#include "Keys.h"
 #include "DamperPedal.h"
 // #include "ExpressionPedal.h"
 // #include "PitchWheel.h"
+
+#include "General.h"
 #include "Buttons.h"
+#include "Encoder.h"
 #include "RGB.h"
+
+#include <Wire.h>
+#define SDA_PIN 21
+#define SCL_PIN 47
 
 // ============================  PROGRAM VARIABLES  ===========================
 uint8_t cycleCount = 0;
 // ============================================================================
 
-// =============================  KEYS VARIABLES  =============================
-
-// ============================================================================
+// ===============================  KEYS  ==================================
+Keys keys;
+// =========================================================================
 
 
 void IRAM_ATTR onConvReady() {
@@ -35,11 +44,9 @@ void setup() {
   usbmidi.begin();
   USB.begin();
 
-  Serial.println("Hello, world!");
-  delay(2000);
-
-  // Set analog read resolution to 12 bits
-  analogReadResolution(12);
+  // Begin Wire
+  Wire.begin(21, 47);
+    Wire.setClock(400000);
 
   // Begin ADS Manager
   ADSManager.begin();
@@ -48,10 +55,17 @@ void setup() {
   // initialize LCD Screen
   screen.init();
 
+
+  // Set analog read resolution to 12 bits
+  analogReadResolution(12);
+
   // Initialize Button manager and buttons
   BUTTON_STRIP.begin();
   // INDICATOR_STRIP.begin();
   initButtons();
+
+  // initialize encoder
+  // encoder.initializeEncoder();
 
 
 

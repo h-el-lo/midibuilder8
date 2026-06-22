@@ -13,7 +13,18 @@ private:
   uint8_t _SDA_PIN;
   uint8_t _SCL_PIN;
 
+
+
 public:
+
+  enum Page {
+    HOME,
+    TRANSPOSE,
+    CHANNEL,
+  };
+
+  inline static Page _page = HOME;
+
   // Constructors
   Screen(uint8_t LCD_ADDR, uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS);
   Screen(uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS);
@@ -29,6 +40,11 @@ public:
   void init();
   void printHome();
   static void printHomeHandler();
+  void printTranspose();
+  void printChannel();
+  void printLoadingScreen();
+  void printSettings();
+  void clearScreen();
 };
 
 extern Screen screen;

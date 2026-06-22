@@ -1,4 +1,6 @@
 #pragma once
+#include "Keys.h"
+#include "Screen.h"
 
 inline void home() {
   Serial.println("Home Button Pressed");
@@ -14,4 +16,4 @@ inline void exit() {
 
 inline void enter() {
   Serial.println("Enter Button Pressed");
-}
+} 

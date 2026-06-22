@@ -1,5 +1,6 @@
 #include "Screen.h"
-#include <Wire.h>
+#include "MIDIHelper.h"
+#include "Keys.h"
 
 // Constructors
 Screen::Screen(uint8_t LCD_ADDR, uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS)
@@ -23,9 +24,6 @@ Screen::Screen()
 }
 
 void Screen::init() {
-
-  Serial.println("Screen init begun.");
-  Wire.begin(_SDA_PIN, _SCL_PIN);
   _lcd.init();
   _lcd.backlight();
 
@@ -34,7 +32,9 @@ void Screen::init() {
 }
 
 void Screen::printHome() {
-  // Print a message to the LCD.
+  if (_page != HOME) {
+    _page = HOME;
+  }
   _lcd.setCursor(3, 0);
   _lcd.print("Hello, world!");
   _lcd.setCursor(2, 1);
@@ -50,3 +50,33 @@ void Screen::printHomeHandler() {
     instance->printHome();
   }
 }
+
+void Screen::printTranspose() {
+
+  if (_page != TRANSPOSE) {
+    _page = TRANSPOSE;
+    _lcd.clear();
+    _lcd.setCursor(3, 1);
+    _lcd.print("Transpose: ");
+  }
+  _lcd.setCursor(12, 1);
+  _lcd.printf("%4d", keys.getTranspose());
+}
+
+void Screen::printChannel() {
+
+  if (_page != CHANNEL) {
+    _page = CHANNEL;
+    _lcd.clear();
+    _lcd.setCursor(5, 1);
+    _lcd.print("Channel: ");
+  }
+  _lcd.setCursor(12, 1);
+  _lcd.printf("%4d", GLOBAL_MIDI_CHANNEL);
+}
+
+
+// ============================  SCREEN OBJECT  ============================
+// Screen screen(0x27, 20, 4);
+Screen screen;
+// =========================================================================

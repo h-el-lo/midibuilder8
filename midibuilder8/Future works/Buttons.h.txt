@@ -2,7 +2,7 @@ uint8_t XY_array[23][2] = {
   // { anodePin, cathodePin, RGBIndex }
   { 1, 4 },  // M1 BANK_A SELECT
   { 1, 3 },  // M2 BANK_B SELECT
-  { 1, 2 },  // DEFAULT A
+  { 1, 2 },  // DEFAULT A SETALLBANKPARTS
   { 1, 1 },  // DEFAULT B CLEARALLPARTS
   { 2, 4 },  // TRANSPOSE +
   { 2, 3 },  // TRANSPOSE -

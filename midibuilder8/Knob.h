@@ -29,7 +29,7 @@ protected:
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
   uint16_t _potTimer = 0;
-  static constexpr uint8_t _potThreshold = 4;
+  static constexpr uint8_t _potThreshold = 5;
   static constexpr uint16_t POT_TIMEOUT = 300;
 
   // Constructors

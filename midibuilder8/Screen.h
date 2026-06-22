@@ -1,7 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <Arduino.h>
+#include <stdint.h>
 #include <LiquidCrystal_I2C.h>
 
 class Screen {
@@ -12,8 +12,6 @@ private:
   uint8_t _LCD_COLS;
   uint8_t _SDA_PIN;
   uint8_t _SCL_PIN;
-
-
 
 public:
 

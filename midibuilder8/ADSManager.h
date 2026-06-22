@@ -31,18 +31,29 @@ private:
 public:
   void begin() {
     bool adsfound = false;
+
+    // while (!adsfound) {
+    //   continue;
+    // }
+
     if (_ads.begin(0x48, &Wire)) {
       Serial.println("ADS found on 0x48.");
+      adsfound = true;
       delay(500);
     } else if (_ads.begin(0x49, &Wire)) {
-      // Serial.println("ADS not found on 0x49... retrying.");
       Serial.println("ADS found on 0x49.");
+      adsfound = true;
       delay(500);
     } else if (_ads.begin(0x4A, &Wire)) {
       Serial.println("ADS found on 0x4A.");
+      adsfound = true;
       delay(500);
     } else if (_ads.begin(0x4B, &Wire)) {
       Serial.println("ADS found on 0x4B.");
+      adsfound = true;
+      delay(500);
+    } else {
+      Serial.println("ADS not found, retrying.");
       delay(500);
     }
 

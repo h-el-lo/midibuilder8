@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Encoder.h"
 #include "Screen.h"
 #include "Keys.h"
@@ -10,13 +11,10 @@ Encoder* Encoder::instance = nullptr;
 Encoder::Encoder(uint8_t PIN_A, uint8_t PIN_B) {
   _PIN_A = PIN_A;
   _PIN_B = PIN_B;
-  // Bind ISR to this instance
-  instance = this;
-  initializeEncoder();
 }
 
 Encoder::Encoder()
-  : Encoder(1, 2) {
+  : Encoder(2, 1) {
 }
 
 // This method shall be called in case of change in pin numbering, encoder resolution or rotation
@@ -28,6 +26,9 @@ void Encoder::initializeEncoder() {
   // Attach interrupts for encoder channels/pins
   attachInterrupt(digitalPinToInterrupt(_PIN_A), updateEncoderISR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_PIN_B), updateEncoderISR, CHANGE);
+
+  // Bind ISR to this instance
+  instance = this;
 }
 
 // Getters
@@ -44,8 +45,6 @@ void Encoder::updateEncoderISR() {
 // Interrupt service routine for encoder - removed artificial limits
 void Encoder::updateEncoder() {
 
-  volatile int counter = 0;
-
   int MSB = digitalRead(_PIN_A);  // Most significant bit
   int LSB = digitalRead(_PIN_B);  // Least significant bit
 
@@ -53,42 +52,74 @@ void Encoder::updateEncoder() {
   int sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
 
   // Determine direction based on state changes
-  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) {
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) {
     _encoderPos++;
   }
-  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) {
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) {
     _encoderPos--;
   }
 
   _lastEncoded = encoded;  // Store this value for next time
   _encoderVal = _encoderPos / 4;
+  // Serial.print("Encoder ORIGINAL value: "); // DEBUGGER
+  // Serial.println(_encoderPos); // DEBUGGER
+}
 
-  if (_encoderVal > _prevEncoderVal) {
+void Encoder::updateScreenValues() {
+  // portDISABLE_INTERRUPTS(); // should be used only within ISRs
+  // portENABLE_INTERRUPTS(); // should be used only within ISRs
+
+  noInterrupts();
+  int16_t val = _encoderVal;
+  int16_t pVal = _prevEncoderVal;
+  interrupts();  // should be called for only a very short period, three lines at the most
+  // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
+
+  // // DEBUGGER
+  // Serial.print("Encoder modified value: ");
+  // Serial.print(_encoderVal);
+  // Serial.print(", Previous encoder modified value: ");
+  // Serial.println(_prevEncoderVal);
+
+  if (val > pVal) {
     // if encoder++
-    _encoderVal = _prevEncoderVal;
-    Serial.print("Encoder modified value: ");
-    Serial.println(_encoderVal);
+
+    // // DEBUGGER
+    // Serial.print("Encoder modified value for plus: ");
+    // Serial.print(_encoderVal);
+    // Serial.print(", Previous encoder modified value: ");
+    // Serial.println(_prevEncoderVal);
+
+    _prevEncoderVal = val;
 
     if (Screen::_page == Screen::TRANSPOSE) {
       keys.transposeUp();
+      // Serial.println("Yellow Jacket Plus.");
     } else if (Screen::_page == Screen::CHANNEL) {
       channelUp();
+      // Serial.println("Blue Marlin Plus.");
     }
-
   } else if (_encoderVal < _prevEncoderVal) {
     // if encoder--
-    _encoderVal = _prevEncoderVal;
-    Serial.print("Encoder modified value: ");
-    Serial.println(_encoderVal);
+
+    // // DEBUGGER
+    // Serial.print("Encoder modified value for minus: ");
+    // Serial.print(_encoderVal);
+    // Serial.print(", Previous encoder modified value: ");
+    // Serial.println(_prevEncoderVal);
+
+    _prevEncoderVal = val;
 
     if (Screen::_page == Screen::TRANSPOSE) {
       keys.transposeDown();
+      // Serial.println("Yellow Jacket Minus.");
     } else if (Screen::_page == Screen::CHANNEL) {
       channelDown();
+      // Serial.println("Blue Marlin Minus.");
     }
   }
-}
+};
 
-// // ===========================  ENCODER OBJECT  ===============================
+// ===========================  ENCODER OBJECT  ===============================
 Encoder encoder;
-// // ============================================================================
+// ============================================================================

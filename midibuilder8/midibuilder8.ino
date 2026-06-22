@@ -46,7 +46,7 @@ void setup() {
 
   // Begin Wire
   Wire.begin(21, 47);
-    Wire.setClock(400000);
+  Wire.setClock(400000);
 
   // Begin ADS Manager
   ADSManager.begin();
@@ -55,6 +55,8 @@ void setup() {
   // initialize LCD Screen
   screen.init();
 
+  // initialize encoder
+  encoder.initializeEncoder();
 
   // Set analog read resolution to 12 bits
   analogReadResolution(12);
@@ -63,10 +65,6 @@ void setup() {
   BUTTON_STRIP.begin();
   // INDICATOR_STRIP.begin();
   initButtons();
-
-  // initialize encoder
-  // encoder.initializeEncoder();
-
 
 
   // ExpressionPedal.init();
@@ -116,6 +114,10 @@ void loop() {
 
   // ==============================  READ THROUGH BUTTONS  ==================================
   scanButtons();
+  // ========================================================================================
+
+  // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================
+  encoder.updateScreenValues();
   // ========================================================================================
 
   // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================

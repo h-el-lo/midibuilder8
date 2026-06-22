@@ -1,7 +1,7 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include <Arduino.h>
+#include <stdint.h>
 
 class Encoder {
 private:
@@ -30,7 +30,9 @@ public:
   // Methods
   void initializeEncoder();
   void updateEncoder();
-  static void updateEncoderISR();
+  static void IRAM_ATTR updateEncoderISR();
+
+  void updateScreenValues();
 };
 
 extern Encoder encoder;

@@ -12,18 +12,17 @@ extern uint8_t KEYS_CHANNEL;
 // These functions are defined as inline to prevent multiple definition errors when
 // header is called in different files
 
-inline void channelUp() {
-  if (GLOBAL_MIDI_CHANNEL < 16) {
-    GLOBAL_MIDI_CHANNEL++;
-  }
+inline void updateChannel(int8_t value) {
+  GLOBAL_MIDI_CHANNEL = constrain(GLOBAL_MIDI_CHANNEL + value, 1, 16);
   screen.printChannel();
 }
 
+inline void channelUp() {
+  updateChannel(1);
+}
+
 inline void channelDown() {
-  if (GLOBAL_MIDI_CHANNEL > 1) {
-    GLOBAL_MIDI_CHANNEL--;
-  }
-  screen.printChannel();
+  updateChannel(-1);
 }
 
 inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {

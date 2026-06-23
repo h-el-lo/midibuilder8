@@ -20,8 +20,8 @@ Encoder::Encoder()
 // This method shall be called in case of change in pin numbering, encoder resolution or rotation
 void Encoder::initializeEncoder() {
   // Configure encoder pins as inputs with pull-up resistors
-  pinMode(_PIN_A, INPUT_PULLUP);
-  pinMode(_PIN_B, INPUT_PULLUP);
+  pinMode(_PIN_A, INPUT);  // External pullup resistors are used
+  pinMode(_PIN_B, INPUT);  // External pullup resistors are used
 
   // Attach interrupts for encoder channels/pins
   attachInterrupt(digitalPinToInterrupt(_PIN_A), updateEncoderISR, CHANGE);
@@ -52,73 +52,46 @@ void Encoder::updateEncoder() {
   int sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
 
   // Determine direction based on state changes
-  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) {
-    _encoderPos++;
-  }
-  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) {
-    _encoderPos--;
-  }
+  if (sum == 0b1101 /*|| sum == 0b0100 || sum == 0b0010 || sum == 0b1011*/) _delta++;
+  // _encoderPos++;
+  if (sum == 0b1110 /*|| sum == 0b0111 || sum == 0b0001 || sum == 0b1000*/) _delta--;
+  // _encoderPos--;
+
 
   _lastEncoded = encoded;  // Store this value for next time
-  _encoderVal = _encoderPos / 4;
   // Serial.print("Encoder ORIGINAL value: "); // DEBUGGER
   // Serial.println(_encoderPos); // DEBUGGER
 }
 
-void Encoder::updateScreenValues() {
+int8_t Encoder::consumeDelta() {
   // portDISABLE_INTERRUPTS(); // should be used only within ISRs
   // portENABLE_INTERRUPTS(); // should be used only within ISRs
 
   noInterrupts();
-  int16_t val = _encoderVal;
-  int16_t pVal = _prevEncoderVal;
+  int8_t d = _delta;
+  _delta = 0;
   interrupts();  // should be called for only a very short period, three lines at the most
   // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
+  return d;
+}
 
-  // // DEBUGGER
-  // Serial.print("Encoder modified value: ");
-  // Serial.print(_encoderVal);
-  // Serial.print(", Previous encoder modified value: ");
-  // Serial.println(_prevEncoderVal);
+void Encoder::updateScreenValues() {
 
-  if (val > pVal) {
-    // if encoder++
-
-    // // DEBUGGER
-    // Serial.print("Encoder modified value for plus: ");
-    // Serial.print(_encoderVal);
-    // Serial.print(", Previous encoder modified value: ");
-    // Serial.println(_prevEncoderVal);
-
-    _prevEncoderVal = val;
-
-    if (Screen::_page == Screen::TRANSPOSE) {
-      keys.transposeUp();
-      // Serial.println("Yellow Jacket Plus.");
-    } else if (Screen::_page == Screen::CHANNEL) {
-      channelUp();
-      // Serial.println("Blue Marlin Plus.");
-    }
-  } else if (_encoderVal < _prevEncoderVal) {
-    // if encoder--
-
-    // // DEBUGGER
-    // Serial.print("Encoder modified value for minus: ");
-    // Serial.print(_encoderVal);
-    // Serial.print(", Previous encoder modified value: ");
-    // Serial.println(_prevEncoderVal);
-
-    _prevEncoderVal = val;
-
-    if (Screen::_page == Screen::TRANSPOSE) {
-      keys.transposeDown();
-      // Serial.println("Yellow Jacket Minus.");
-    } else if (Screen::_page == Screen::CHANNEL) {
-      channelDown();
-      // Serial.println("Blue Marlin Minus.");
-    }
+  int8_t d = consumeDelta();
+  if (d) {
+    switch (Screen::_page) {
+      case Screen::PAGE_HOME:
+        // keys.updateTranspose(d);
+        break;
+      case Screen::PAGE_TRANSPOSE:
+        keys.updateTranspose(d);
+        break;
+      case Screen::PAGE_CHANNEL:
+        updateChannel(d);
+        break;
+    };
   }
-};
+}
 
 // ===========================  ENCODER OBJECT  ===============================
 Encoder encoder;

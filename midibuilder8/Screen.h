@@ -16,12 +16,12 @@ private:
 public:
 
   enum Page {
-    HOME,
-    TRANSPOSE,
-    CHANNEL,
+    PAGE_HOME,
+    PAGE_TRANSPOSE,
+    PAGE_CHANNEL,
   };
 
-  inline static Page _page = HOME;
+  inline static Page _page = PAGE_HOME;
 
   // Constructors
   Screen(uint8_t LCD_ADDR, uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS);

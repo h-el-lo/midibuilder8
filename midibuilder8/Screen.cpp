@@ -33,17 +33,21 @@ void Screen::init() {
 }
 
 void Screen::printHome() {
-  if (_page != HOME) {
-    _page = HOME;
+  if (_page != PAGE_HOME) {
+    _page = PAGE_HOME;
+    _lcd.clear();
   }
-  _lcd.setCursor(3, 0);
-  _lcd.print("Hello, world!");
-  _lcd.setCursor(2, 1);
-  _lcd.print("Ywrobot Arduino!");
-  _lcd.setCursor(0, 2);
-  _lcd.print("Arduino LCM IIC 2004");
-  _lcd.setCursor(2, 3);
-  _lcd.print("Power By Ec-yuan!");
+  _lcd.setCursor(0, 0);
+  _lcd.printf("CHAN: %2d", GLOBAL_MIDI_CHANNEL);
+  _lcd.setCursor(17, 0);
+  _lcd.printf("100%");
+
+  // _lcd.setCursor(2, 1);
+  // _lcd.print("Ywrobot Arduino!");
+  // _lcd.setCursor(0, 2);
+  // _lcd.print("Arduino LCM IIC 2004");
+  // _lcd.setCursor(2, 3);
+  // _lcd.print("Power By Ec-yuan!");
 }
 
 void Screen::printHomeHandler() {
@@ -54,8 +58,8 @@ void Screen::printHomeHandler() {
 
 void Screen::printTranspose() {
 
-  if (_page != TRANSPOSE) {
-    _page = TRANSPOSE;
+  if (_page != PAGE_TRANSPOSE) {
+    _page = PAGE_TRANSPOSE;
     _lcd.clear();
     _lcd.setCursor(3, 1);
     _lcd.print("Transpose: ");
@@ -66,8 +70,8 @@ void Screen::printTranspose() {
 
 void Screen::printChannel() {
 
-  if (_page != CHANNEL) {
-    _page = CHANNEL;
+  if (_page != PAGE_CHANNEL) {
+    _page = PAGE_CHANNEL;
     _lcd.clear();
     _lcd.setCursor(5, 1);
     _lcd.print("Channel: ");

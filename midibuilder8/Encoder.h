@@ -5,8 +5,8 @@
 
 class Encoder {
 private:
-
-  volatile long _encoderPos = 0;
+  volatile int8_t _delta = 0;
+  volatile long _encoderPos;
   volatile long _lastEncoded = 0;
   volatile int16_t _encoderVal = 0;
   volatile int16_t _prevEncoderVal = 0;
@@ -31,6 +31,7 @@ public:
   void initializeEncoder();
   void updateEncoder();
   static void IRAM_ATTR updateEncoderISR();
+  int8_t consumeDelta();
 
   void updateScreenValues();
 };

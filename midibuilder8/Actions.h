@@ -17,3 +17,8 @@ inline void exit() {
 inline void enter() {
   Serial.println("Enter Button Pressed");
 } 
+
+
+
+// add a proper home screen to screen
+// issues may be with i2c, power d

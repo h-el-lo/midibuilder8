@@ -94,20 +94,18 @@ public:
     return transpose;
   }
 
-  inline static void transposeUp() {
-    if (transpose < transposeUpperLimit) {
-      transpose++;
-      // Serial.println("Transpose Up");
-    }
+  inline static void updateTranspose(int8_t value) {
+    transpose = constrain(transpose + value, transposeLowerLimit, transposeUpperLimit);
+    // Serial.println(transpose);
     screen.printTranspose();
   }
 
+  inline static void transposeUp() {
+    updateTranspose(1);
+  }
+
   inline static void transposeDown() {
-    if (transpose > transposeLowerLimit) {
-      transpose--;
-      // Serial.println("Transpose Down");
-    }
-    screen.printTranspose();
+    updateTranspose(-1);
   }
 
   inline static void octaveUp() {

@@ -65,7 +65,7 @@ private:
 
   inline static int8_t transpose = 0;
   static constexpr int8_t transposeLowerLimit = -24;
-  static constexpr uint8_t transposeUpperLimit = 24;
+  static constexpr int8_t transposeUpperLimit = 24;
   uint8_t note, velocity;
   uint8_t vel_min = 0;
   uint8_t vel_max = 45;
@@ -90,37 +90,39 @@ private:
   //  ===========================================================================
 
 public:
-  inline static int8_t getTranspose() {
+  static int8_t getTranspose() {
     return transpose;
   }
 
-  inline static void updateTranspose(int8_t value) {
-    transpose = constrain(transpose + value, transposeLowerLimit, transposeUpperLimit);
-    // Serial.println(transpose);
+   void updateTranspose(int8_t increment) {
+    transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
+    Serial.println(getTranspose());
     screen.printTranspose();
   }
 
   inline static void transposeUp() {
-    updateTranspose(1);
+    if (transpose + 1 <= transposeUpperLimit) transpose++;
+    // Serial.print("Button Press Transpose Up: ");
+    // Serial.println(getTranspose());
+    screen.printTranspose();
   }
 
   inline static void transposeDown() {
-    updateTranspose(-1);
+    if (transpose - 1 >= transposeLowerLimit) transpose--;
+    // Serial.print("Button Press Transpose Down: ");
+    // Serial.println(getTranspose());
+    screen.printTranspose();
   }
 
   inline static void octaveUp() {
-    if (transpose + 12 <= transposeUpperLimit) {
-      transpose += 12;
-      // Serial.println(transpose);
-    }
+    if (transpose + 12 <= transposeUpperLimit) transpose += 12;
+    // Serial.println(transpose);
     screen.printTranspose();
   }
 
   inline static void octaveDown() {
-    if (transpose - 12 >= transposeLowerLimit) {
-      transpose -= 12;
-      // Serial.println(transpose);
-    }
+    if (transpose - 12 >= transposeLowerLimit) transpose -= 12;
+    // Serial.println(transpose);
     screen.printTranspose();
   }
 

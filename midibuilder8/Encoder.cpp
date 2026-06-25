@@ -17,6 +17,12 @@ Encoder::Encoder()
   : Encoder(2, 1) {
 }
 
+// Getters
+
+// Setters
+
+// Methods
+
 // This method shall be called in case of change in pin numbering, encoder resolution or rotation
 void Encoder::initializeEncoder() {
   // Configure encoder pins as inputs with pull-up resistors
@@ -31,11 +37,6 @@ void Encoder::initializeEncoder() {
   instance = this;
 }
 
-// Getters
-
-// Setters
-
-// Methods
 void Encoder::updateEncoderISR() {
   if (instance != nullptr) {
     instance->updateEncoder();  // Call the actual member function
@@ -52,11 +53,8 @@ void Encoder::updateEncoder() {
   int sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
 
   // Determine direction based on state changes
-  if (sum == 0b1101 /*|| sum == 0b0100 || sum == 0b0010 || sum == 0b1011*/) _delta++;
-  // _encoderPos++;
-  if (sum == 0b1110 /*|| sum == 0b0111 || sum == 0b0001 || sum == 0b1000*/) _delta--;
-  // _encoderPos--;
-
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _delta++;
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _delta--;
 
   _lastEncoded = encoded;  // Store this value for next time
   // Serial.print("Encoder ORIGINAL value: "); // DEBUGGER
@@ -68,7 +66,7 @@ int8_t Encoder::consumeDelta() {
   // portENABLE_INTERRUPTS(); // should be used only within ISRs
 
   noInterrupts();
-  int8_t d = _delta;
+  int16_t d = _delta;
   _delta = 0;
   interrupts();  // should be called for only a very short period, three lines at the most
   // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
@@ -80,14 +78,13 @@ void Encoder::updateScreenValues() {
   int8_t d = consumeDelta();
   if (d) {
     switch (Screen::_page) {
-      case Screen::PAGE_HOME:
-        // keys.updateTranspose(d);
-        break;
       case Screen::PAGE_TRANSPOSE:
         keys.updateTranspose(d);
         break;
       case Screen::PAGE_CHANNEL:
         updateChannel(d);
+        break;
+      default:
         break;
     };
   }

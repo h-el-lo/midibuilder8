@@ -16,12 +16,13 @@ private:
 public:
 
   enum Page {
+    PAGE_NULL,
     PAGE_HOME,
     PAGE_TRANSPOSE,
     PAGE_CHANNEL,
   };
 
-  inline static Page _page = PAGE_HOME;
+  inline static Page _page = PAGE_NULL;
 
   // Constructors
   Screen(uint8_t LCD_ADDR, uint8_t SDA_PIN, uint8_t SCL_PIN, uint8_t LCD_COLS, uint8_t LCD_ROWS);
@@ -43,6 +44,7 @@ public:
   void printLoadingScreen();
   void printSettings();
   void clearScreen();
+  void knobsEnablePage();
 };
 
 extern Screen screen;

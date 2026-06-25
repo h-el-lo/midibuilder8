@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Knob.h"
 #include "MIDIHelper.h"
 
 uint8_t wheelPin = 10;  // This pin is connected directly to the MCU board, not a multiplexer

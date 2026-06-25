@@ -43,6 +43,8 @@ void setup() {
   // Begin MIDI
   usbmidi.begin();
   USB.begin();
+  // // allow USB time to initialize correctly
+  // delay(2000);
 
   // Begin Wire
   Wire.begin(21, 47);
@@ -54,6 +56,7 @@ void setup() {
 
   // initialize LCD Screen
   screen.init();
+  screen.printHome();
 
   // initialize encoder
   encoder.initializeEncoder();

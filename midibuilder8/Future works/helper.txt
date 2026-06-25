@@ -153,11 +153,11 @@ checkRecoveredKeys();
 
 
 Fail gracefully - Don't crash, degrade functionality instead
-Log errors - Use LEDs/serial since there's no display
+Log errors - RGB INDICATOR AND ERROR LOGGER
 Validate inputs - Hardware can glitch, always sanity-check
 Use timeouts - Prevent infinite waits
 State machines - Catch impossible state transitions
-Watchdogs - Last resort recovery from lockups
+Watchdogs (ON AVR BOARDS) - Last resort recovery from lockups
 
 
 

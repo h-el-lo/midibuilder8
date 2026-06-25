@@ -24,4 +24,4 @@ struct Damper_Pedal {
   }
 };
 
-Damper_Pedal DamperPedal = { 13 };  // on Mux5
+Damper_Pedal DamperPedal = { 13 };  // on Mux3

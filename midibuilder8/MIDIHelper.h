@@ -19,10 +19,12 @@ inline void updateChannel(int8_t value) {
 
 inline void channelUp() {
   updateChannel(1);
+  // Serial.println(GLOBAL_MIDI_CHANNEL);
 }
 
 inline void channelDown() {
   updateChannel(-1);
+  // Serial.println(GLOBAL_MIDI_CHANNEL);
 }
 
 inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {

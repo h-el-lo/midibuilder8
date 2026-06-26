@@ -85,7 +85,7 @@ public:
 
   int16_t read() {
     if (!_convReady) {
-      return -1;
+      return -255;
     } else {
       return constrain(_ads.getLastConversionResults(), 0, ADS_RAW_MAX);
     }

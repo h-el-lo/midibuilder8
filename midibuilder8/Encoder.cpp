@@ -53,8 +53,8 @@ void Encoder::updateEncoder() {
   int sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
 
   // Determine direction based on state changes
-  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _delta++;
-  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _delta--;
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _encoderPos++;
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _encoderPos--;
 
   _lastEncoded = encoded;  // Store this value for next time
   // Serial.print("Encoder ORIGINAL value: "); // DEBUGGER
@@ -65,11 +65,16 @@ int8_t Encoder::consumeDelta() {
   // portDISABLE_INTERRUPTS(); // should be used only within ISRs
   // portENABLE_INTERRUPTS(); // should be used only within ISRs
 
-  noInterrupts();
-  int16_t d = _delta;
-  _delta = 0;
-  interrupts();  // should be called for only a very short period, three lines at the most
+  int16_t d;
+  noInterrupts();  // should be called for only a very short period, three lines at the most
   // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
+
+  _encoderVal = _encoderPos / 4;
+  if (_encoderVal != _prevEncoderVal) {
+    d = _encoderVal - _prevEncoderVal;
+    _prevEncoderVal = _encoderVal;
+  }
+  interrupts();
   return d;
 }
 

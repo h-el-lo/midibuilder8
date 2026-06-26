@@ -21,7 +21,7 @@ protected:
   uint16_t _maxAnalogValue = 4096;  // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
   uint8_t _minCCValue = 0;          // Minimum CC value
   uint8_t _maxCCValue = 127;        // Maximum CC value
-  uint16_t _potState, _potPState;
+  int16_t _potState, _potPState;
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
   bool _usesADS = false;
@@ -74,7 +74,7 @@ public:
   void disable();
   virtual void readKnob();
   void validateAnalogRead();
-  void update();
+  virtual void update();
 };
 // =========================================================
 // =========================================================

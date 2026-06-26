@@ -122,8 +122,8 @@ void Knob::readKnob() {
 
 void Knob::validateAnalogRead() {
   if (_usesADS) {
-    if (_potState == -1) {
-      // -1 is returned from the ADS Manager if conversion not ready
+    if (_potState == -255) {
+      // -255 is returned from the ADS Manager if conversion not ready
       // if conversion not read, use last correct reading
       _potState = _potPState;
       return;

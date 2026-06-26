@@ -5,9 +5,9 @@
 
 class Encoder {
 private:
+  volatile long _lastEncoded = 0;
   volatile int16_t _delta = 0;
   volatile long _encoderPos;
-  volatile long _lastEncoded = 0;
   volatile int16_t _encoderVal = 0;
   volatile int16_t _prevEncoderVal = 0;
 

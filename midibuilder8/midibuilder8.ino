@@ -11,8 +11,8 @@ void loop() {}
 
 #include "Keys.h"
 #include "DamperPedal.h"
+#include "PitchWheel.h"
 // #include "ExpressionPedal.h"
-// #include "PitchWheel.h"
 
 #include "General.h"
 #include "Buttons.h"
@@ -30,6 +30,10 @@ uint8_t cycleCount = 0;
 // ===============================  KEYS  ==================================
 Keys keys;
 // =========================================================================
+
+// =============================  PITCH WHEEL  ================================
+PitchWheel pitchWhel;
+// ============================================================================
 
 
 void IRAM_ATTR onConvReady() {
@@ -98,7 +102,7 @@ void loop() {
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   DamperPedal.update();
   // ExpressionPedal.update();
-  // updatePitchWheel();
+  pitchWheel.update();
   Slider.update();
   // joystick.update();
   // // ========================================================================================

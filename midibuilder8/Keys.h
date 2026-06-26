@@ -178,7 +178,7 @@ private:
       // Check for stuck key
       if (checkStuckKey(x, y)) {
         keyState[x][y] = KEY_STUCK;
-        // Serial.print("Key ");
+        // Serial.print("Key ");  //DEBUGGER 
         // Serial.print(note);
         // Serial.println(" STUCK!");
       }
@@ -203,7 +203,7 @@ private:
 
         if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
           keyState[x][y] = KEY_IDLE;
-          // Serial.print("Key ");
+          // Serial.print("Key ");  //DEBUGGER 
           // Serial.print(note);
           // Serial.println(" RECOVERED!");
           return;
@@ -216,14 +216,14 @@ private:
       if (GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
 
         keyState[x][y] = KEY_HALF_PRESSED;
-        // Serial.print("Key ");
+        // Serial.print("Key ");  //DEBUGGER 
         // Serial.print(note);
         // Serial.println(" is half pressed");
 
       } else if (GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
 
         keyState[x][y] = KEY_FULL_PRESSED;
-        // Serial.print("Key ");
+        // Serial.print("Key "); //DEBUGGER 
         // Serial.print(note);
         // Serial.println(" is fully pressed");
 
@@ -262,7 +262,8 @@ private:
     // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
     Mux2.writeToChannel(KPS[x], LOW);
     !Mux1.readChannel(cols[y]) ? SET_BIT(kps, x, y) : CLEAR_BIT(kps, x, y);  // kps[x][y] = !Mux1.readChannel(cols[y]);
-
+    Mux2.write(HIGH); 
+    
     // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
     Mux2.writeToChannel(KPE[x], LOW);
     !Mux1.readChannel(cols[y]) ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);  // kpe[x][y] = !Mux1.readChannel(cols[y]);

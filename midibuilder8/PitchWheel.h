@@ -3,12 +3,12 @@
 #include "Knob.h"
 #include "MIDIHelper.h"
 
-struct PitchWheel : public Knob {
+struct Pitch_Wheel : public Knob {
 
 private:
-  uint8_t _potThreshold = 1;
-  static constexpr uint16_t POT_TIMEOUT = 300; // May change later
-  uint8_t DEADZONE_RANGE =25;
+  uint8_t _potThreshold = 100;
+  static constexpr uint16_t POT_TIMEOUT = 300;  // May change later
+  uint8_t DEADZONE_RANGE = 25;
   uint16_t wheelCenter = (_minAnalogValue + _maxAnalogValue) / 2;
 
 
@@ -49,4 +49,4 @@ public:
   }
 };
 
-extern PitchWheel pitchWheel;
+extern Pitch_Wheel PitchWheel;

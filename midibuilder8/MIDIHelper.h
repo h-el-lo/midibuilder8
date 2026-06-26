@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include "USB.h"
-#include "USBMIDI.h"
+#include <USB.h>
+#include <USBMIDI.h>
 #include "Screen.h"
 
 extern USBMIDI usbmidi;
@@ -44,7 +44,7 @@ inline void pitchBend(uint8_t channel, int16_t value) {
   // this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
   // Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent
   // a range of 0 - 16383 or -8192 to 8191. (2**14)
-  usbmidi.pitchBend(value, channel);
+  usbmidi.pitchBend((int16_t)value, channel);
 }
 
 inline void centerPitchWheel() {
@@ -53,7 +53,7 @@ inline void centerPitchWheel() {
 }
 
 inline void allNotesOff() {
-  // Set all notes of on selected channel
+  // Send all notes off on selected channel
   controlChange(GLOBAL_MIDI_CHANNEL, 123, 127);
   // Set CC123 back to 0
   controlChange(GLOBAL_MIDI_CHANNEL, 123, 0);
@@ -66,4 +66,4 @@ inline void allSoundsOff() {
 
 // Maybe in future versions, implement a special function for sendMIDI.
 // This function should send the midi MESSAGES IN THE BUFFRER
-// Buffer size shall be 64 messages(max length of keypresses per time)/ should be enough for knobs and special units (pedals, pitch wheel etc.)
+// Buffer size shall be 64 messages(max length of keypresses per time) / should be enough for knobs and special units (pedals, pitch wheel etc.)

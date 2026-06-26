@@ -32,7 +32,7 @@ Keys keys;
 // =========================================================================
 
 // =============================  PITCH WHEEL  ================================
-PitchWheel pitchWhel;
+Pitch_Wheel PitchWheel;
 // ============================================================================
 
 
@@ -93,7 +93,7 @@ void loop() {
   // Reset watchdog timer
   // wdt_reset();
 
-  // Serial.println("Mainloop runnning!");
+  // Serial.println("Mainloop runnning!"); // DEBUGGER
 
   // ================================  READ THROUGH KEYS  ===================================
   keys.updateKeys();
@@ -101,9 +101,9 @@ void loop() {
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   DamperPedal.update();
-  // ExpressionPedal.update();
-  pitchWheel.update();
+  PitchWheel.update();
   Slider.update();
+  // ExpressionPedal.update();
   // joystick.update();
   // // ========================================================================================
 

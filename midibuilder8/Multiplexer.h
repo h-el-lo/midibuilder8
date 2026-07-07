@@ -18,6 +18,8 @@ private:
   uint8_t _type;
   uint8_t _mode;
   uint8_t _selectedChannel = 255;
+  unsigned long _lastUpdatedTime;
+  uint8_t _delayThreshold = 5;
 
 public:
   // Constructors

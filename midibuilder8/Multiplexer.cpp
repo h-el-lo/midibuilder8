@@ -54,12 +54,13 @@ void Mux::validate() {
 }
 
 void Mux::selectChannel(uint8_t channel) {
+  if (micros() - _lastUpdatedTime < _delayThreshold) return;  //signal stabilization
   if (channel != _selectedChannel) {
     digitalWrite(_S0, channel & 0x01);
     digitalWrite(_S1, (channel >> 1) & 0x01);
     digitalWrite(_S2, (channel >> 2) & 0x01);
     digitalWrite(_S3, (channel >> 3) & 0x01);
-    delayMicroseconds(5);  // for signal stabilization
+    // delayMicroseconds(5);  // for signal stabilization
     _selectedChannel = channel;
   }
 }
@@ -151,4 +152,4 @@ Mux Mux2(42, 41, 40, 39, 8, OUTPUT, DIGITAL);         // Mux 2 (Outputs (keys), 
 Mux Mux3(7, 6, 5, 4, 3, INPUT_PULLUP, DIGITAL);       // Mux 3 (Digital output of buttons)
 // Mux Mux4(/* usesADS */ true, 15, 16, 17, 18, /* Pin on ADS */ ADS_MUX4_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
 Mux Mux4(15, 16, 17, 18, 9, INPUT, ANALOG);  // Mux 4 (Analog Input, Knobs and Faders)
-// ===========================================================================
+                                             // ===========================================================================

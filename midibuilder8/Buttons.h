@@ -14,7 +14,7 @@
 
 enum ButtonType {
   YX_BUTTON,  // anode: Mux3, cathode: MCU pin
-  YZ_BUTTON   // anode: MCU pin, cathode: Mux1
+  YZ_BUTTON,  // anode: MCU pin, cathode: Mux1
 };
 
 // ─────────────────────────────────────────────

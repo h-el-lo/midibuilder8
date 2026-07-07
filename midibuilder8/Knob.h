@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "Multiplexer.h"
+#include "MIDIHelper.h"
 
 // Analog Inputs for Knobs and Faders alike
 
@@ -12,11 +13,9 @@
 
 class Knob {
 protected:
+  bool _usesADS = false;
   const uint8_t _potPin;  // Connected to MCU, ADS or MUX
-  bool _configurablePin;
-  bool _isEnabled;
   uint8_t _CCNumber;
-  uint8_t _channel;
   uint16_t _minAnalogValue = 0;     // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
   uint16_t _maxAnalogValue = 4096;  // Maximum analog value from potentiometer readings (0 - 1023) Read in 10 bits
   uint8_t _minCCValue = 0;          // Minimum CC value
@@ -24,7 +23,8 @@ protected:
   int16_t _potState, _potPState;
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
-  bool _usesADS = false;
+  uint8_t _channel;
+  bool _isEnabled;
 
   unsigned long snapshot = millis();  // Pot time recorder snapshot
   uint16_t _potIncrement = 0;
@@ -59,11 +59,14 @@ public:
 
   // Getters
   uint8_t getCCNumber() const;
+  uint8_t getMin() const;
+  uint8_t getMax() const;
   MinMax getMinMax() const;  // Returns min and max CC values of knob
+  virtual uint8_t getMIDIChannel() const;
 
   // Setters
   virtual void setPinMode();
-  void setMIDIChannel(uint8_t channel);
+  virtual void setMIDIChannel(uint8_t channel);
   void setAnalogMin(uint16_t minAnalogValue);
   void setAnalogMax(uint16_t maxAnalogValue);
   void setCCMin(uint8_t CCMinValue);
@@ -86,7 +89,7 @@ public:
 // Inherits the Knob class
 
 class Knob_On_Mux : public Knob {
-private:
+protected:
   Mux& _mux;
 
 public:
@@ -105,6 +108,42 @@ public:
 
   // Methods
   void readKnob() override;
+};
+// =========================================================
+// =========================================================
+
+
+// ========================= FADER =========================
+// =========================================================
+// Modified knob class to read Analog from Multiplexer.
+// Inherits the KnobOnMux class
+
+class Fader : public Knob_On_Mux {
+public:
+  enum Bank {
+    BANK_A,
+    BANK_B
+  };
+
+private:
+  inline static Bank _bank = BANK_A;
+  inline static uint8_t _channel = GLOBAL_MIDI_CHANNEL;
+
+public:
+  // Constructors
+  Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
+  Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
+  Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
+  Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber);
+
+  // Getters
+  uint8_t getMIDIChannel() const override;
+
+  // Setters
+  void toggleBank();
+  void setMIDIChannel(uint8_t channel) override{ /* no-op method*/ };
+
+  // Methods
 };
 // =========================================================
 // =========================================================

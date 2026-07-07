@@ -30,15 +30,15 @@ Knob_On_Mux knobSet[NUM_OF_KNOBS] = {
   Knob_On_Mux(Mux4, 4, 17),   // General Purpose Controller 2 - Knob 5
   Knob_On_Mux(Mux4, 5, 18),   // General Purpose Controller 3 - Knob 6
   Knob_On_Mux(Mux4, 6, 19),   // General Purpose Controller 4 - Knob 7
-  Knob_On_Mux(Mux4, 7, 20),   // Fader 1
-  Knob_On_Mux(Mux4, 8, 21),   // Fader 2
-  Knob_On_Mux(Mux4, 9, 22),   // Fader 3
-  Knob_On_Mux(Mux4, 10, 23),  // Fader 4
-  Knob_On_Mux(Mux4, 11, 24),  // Fader 5
-  Knob_On_Mux(Mux4, 12, 25),  // Fader 6
-  Knob_On_Mux(Mux4, 13, 26),  // Fader 7
-  Knob_On_Mux(Mux4, 14, 27),  // Fader 8
-  Knob_On_Mux(Mux4, 15, 28),  // Fader 9
+  Fader(Mux4, 7, 20),   // Fader 1
+  Fader(Mux4, 8, 21),   // Fader 2
+  Fader(Mux4, 9, 22),   // Fader 3
+  Fader(Mux4, 10, 23),  // Fader 4
+  Fader(Mux4, 11, 24),  // Fader 5
+  Fader(Mux4, 12, 25),  // Fader 6
+  Fader(Mux4, 13, 26),  // Fader 7
+  Fader(Mux4, 14, 27),  // Fader 8
+  Fader(Mux4, 15, 28),  // Fader 9
 };
 // ============================================================================
 

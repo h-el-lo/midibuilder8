@@ -76,6 +76,10 @@ Knob::MinMax Knob::getMinMax() const {
   return { _minCCValue, _maxCCValue };
 }
 
+uint8_t Knob::getMIDIChannel() const {
+    return _channel;
+  }
+
 // Setters
 void Knob::setPinMode() {
   // virtual method
@@ -152,7 +156,7 @@ void Knob::update() {
     _potTimer = millis() - snapshot;
 
     if (_potTimer < POT_TIMEOUT) {
-      controlChange(_channel, _CCNumber, _midiState);
+      controlChange(getMIDIChannel(), _CCNumber, _midiState);
       _potPState = _potState;
       _midiPState = _midiState;
     }
@@ -192,6 +196,40 @@ void Knob_On_Mux::setPinMode() {
 void Knob_On_Mux::readKnob() {
   _potState = _mux.readChannel(_potPin);
 }
+
+// ==========================================================================================================================
+// ==========================================================================================================================
+
+
+// ========================================================== FADER =========================================================
+// ==========================================================================================================================
+// Constructors
+Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled)
+  : Knob_On_Mux(mux, potPin, CCNumber, minCCValue, maxCCValue, channel, isEnabled) {}
+
+Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel)
+  : Fader(mux, potPin, CCNumber, minCCValue, maxCCValue, channel, true) {
+}
+
+Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue)
+  : Fader(mux, potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL) {
+}
+
+Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber)
+  : Fader(mux, potPin, CCNumber, 0, 127) {
+}
+// Getters
+uint8_t Fader::getMIDIChannel() const {
+  return _channel;
+}
+
+// Setters
+void Fader::toggleBank() {
+  _bank = _bank == BANK_A ? BANK_B : BANK_A;
+  _channel = _bank == BANK_A ? GLOBAL_MIDI_CHANNEL : 5;
+}
+
+// Methods
 
 // ==========================================================================================================================
 // ==========================================================================================================================

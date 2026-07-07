@@ -19,8 +19,9 @@ private:
 
 public:
   // Constructors
-  PitchWheel()
+  Pitch_Wheel()
     : Knob(/*usesADS*/ true, ADS_PITCH_CHANNEL) {
+    // No-op
   }
 
   void update() override {

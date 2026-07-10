@@ -6,9 +6,11 @@
 struct Pitch_Wheel : public Knob {
 
 private:
-  uint8_t _potThreshold = 100;
-  static constexpr uint16_t POT_TIMEOUT = 300;  // May change later
+  uint8_t _potThreshold = 50;
+  static constexpr uint16_t POT_TIMEOUT = 400;  // May change later
   uint8_t DEADZONE_RANGE = 25;
+  uint16_t _minAnalogValue = map(8110, 0, 26400, 0, 4096);
+  uint16_t _maxAnalogValue = map(18260, 0, 26400, 0, 4096);
   uint16_t wheelCenter = (_minAnalogValue + _maxAnalogValue) / 2;
 
 
@@ -38,7 +40,7 @@ public:
       _potTimer = millis() - snapshot;
 
       if (_potTimer < POT_TIMEOUT) {
-        if ((_potState <= wheelCenter + DEADZONE_RANGE) || (_potState <= wheelCenter - DEADZONE_RANGE)) {
+        if ((_potState >= wheelCenter - DEADZONE_RANGE) && (_potState <= wheelCenter + DEADZONE_RANGE)) {
           centerWheel();
         } else {
           pitchBend(KEYS_CHANNEL, map(constrain(_potState, _minAnalogValue, _maxAnalogValue), _minAnalogValue, _maxAnalogValue, -8192, 8191));

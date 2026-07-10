@@ -96,7 +96,7 @@ public:
 
    void updateTranspose(int8_t increment) {
     transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
-    Serial.println(getTranspose());
+    // Serial.println(getTranspose());
     screen.printTranspose();
   }
 

@@ -43,12 +43,13 @@ void Screen::printHome() {
   _lcd.printf("%2d", GLOBAL_MIDI_CHANNEL);
   _lcd.setCursor(16, 0);
   uint8_t batteryPercentage = 100;
-  _lcd.printf("%3d\%", batteryPercentage);
+  _lcd.printf("%3d", batteryPercentage);
+  _lcd.print("%");
 
-  _lcd.setCursor(0, 2);
-  _lcd.print("Delta: ");
-  _lcd.setCursor(8, 2);
-  _lcd.print("Ec-yuan!");
+  _lcd.setCursor(0, 1);
+  _lcd.print("Transpose: ");
+  _lcd.setCursor(11, 1);
+  _lcd.printf("%3d", keys.getTranspose());
 }
 
 void Screen::printHomeHandler() {

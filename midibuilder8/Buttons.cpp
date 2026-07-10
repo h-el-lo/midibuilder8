@@ -362,10 +362,10 @@ void initButtons() {
   buttonArray[i++] = new ActionButton(YX_BUTTON, 2, 1, SceneSelectorButton::setAllBankParts);          // Set all bank part
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);         // Transpose +
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);       // Transpose -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, keys.octaveUp);           // Octave +
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, keys.octaveDown);         // Octave -
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, channelUp);               // Channel +
-  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, channelDown);             // Channel -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, channelUp);               // Channel +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, channelDown);             // Channel -
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, keys.octaveUp);           // Octave +
+  buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, keys.octaveDown);         // Octave -
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 100, 0, 15 }, allSoundsOff);           // All sounds off
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, screen.printHomeHandler);  // Home
   buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);               // Settings

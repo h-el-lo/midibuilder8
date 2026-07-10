@@ -35,11 +35,6 @@ Keys keys;
 Pitch_Wheel PitchWheel;
 // ============================================================================
 
-
-void IRAM_ATTR onConvReady() {
-  ADSManager.onConvReady();
-}
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(921600);
@@ -56,7 +51,6 @@ void setup() {
 
   // Begin ADS Manager
   ADSManager.begin();
-  attachInterrupt(digitalPinToInterrupt(ADS_ALRT_MCU_PIN), onConvReady, FALLING);
 
   // initialize LCD Screen
   screen.init();
@@ -103,6 +97,7 @@ void loop() {
   DamperPedal.update();
   PitchWheel.update();
   Slider.update();
+  // Slide.update();
   // ExpressionPedal.update();
   // joystick.update();
   // // ========================================================================================

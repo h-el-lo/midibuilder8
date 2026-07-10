@@ -16,7 +16,8 @@ uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
 // // ============================================================================
 
 // // ===============================  SLIDER  ===================================
-Knob Slider = Knob(/*usesADS*/ true, ADS_EXPR_CHANNEL, 1); // Modulation Wheel
+Knob Slider = Knob(/*usesADS*/ true, ADS_SLIDER_CHANNEL, /*CC*/1); // Modulation Wheel
+// Knob Slide = Knob(/*usesADS*/ true, ADS_PITCH_CHANNEL, /*CC*/7); // Modulation Wheel
 // // ============================================================================
 
 // ===============================  KNOBS  ====================================

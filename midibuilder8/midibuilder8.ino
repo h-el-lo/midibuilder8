@@ -95,27 +95,26 @@ void loop() {
 
   // ==============================  UPDATE SPECIAL UNITS  ==================================
   DamperPedal.update();
-  PitchWheel.update();
-  Slider.update();
-  // Slide.update();
+  // PitchWheel.update();
+  // Slider.update();
   // ExpressionPedal.update();
   // joystick.update();
   // // ========================================================================================
 
-  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
-  if (cycleCount == 0) {
-    updateKnobs();
-  }
-  cycleCount++;
+  // // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
+  // if (cycleCount == 0) {
+  //   updateKnobs();
+  // }
+  // cycleCount++;
 
-  // Reset cycle count
-  if (cycleCount >= 5) {
-    cycleCount = 0;
-  }
-  // ========================================================================================
+  // // Reset cycle count
+  // if (cycleCount >= 5) {
+  //   cycleCount = 0;
+  // }
+  // // ========================================================================================
 
   // ==============================  READ THROUGH BUTTONS  ==================================
-  scanButtons();
+  // scanButtons();
   // ========================================================================================
 
   // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================

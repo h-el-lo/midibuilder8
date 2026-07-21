@@ -27,6 +27,22 @@ inline void channelDown() {
   // Serial.println(GLOBAL_MIDI_CHANNEL);
 }
 
+// void bNoteOn(byte channel, byte note, byte velocity) {
+//   MIDI.sendNoteOn(note, velocity, channel);
+// }
+
+// void bNoteOff(byte channel, byte note, byte velocity) {
+//   MIDI.sendNoteOff(note, velocity, channel);
+// }
+
+// void bControlChange(byte channel, byte control, byte value) {
+//   MIDI.sendControlChange(control, value, channel);
+// }
+
+// void bPitchBend(byte channel, int16_t value) {
+//   MIDI.sendPitchBend(value, channel);
+// }
+
 inline void noteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
   usbmidi.noteOn(note, velocity, channel);
 }
@@ -40,7 +56,7 @@ inline void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
 }
 
 inline void pitchBend(uint8_t channel, int16_t value) {
-  // The generic "int" or "byte" data types cannot be used here to represent values greater than 256 ()
+  // The generic "byte" data type cannot be used here to represent values greater than 256 ()
   // this is because it comprises of just 8 bits, with a max possible permutation of 256 (2**8)
   // Thus, we must explicitly specicy to use the 16 bits variant (int16_t or uint16_t) to represent
   // a range of 0 - 16383 or -8192 to 8191. (2**14)

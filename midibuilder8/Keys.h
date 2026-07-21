@@ -1,22 +1,53 @@
 #pragma once
-
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
 #include "Screen.h"
-
-#define GET_BIT(array, row, col) ((array[row] >> col) & 0x01)
-#define SET_BIT(array, row, col) (array[row] |= (1 << col))
-#define CLEAR_BIT(array, row, col) (array[row] &= ~(1 << col))
 
 struct Keys {
 private:
   // ==============================  KEYS VARIABLES  =====================================
   // KEYSCAN MATRIX VARIABLES
   static constexpr uint8_t COL_NUM = 8;
-  static constexpr uint8_t ROW_NUM = 8;
+  static constexpr uint8_t  ROW_NUM = 8;
 
-  const uint8_t PROGMEM nums[ROW_NUM][COL_NUM] = {
-    // Array  of midi note numbers C1 (36) to D#6 (99), 64 notes in total.
+  int cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };       // Blue cols (Mux2 0 - 7) input_pullup
+  int KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux1 0 - 7), output
+  int KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux1 8 - 15), output
+
+  // Array to keep track of previous states of kps and kpe data for all keys
+  int pState[2][ROW_NUM][COL_NUM] = { 0 };  // pState[2] for kps[x][y] and kpe[x][y]
+  int temp;                                 // variable for temporary storage
+  // Arrays to keep track of present states of kps and kpe data for all keys
+  bool kps[ROW_NUM][COL_NUM] = { 0 };
+  int kpe[ROW_NUM][COL_NUM] = { 0 };
+  bool pressed[ROW_NUM][COL_NUM] = { 0 };
+
+  // The "not_ready[x][y]" variable name is used here because using "ready[x][y] = 1" would
+  // set just ready[0][0] to "1", and all other elements to "0". The logic is then inverted
+  // in variable naming and assignment to "0" instead. This way, one saves the stress of
+  // having to hardcode the array, giving flexibility when modifying the program.
+
+  // bool ready[ROW_NUM][COL_NUM] = { 1 };
+  bool not_ready[ROW_NUM][COL_NUM] = { 0 };
+
+  // TIMER VARIABLES
+  unsigned long timer[2][ROW_NUM][COL_NUM] = { 0 };  // timer[2] for kps[x][y] and kpe[x][y]
+  int timing;
+  //  ===========================================================================
+
+
+  // ============================  MIDI VARIABLES  =============================
+  inline static int8_t transpose = 0;
+  static constexpr int8_t transposeLowerLimit = -24;
+  static constexpr int8_t transposeUpperLimit = 24;
+  const int channel = 0;
+  int note, vel, velocity;
+  int vel_min = 0;
+  int vel_max = 50;
+
+
+  int nums[ROW_NUM][COL_NUM] = {
+    // Array  of midi note numbers C1 (24) to D#6 (87), 64 notes in total.
     { 36, 37, 38, 39, 40, 41, 42, 43 },
     { 44, 45, 46, 47, 48, 49, 50, 51 },
     { 52, 53, 54, 55, 56, 57, 58, 59 },
@@ -27,76 +58,16 @@ private:
     { 92, 93, 94, 95, 96, 97, 98, 99 },
   };
 
-  enum KeyState {
-    KEY_IDLE,
-    KEY_HALF_PRESSED,
-    KEY_FULL_PRESSED,
-    KEY_RELEASING,
-    KEY_STUCK,
-    KEY_AWAITING_RECOVERY,
-    KEY_ERROR,  // SANITY CHECK RETURNS IMPOSSIBLE VALUES, KPS BEFORE KPE
-    KEY_FAULT,  // HAS PHYSICAL STUCK KEY FAULT, DISABLE / TURN OFF KEY
-  };
-
-  KeyState keyState[ROW_NUM][COL_NUM] = { KEY_IDLE };
-
-  uint8_t cols[COL_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };  // Blue cols (Mux1 0 - 7) input_pullup
-  // uint8_t cols[COL_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // Blue cols (Mux1 8 - 15) input_pullup
-  uint8_t KPS[ROW_NUM] = { 0, 1, 2, 3, 4, 5, 6, 7 };        // Brown rows (Mux2 0 - 7), output
-  uint8_t KPE[ROW_NUM] = { 8, 9, 10, 11, 12, 13, 14, 15 };  // White rows (Mux2 8 - 15), output
-
-  // Rather than use an 8x8 matrix, consuming 64 bytes per matrix, we shall employ bit packing.
-  // Using an array of 8 bytes, 1 byte per item, every bit within every byte shall represent a data point
-  // The macros GET_BIT, SET_BIT and CLEAR_BIT shall then be used to manipulate the arrays
-  // This method consumes 8 bytes alone per 8x8 matrix
-
-  // Arrays to keep track of present states of kps and kpe data for all keys
-  byte kps[ROW_NUM] = { 0 };
-  byte kpe[ROW_NUM] = { 0 };
-
-  // Array to keep track of previous states of kps and kpe data for all keys
-  uint8_t pState[2][ROW_NUM][COL_NUM] = { 0 };  // pState[2] for kps[x][y] and kpe[x][y]
-  uint8_t temp;                                 // variable for temporary storage
-
-  // TIMER VARIABLES
-  unsigned long timeOfStart[ROW_NUM][COL_NUM] = { 0 };  // time of keypress start kps[x][y]
-  unsigned long timeOfEnd[ROW_NUM][COL_NUM] = { 0 };    // time of keypress end kpe[x][y]
-  int16_t keyTravelTime;
-
-  inline static int8_t transpose = 0;
-  static constexpr int8_t transposeLowerLimit = -24;
-  static constexpr int8_t transposeUpperLimit = 24;
-  uint8_t note, velocity;
-  uint8_t vel_min = 0;
-  uint8_t vel_max = 45;
-
-  // 2d 8 x 8 array to store pressed notes in memory
-  // in case of a transpose after a keypress, this aids correct tracking and sending of pending noteoff messages
-  uint8_t pressed_notes[ROW_NUM][COL_NUM] = { 0 };
-
-  // A key logs as key_stuck when held past this amount of time in milliseconds.
-  uint16_t KEY_STUCK_TIME_THRESHOLD = 25000;
-
-  uint8_t CONSECUTIVE_KEY_STUCK_COUNT[ROW_NUM][COL_NUM] = { 0 };
-
-  uint8_t KEY_STUCK_COUNT[ROW_NUM][COL_NUM] = { 0 };
-
-  enum KeyErrorCode {
-    ERROR1,                // kpe before kps
-    ERROR_INVALID_TIMING,  // kpe takes too long to read after kps (10s) - timing sanity check
-    ERROR_KEY_STUCK,       // two consecutive key_stucks.
-    ERROR_ADC_FAULT
-  };
-  //  ===========================================================================
+  // ==========================================================
 
 public:
   static int8_t getTranspose() {
     return transpose;
   }
 
-   void updateTranspose(int8_t increment) {
+  void updateTranspose(int8_t increment) {
     transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
-    // Serial.println(getTranspose());
+    Serial.println(getTranspose());
     screen.printTranspose();
   }
 
@@ -131,198 +102,87 @@ public:
     KEYS_CHANNEL = channel;
   }
 
-private:
-  bool checkStuckKey(uint8_t x, uint8_t y) {
-    if (keyState[x][y] == KEY_HALF_PRESSED) {
-      return (millis() - timeOfStart[x][y] >= KEY_STUCK_TIME_THRESHOLD);
-    } else if (keyState[x][y] == KEY_FULL_PRESSED || keyState[x][y] == KEY_RELEASING) {
-      return (millis() - timeOfEnd[x][y] >= KEY_STUCK_TIME_THRESHOLD);
-    }
-    return false;  // KEY_IDLE, KEY_STUCK, KEY_ERROR
-  }
-
-  // Return to these functions
-  void resetStuckKey(uint8_t x, uint8_t y) {
-    KEY_STUCK_COUNT[x][y] += 1;
-    noteOff(GLOBAL_MIDI_CHANNEL, pressed_notes[x][y], 127);
-    keyState[x][y] = KEY_AWAITING_RECOVERY;
-  }
-
-  void scanKey(uint8_t x, uint8_t y) {
-    // Reset key if the key is stuck
-    if (keyState[x][y] == KEY_STUCK) {
-      KEY_STUCK_COUNT[x][y] += 1;
-      resetStuckKey(x, y);
-      // Enact later error logging after 2 consecutive key_stuck
-    }
-
-    // if keyState is IDLE or HALF_PRESSED
-    if ((keyState[x][y] == KEY_IDLE) || (keyState[x][y] == KEY_HALF_PRESSED) || (keyState[x][y] == KEY_AWAITING_RECOVERY)) {
-
-      // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
-      Mux2.writeToChannel(KPS[x], LOW);
-      temp = !Mux1.readChannel(cols[y]);
-      Mux2.write(HIGH);  // Still tentative, might remove later
-
-      if (temp != pState[0][x][y]) {
-        timeOfStart[x][y] = (temp == 1) ? millis() : 0;
-        // kps[x][y] = temp;
-        if (temp) {
-          SET_BIT(kps, x, y);
-        } else {
-          CLEAR_BIT(kps, x, y);
-        }
-        pState[0][x][y] = temp;
-      }
-
-      // Check for stuck key
-      if (checkStuckKey(x, y)) {
-        keyState[x][y] = KEY_STUCK;
-        // Serial.print("Key ");  //DEBUGGER 
-        // Serial.print(note);
-        // Serial.println(" STUCK!");
-      }
-
-      // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
-      Mux2.writeToChannel(KPE[x], LOW);
-      temp = !Mux1.readChannel(cols[y]);
-      Mux2.write(HIGH);
-
-      if (temp != pState[1][x][y]) {
-        timeOfEnd[x][y] = (temp == 1) ? millis() : 0;
-        temp ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);
-        pState[1][x][y] = temp;
-      }
-    }
-  }
-
-  void checkPressLevel(uint8_t x, uint8_t y) {
-    if (keyState[x][y] != KEY_RELEASING) {
-
-      if (keyState[x][y] == KEY_AWAITING_RECOVERY) {
-
-        if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
-          keyState[x][y] = KEY_IDLE;
-          // Serial.print("Key ");  //DEBUGGER 
-          // Serial.print(note);
-          // Serial.println(" RECOVERED!");
-          return;
-
-        } else {
-          return;
-        }
-      }
-
-      if (GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
-
-        keyState[x][y] = KEY_HALF_PRESSED;
-        // Serial.print("Key ");  //DEBUGGER 
-        // Serial.print(note);
-        // Serial.println(" is half pressed");
-
-      } else if (GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
-
-        keyState[x][y] = KEY_FULL_PRESSED;
-        // Serial.print("Key "); //DEBUGGER 
-        // Serial.print(note);
-        // Serial.println(" is fully pressed");
-
-
-      } else if (!GET_BIT(kps, x, y) && GET_BIT(kpe, x, y)) {
-        keyState[x][y] = KEY_ERROR;
-        Serial.println("Error with key " + String(note - 36) + ". kpe before kps");
-        keyState[x][y] = KEY_AWAITING_RECOVERY;
-        // Remember to state the error code, log the error and increment the error counter.
-      } else if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
-        keyState[x][y] = KEY_IDLE;
-      }
-    }
-  }
-
-  void performTimingSanityCheck(uint8_t x, uint8_t y) {
-    // Check for timing anomilaies
-    keyTravelTime = timeOfEnd[x][y] - timeOfStart[x][y];
-
-    // Sanity check: physically impossible timing
-    if (keyTravelTime == 0) {
-      // Both switches triggered simultaneously - hardware glitch
-      keyTravelTime = vel_max / 2;  // Use medium velocity
-    }
-  }
-
-  void checkForKeyReleasing(uint8_t x, uint8_t y) {
-    // Check for stuck key
-    if (checkStuckKey(x, y)) {
-      keyState[x][y] = KEY_STUCK;
-      // Serial.print("Key ");
-      // Serial.print(note);
-      // Serial.println(" STUCK!");
-    }
-
-    // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
-    Mux2.writeToChannel(KPS[x], LOW);
-    !Mux1.readChannel(cols[y]) ? SET_BIT(kps, x, y) : CLEAR_BIT(kps, x, y);  // kps[x][y] = !Mux1.readChannel(cols[y]);
-    Mux2.write(HIGH); 
-    
-    // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
-    Mux2.writeToChannel(KPE[x], LOW);
-    !Mux1.readChannel(cols[y]) ? SET_BIT(kpe, x, y) : CLEAR_BIT(kpe, x, y);  // kpe[x][y] = !Mux1.readChannel(cols[y]);
-    Mux2.write(HIGH);                                                        // Tentative, might remove later
-
-    // Send noteoff when key release complete
-    if (!GET_BIT(kps, x, y) && !GET_BIT(kpe, x, y)) {
-      noteOff(GLOBAL_MIDI_CHANNEL, pressed_notes[x][y], velocity);
-      // Serial.print("Note ");
-      // Serial.print(note);
-      // Serial.println(" released (Note Off)");
-
-      keyState[x][y] = KEY_IDLE;
-      timeOfStart[x][y] = 0;
-      timeOfEnd[x][y] = 0;
-    }
-  }
-
-  void updateKey(uint8_t x, uint8_t y) {
-
-    note = pgm_read_byte(&nums[x][y]) + transpose;
-    // Serial.print("key selected is ");
-    // Serial.println(note);
-    scanKey(x, y);
-    checkPressLevel(x, y);
-
-    // Sends a noteOn midi message when keypress is complete
-    if (keyState[x][y] == KEY_FULL_PRESSED) {
-      performTimingSanityCheck(x, y);
-      // Serial.println(keyTravelTime); // DEBUGGER
-      velocity = map(constrain(keyTravelTime, vel_min, vel_max), vel_max, vel_min, 5, 127);
-      noteOn(GLOBAL_MIDI_CHANNEL, note, velocity);
-      // Serial.print("Note ");
-      // Serial.print(note);
-      // Serial.println(" pressed (Note On)");
-
-
-      pressed_notes[x][y] = note;
-      keyState[x][y] = KEY_RELEASING;
-    } else if (keyState[x][y] == KEY_RELEASING) {
-      checkForKeyReleasing(x, y);
-    }
-  }
-
-public:
   void updateKeys() {
-    // READ THROUGH ALL KEYS
-    for (uint8_t x = 0; x < ROW_NUM; x++) {
-      for (uint8_t y = 0; y < COL_NUM; y++) {
-        updateKey(x, y);
+
+    // ==============================  READ THROUGH THE KEYS  ===============================
+    for (int x = 0; x < ROW_NUM; x++) {
+
+      for (int y = 0; y < COL_NUM; y++) {
+
+        note = nums[x][y] + transpose;
+        // if the selected note "nums[x][y]" is ready to be pressed, i.e, !not_ready
+        if (!not_ready[x][y]) {
+
+          // Shift mux to Keypress-start (KPS) channel and read the digital input of note[x][y]
+          Mux2.writeToChannel(KPS[x], LOW);
+          temp = !Mux1.readChannel(cols[y]);
+          Mux2.write(HIGH);
+
+          // if change recorded in kps of note
+          if (temp != pState[0][x][y]) {
+            if (temp == 1) {
+              // begin a timer for the note, and re-record new state in
+              timer[0][x][y] = millis();
+              kps[x][y] = 1;
+              pState[0][x][y] = temp;
+            } else {
+              timer[0][x][y] = 0;
+              kps[x][y] = 0;
+              pState[0][x][y] = temp;
+            }
+          }
+
+          // Shift mux to Keypress-end (KPE) channel and read the digital input of note[x][y]
+          Mux2.writeToChannel(KPE[x], LOW);
+          temp = !Mux1.readChannel(cols[y]);
+          Mux2.write(HIGH);
+
+          if (temp != pState[1][x][y]) {
+            if (temp == 1) {
+              timer[1][x][y] = millis();
+              kpe[x][y] = 1;
+              pState[1][x][y] = temp;
+            } else {
+              timer[1][x][y] = 0;
+              kpe[x][y] = 0;
+              pState[1][x][y] = temp;
+            }
+          }
+
+          if (kps[x][y] && kpe[x][y]) {
+            // Declare key[x][y] as "pressed" and not ready to read another keypress
+            pressed[x][y] = 1;
+            not_ready[x][y] = 1;
+          }
+        }
+
+        // Sends a noteOn midi message when keypress is complete
+        if (pressed[x][y]) {
+          timing = abs(int(timer[1][x][y] - timer[0][x][y]));
+          vel = constrain(timing, vel_min, vel_max);
+          velocity = map(vel, vel_max, vel_min, 10, 127);
+          noteOn(GLOBAL_MIDI_CHANNEL, note, velocity);
+          pressed[x][y] = 0;
+        }
+
+        if (not_ready[x][y]) {
+
+          Mux2.writeToChannel(KPS[x], LOW);
+          kps[x][y] = !Mux1.readChannel(cols[y]);
+
+          Mux2.writeToChannel(KPE[x], LOW);
+          kpe[x][y] = !Mux1.readChannel(cols[y]);
+
+          Mux2.write(HIGH);
+          if (!kps[x][y] && !kpe[x][y]) {
+            noteOff(GLOBAL_MIDI_CHANNEL, note, velocity);
+            not_ready[x][y] = 0;
+          }
+        }
       }
     }
+    // =======================================================================================
   }
 };
 
-
 extern Keys keys;
-
-// if keystuck, free key, log keystuck, increment count:
-// if 2 consecutive stuck key; disable key with KEY_ERROR state, log key as not working.
-// Possibly save this setting to EEPROM for reference on boot.
-// once 5 total stuck key recorded during uptime; log key as faulty, save to EEPROM.

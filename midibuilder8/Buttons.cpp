@@ -17,7 +17,6 @@ bool Button::readHardware() {
   static bool reading = false;
 
   uint8_t x_pins[8] = { 15, 14, 13, 12, 11, 10, 9, 8 };
-  // uint8_t x_pins[8] = { 7, 6, 5, 4, 3, 2, 1, 0 };
   uint8_t y_pins[4] = { 13, 12, 11, 10 };
   uint8_t z_pins[6] = { 0, 1, 2, 3, 4, 5 };
 

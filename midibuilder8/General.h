@@ -1,24 +1,17 @@
 #pragma once
 
-#include "MIDIHelper.h"
 #include "Knob.h"
 // #include "Joystick.h"
 // #include "TouchSensor.h"
 
-// =============================  MIDI VARIABLES  =============================
-USBMIDI usbmidi("ANNIHILO");
-uint8_t GLOBAL_MIDI_CHANNEL = 1;
-uint8_t KEYS_CHANNEL = GLOBAL_MIDI_CHANNEL;
-// ============================================================================
 
 // // ==============================  JOYSTICK  ==================================
 // Joystick joystick(1, 2);
 // // ============================================================================
 
-// // ===============================  SLIDER  ===================================
+// ===============================  SLIDER  ===================================
 Knob Slider = Knob(/*usesADS*/ true, ADS_SLIDER_CHANNEL, /*CC*/1); // Modulation Wheel
-// Knob Slide = Knob(/*usesADS*/ true, ADS_PITCH_CHANNEL, /*CC*/7); // Modulation Wheel
-// // ============================================================================
+// ============================================================================
 
 // ===============================  KNOBS  ====================================
 const uint8_t NUM_OF_KNOBS = 16;

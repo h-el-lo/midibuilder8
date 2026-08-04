@@ -1,4 +1,4 @@
 #include "RGB.h"
 
-RGBStrip BUTTON_STRIP(29, 14, 200);
+RGBStrip BUTTON_STRIP(29, 14, 150);
 // RGBStrip INDICATOR_STRIP(16, 6, 150);

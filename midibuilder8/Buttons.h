@@ -136,12 +136,12 @@ private:
 
   // Shared color variables
   inline static ColorStruct sceneSelectedColor[2] = {
-    { 0, 150, 255 },    // BANK_A
-    { 200, 230, 160 },  // BANK_B
+    { 0, 150, 255 },  // BANK_A
+    { 255, 50, 0 },   // BANK_B
   };
   inline static ColorStruct sceneUnselectedColor[2] = {
-    { 0, 50, 255 },  // BANK_A
-    { 255, 50, 0 },  // BANK_B
+    { 0, 50, 255 },     // BANK_A
+    { 200, 230, 160 },  // BANK_B
   };
   inline static ColorStruct partsOnColor[2] = {
     { 30, 0, 110 },  // BANK_A

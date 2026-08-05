@@ -59,7 +59,7 @@ void Mux::selectChannel(uint8_t channel) {
     digitalWrite(_S1, (channel >> 1) & 0x01);
     digitalWrite(_S2, (channel >> 2) & 0x01);
     digitalWrite(_S3, (channel >> 3) & 0x01);
-    delayMicroseconds(25);  // for signal stabilization
+    delayMicroseconds(5);  // for signal stabilization
     _selectedChannel = channel;
   }
 }

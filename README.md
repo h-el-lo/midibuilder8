@@ -31,13 +31,10 @@ The project evolved into **controllerbuilder** (created June 2024), a more polis
 - Bridge between controllerbuilder and full-scale implementations
 
 ### Stage 4: MIDI Builder 8 (Current - In Development)
-The **current stage** builds on all lessons learned:
 - **64-key velocity-sensitive keyboard** (8×8 matrix)
-- Full multiplexer support (4 muxes) for efficient pin management
-- Enhanced C++/C hybrid codebase
+- Modular codebase
 - Integration with peripheral controls: knobs, faders, pedals
 - LCD display and addressable LED feedback (NeoPixels)
-- **Not yet production-ready** - core systems working, advanced error handling and features in progress
 
 ## Comparison with Earlier Projects
 

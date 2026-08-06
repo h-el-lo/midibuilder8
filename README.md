@@ -59,18 +59,6 @@ The project evolved into **controllerbuilder** (created June 2024), a more polis
   - Mux4: Analog input (knobs, faders)
 - **Peripheral Support**: 5 configurable knobs/faders with CC control
 - **User Interface**: 20×4 LCD display and addressable LED strips (NeoPixels)
-- **Key State Machine**: Sophisticated state tracking (IDLE, HALF_PRESSED, FULL_PRESSED, RELEASING, STUCK, etc.)
-
-### 🚧 In Progress / Planned
-- Error handling and validation
-- Watchdog timer implementation
-- Hardware validation for analog readings
-- Timing sanity checks for detecting stuck keys
-- Button and encoder support
-- Pedal integration (damper, expression)
-- Joystick/XY pad control
-- Error logging with LED feedback
-- Performance optimization
 
 ## Architecture
 
@@ -80,39 +68,17 @@ The project evolved into **controllerbuilder** (created June 2024), a more polis
 - **Multiplexing**: 4-channel multiplexers reduce pin count
 - **Peripherals**: Analog knobs/faders, digital buttons, LCD display, addressable LEDs
 
-### Software Organization
-```
-midibuilder8/
-├── midibuilder8.ino           # Main sketch
-├── Keys.h                     # Key matrix scanning and state management
-├── MIDIHelper.h               # MIDI communication utilities
-├── Multiplexer.h/.cpp         # Mux control abstraction
-├── Knob.h/.cpp                # Knob/fader handling
-├── DamperPedal.h              # Sustain pedal support
-├── General.h                  # Global configuration and initialization
-└── Future works/              # Work-in-progress features
-    ├── Buttons.h              # Button class (skeleton)
-    ├── Joystick.h             # Joystick control (skeleton)
-    ├── Encoder.h/.cpp         # Rotary encoder support
-    ├── todo.txt               # Development roadmap
-    └── helper.txt             # Reference implementations
-```
-
 ## Technical Details
 
 ### Key Features
 - **Velocity Sensitivity**: Dual-switch mechanism measures time between switch closures
-- **Note Range**: C1 (MIDI 36) to D#6 (MIDI 99) - 64 notes
-- **Multiplexing**: Reduces required GPIO pins through 4-to-16 channel multiplexing
 - **State Tracking**: Advanced state machine detects stuck keys, hardware faults, and timing anomalies
 - **Bit Packing**: Efficient memory usage - 8 bytes per 8×8 matrix instead of 64
 
 ### MIDI Specification
-- **Protocol**: USB MIDI
-- **Channels**: Configurable (currently defaults to channel 1)
-- **CC Support**: 5+ continuous controllers (knobs/faders)
-- **Note Range**: 36-99 (C1 to D#6)
-- **Velocity**: 5-127
+- **Protocol**: USB MIDI, BLE MIDI
+- **Channels**: Configurable (defaults to channel 1)
+- **CC Support**: 16+ continuous controllers (knobs/faders)
 
 ## Getting Started
 
@@ -123,7 +89,6 @@ midibuilder8/
 - External libraries:
   - `Adafruit_NeoPixel.h` (LED control)
   - `LiquidCrystal_I2C.h` (LCD display)
-  - `Wire.h` (I2C communication)
   - USBMIDI library
 
 ### Hardware Requirements
@@ -151,20 +116,10 @@ Edit the following files to customize:
 ## Known Limitations & TODOs
 
 ### Incomplete Features (See `Future works/` directory)
-- [ ] Comprehensive error handling and validation
-- [ ] Watchdog timer for fault recovery
-- [ ] Hardware validation for analog inputs
-- [ ] Button/encoder support classes (skeleton only)
 - [ ] Joystick/XY pad control
 - [ ] Pedal integration (currently DamperPedal only)
-- [ ] Error logging with LED feedback patterns
-- [ ] MIDI message buffering for high-speed scanning
 
 ### Known Issues
-- Error handling exists only as pseudocode/reference
-- Limited testing on full 64-key layout
-- No hardware validation currently active
-- Button and encoder functionality not yet integrated
 
 ## Development Notes
 

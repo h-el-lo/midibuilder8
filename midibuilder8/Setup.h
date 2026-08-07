@@ -17,7 +17,7 @@
 inline void Setup() {
   // put your setup code here, to run once:
   Serial.begin(921600);
-  
+
   // Initialize Button manager and buttons
   BUTTON_STRIP.begin();
   // INDICATOR_STRIP.begin();
@@ -46,6 +46,11 @@ inline void Setup() {
     // rgbLedWrite(RGB_BUILTIN, 255, 0, 0);
     BUTTON_STRIP.update(10, { 255, 0, 0 });
   });
+  // BUTTON_STRIP.update(11, { 75, 155, 214 });
+  // BUTTON_STRIP.update(12, { 75, 155, 214 });
+  // BUTTON_STRIP.update(13, { 75, 155, 214 });
+  // BUTTON_STRIP.update(14, { 255, 0, 0 });
+  // BUTTON_STRIP.update(15, { 75, 155, 214 });
 
   // Begin Wire
   Wire.begin(SDA_PIN, SCL_PIN);

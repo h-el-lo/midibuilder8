@@ -4,10 +4,7 @@
 #include "MenuScreen.h"
 #include "Encoder.h"
 
-// ------------------------------------------------------------------
-// ESP32-S3 pin configuration
-// ------------------------------------------------------------------
-// Encoder is wired directly to the MCU (not on the button mux).
+// Encoder is wired directly to the MCU
 static constexpr uint8_t PIN_ENC_A = 2;
 static constexpr uint8_t PIN_ENC_B = 1;
 

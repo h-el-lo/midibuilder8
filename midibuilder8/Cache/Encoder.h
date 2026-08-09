@@ -29,6 +29,7 @@ public:
 
   // Methods
   void initializeEncoder();
+  uint8_t readState();
   void updateEncoder();
   static void IRAM_ATTR updateEncoderISR();
   int8_t consumeDelta();

@@ -28,6 +28,7 @@ void Encoder::initializeEncoder() {
   // Configure encoder pins as inputs with pull-up resistors
   pinMode(_PIN_A, INPUT);  // External pullup resistors are used
   pinMode(_PIN_B, INPUT);  // External pullup resistors are used
+  _lastEncoded = readState();
 
   // Attach interrupts for encoder channels/pins
   attachInterrupt(digitalPinToInterrupt(_PIN_A), updateEncoderISR, CHANGE);
@@ -35,6 +36,12 @@ void Encoder::initializeEncoder() {
 
   // Bind ISR to this instance
   instance = this;
+}
+
+uint8_t Encoder::readState() {
+  uint8_t MSB = digitalRead(_PIN_A);    // Most significant bit
+  uint8_t LSB = digitalRead(_PIN_B);    // Least significant bit
+  return (uint8_t)((MSB << 1) | LSB);  // Convert to single number
 }
 
 void Encoder::updateEncoderISR() {
@@ -46,11 +53,8 @@ void Encoder::updateEncoderISR() {
 // Interrupt service routine for encoder - removed artificial limits
 void Encoder::updateEncoder() {
 
-  int MSB = digitalRead(_PIN_A);  // Most significant bit
-  int LSB = digitalRead(_PIN_B);  // Least significant bit
-
-  int encoded = (MSB << 1) | LSB;           // Convert to single number
-  int sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
+  uint8_t encoded = readState();      
+  uint8_t sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
 
   // Determine direction based on state changes
   if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _encoderPos++;

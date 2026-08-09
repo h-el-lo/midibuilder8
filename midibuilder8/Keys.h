@@ -1,7 +1,7 @@
 #pragma once
 #include "Multiplexer.h"
 #include "MIDIHelper.h"
-#include "Screen.h"
+// #include "Screen.h"
 
 struct Keys {
 private:
@@ -73,33 +73,33 @@ public:
   void updateTranspose(int8_t increment) {
     transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
     // Serial.println(getTranspose());
-    screen.printTranspose();
+    // screen.printTranspose();
   }
 
   inline static void transposeUp() {
     if (transpose + 1 <= transposeUpperLimit) transpose++;
     // Serial.print("Button Press Transpose Up: ");
     // Serial.println(getTranspose());
-    screen.printTranspose();
+    // screen.printTranspose();
   }
 
   inline static void transposeDown() {
     if (transpose - 1 >= transposeLowerLimit) transpose--;
     // Serial.print("Button Press Transpose Down: ");
     // Serial.println(getTranspose());
-    screen.printTranspose();
+    // screen.printTranspose();
   }
 
   inline static void octaveUp() {
     if (transpose + 12 <= transposeUpperLimit) transpose += 12;
     // Serial.println(transpose);
-    screen.printTranspose();
+    // screen.printTranspose();
   }
 
   inline static void octaveDown() {
     if (transpose - 12 >= transposeLowerLimit) transpose -= 12;
     // Serial.println(transpose);
-    screen.printTranspose();
+    // screen.printTranspose();
   }
 
   void setKeysChannel(uint8_t channel) {

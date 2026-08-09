@@ -2,7 +2,7 @@
 
 #include "ADSManager.h"
 #include "MIDIHelper.h"
-#include "Screen.h"
+// #include "Screen.h"
 
 #include <Wire.h>
 #define SDA_PIN 21
@@ -12,6 +12,8 @@
 #include "Flasher.h"
 #include "Encoder.h"
 #include "Buttons.h"
+
+#include "MenuController.h"
 
 
 inline void Setup() {
@@ -61,18 +63,18 @@ inline void Setup() {
 
 
 
-  // initialize LCD Screen
-  screen.init();
-  screen.printHome();
+  // // initialize LCD Screen
+  // screen.init();
+  // screen.printHome();
 
-  // initialize encoder
-  encoder.initializeEncoder();
+  // // initialize encoder
+  // encoder.initializeEncoder();
 
   // Set analog read resolution to 12 bits
   analogReadResolution(12);
 
   initButtons();
-
+  menuController_begin();  // new — encoder.begin() + menuScreen.begin() (Wire.begin(21,47))
 
   // ExpressionPedal.init();
 

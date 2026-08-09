@@ -20,6 +20,14 @@ public:
     PAGE_HOME,
     PAGE_TRANSPOSE,
     PAGE_CHANNEL,
+    PAGE_ALL_SOUNDS_OFF,
+    PAGE_SETTINGS,
+    PAGE_KNOBS,
+    PAGE_FADERS,
+    PAGE_KEYS,
+    PAGE_KEYS_VELOCITY,
+    PAGE_KEYS_VELOCITY_MIN,
+    PAGE_KEYS_VELOCITY_MAX,
   };
 
   inline static Page _page = PAGE_NULL;
@@ -45,6 +53,7 @@ public:
   void printSettings();
   void clearScreen();
   void knobsEnablePage();
+  void setKeyVelocityPage();
 };
 
 extern Screen screen;

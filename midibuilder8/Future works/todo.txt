@@ -160,66 +160,7 @@ Watchdogs - Last resort recovery from lockups
 
 
 
-
-
-
-
-// Wheel Variables
-uint8_t wheel = 5;  // (Mux3, ch5)
-int wheelMin = 510;
-int wheelMax = 785;
-int wheelMid = ceil((wheelMin + wheelMax) / 2);
-int wheelReading = 0;
-byte wheelThreshold = 2;
-int wheelState, wheelPrevState;
-int pitchState, pitchPrevState;
-uint8_t wheelCCState, wheelCCPrevState;
-
-  // Pitch Wheel (Joystick X)
-  //=========================================================
-  // PitchMod();
-  //==========================================================
-
-// void PitchMod() {
-//   mux3_ch(wheel);
-//   int wheelReading = analogRead(signal3);
-//   wheelState = constrain(wheelReading, wheelMin, wheelMax);
-//   int wheelVar = abs(wheelState - wheelPrevState);
-
-//   if (wheelVar > wheelThreshold) {
-//     if (wheelState != wheelPrevState) {
-
-//       if (wheelState < wheelMid) {
-//         // If wheel is in the lower section
-//         pitchState = map(wheelState, wheelMin, wheelMid, 0, 8191);
-//         if (pitchState > 7700) {
-//           pitchState = 8191;
-//         }
-//         if (pitchState != pitchPrevState) {
-//           pitchBend(channel, pitchState);
-//           pitchPrevState = pitchState;
-//         }
-//         wheelPrevState = wheelState;
-//       } else if (wheelState > wheelMid) {
-//         // if wheel is in the upper section
-//         wheelCCState = map(wheelState, wheelMid, wheelMax, 0, 127);
-//         if (wheelCCState < 23) {
-//           wheelCCState = 0;
-//         } else if (wheelCCState >= 124) {
-//           wheelCCState = 127;
-//         }
-
-//         if (wheelCCState != wheelCCPrevState) {
-//           controlChange(channel, 1, wheelCCState);  // Modulation Wheel
-//           wheelCCPrevState = wheelCCState;
-//         }
-
-//         wheelPrevState = wheelState;
-//       }
-//     }
-//   }
-// }
-
-
+add min, max velocity to settings
+add rgb brightness setting
 
 

@@ -1,7 +1,7 @@
 #include "MIDIHelper.h"
 
 #include <Arduino.h>
-#include "Screen.h"
+// #include "Screen.h"
 
 // =============================  MIDI VARIABLES  =============================
 USBMIDI usbmidi("ANNIHILO");
@@ -16,7 +16,7 @@ bool BLE_MIDI_IS_CONNECTED = true;
 
 void updateChannel(int8_t value) {
   GLOBAL_MIDI_CHANNEL = constrain(GLOBAL_MIDI_CHANNEL + value, 1, 16);
-  screen.printChannel();
+  // screen.printChannel();
 }
 
 void channelUp() {

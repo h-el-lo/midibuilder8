@@ -1,6 +1,6 @@
 #pragma once
 #include "Keys.h"
-#include "Screen.h"
+// #include "Screen.h"
 
 inline void home() {
   Serial.println("Home Button Pressed");
@@ -18,7 +18,3 @@ inline void enter() {
   Serial.println("Enter Button Pressed");
 } 
 
-
-
-// add a proper home screen to screen
-// issues may be with i2c, power d

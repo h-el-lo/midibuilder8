@@ -31,7 +31,7 @@ void setup() {
 }
 
 void loop() {
-  
+
   // Serial.println("Mainloop runnning!"); // DEBUGGER
 
   // ==============================  PERFORM RGB LIGHTING  ===============================
@@ -67,7 +67,8 @@ void loop() {
   // ========================================================================================
 
   // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================
-  encoder.updateScreenValues();
+  // encoder.updateScreenValues();
+  menuController_update();  // new — polls the encoder, moves selection / edits value
   // ========================================================================================
 
   // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================

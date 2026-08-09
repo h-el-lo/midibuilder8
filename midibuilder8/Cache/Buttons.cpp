@@ -3,8 +3,7 @@
 #include "MIDIHelper.h"
 #include "Keys.h"
 #include "Actions.h"
-// #include "Screen.h"
-#include "MenuController.h"   // <-- added: settings/enter/exit now drive the menu FSM
+#include "Screen.h"
 
 // ═════════════════════════════════════════════
 //  Button (base)
@@ -366,13 +365,18 @@ void initButtons() {
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 75, 155, 214 }, channelDown);        // Channel -
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 75, 155, 214 }, keys.octaveUp);      // Octave +
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 75, 155, 214 }, keys.octaveDown);    // Octave -
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 2, 6, { 0, 0, 255 }, keys.transposeUp);    // Transpose +
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 2, 5, { 0, 0, 255 }, keys.transposeDown);  // Transpose -
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 2, 8, 17, { 0, 0, 255 }, channelUp);          // Channel +
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 1, 8, 20, { 0, 0, 255 }, channelDown);        // Channel -
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 4, 7, 18, { 0, 0, 255 }, keys.octaveUp);      // Octave +
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 7, 19, { 0, 0, 255 }, keys.octaveDown);    // Octave -
+  // buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 100, 0, 15 }, allSoundsOff);           // All sounds off
   buttonArray[i++] = new RGBActionButton(YX_BUTTON, 3, 5, 16, { 100, 0, 5 }, allSoundsOff);           // All sounds off
-  // buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, screen.printHomeHandler);  // Home
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, menuController_goHomeExplicit);  // Home
-  // Settings / Exit / Enter now drive the nested settings-menu FSM (MenuController.h/.cpp)
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, menuController_onSettingsPressed); // Settings
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, menuController_onExitPressed);     // Exit
-  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, menuController_onEnterPressed);      // Enter
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 3, 1, 9, { 90, 15, 0 }, screen.printHomeHandler);  // Home
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 2, 1, 8, { 255, 255, 0 }, settings);               // Settings
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 1, 1, 7, { 10, 10, 255 }, exit);                   // Exit
+  buttonArray[i++] = new RGBActionButton(YZ_BUTTON, 4, 5, 4, { 0, 255, 0 }, enter);                    // Enter
 
   manager = new ButtonManager(buttonArray, i);
 }

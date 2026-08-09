@@ -73,17 +73,3 @@ private:
     static Encoder* _instance;
     static portMUX_TYPE _mux;
 };
-
-
-// WARNING: library LiquidCrystal I2C claims to run on avr architecture(s) and may be incompatible with your current board which runs on esp32 architecture(s).
-// C:\Users\Admin\AppData\Local\arduino\sketches\083208EEE4A7A90086783B65C4EA8866\sketch\MenuController.cpp.o: in function `Encoder::isrTrampoline()':
-// C:\Users\Admin\Documents\GitHub\midibuilder8\midibuilder8/Encoder.h:39:(.iram1.0[_ZN7Encoder13isrTrampolineEv]+0x3): dangerous relocation: l32r: literal placed after use: .literal._ZN7Encoder13isrTrampolineEv
-// C:\Users\Admin\AppData\Local\arduino\sketches\083208EEE4A7A90086783B65C4EA8866\sketch\MenuController.cpp.o: in function `Encoder::handleInterrupt()':
-// C:\Users\Admin\Documents\GitHub\midibuilder8\midibuilder8/Encoder.h:48:(.iram1.0[_ZN7Encoder13isrTrampolineEv]+0xe): dangerous relocation: l32r: literal placed after use: (.literal._ZN7Encoder13isrTrampolineEv+0xc)
-// C:\Users\Admin\Documents\GitHub\midibuilder8\midibuilder8/Encoder.h:56:(.iram1.0[_ZN7Encoder13isrTrampolineEv]+0x1a): dangerous relocation: l32r: literal placed after use: (.literal._ZN7Encoder13isrTrampolineEv+0x4)
-// C:\Users\Admin\Documents\GitHub\midibuilder8\midibuilder8/Encoder.h:57:(.iram1.0[_ZN7Encoder13isrTrampolineEv]+0x2b): dangerous relocation: l32r: literal placed after use: (.literal._ZN7Encoder13isrTrampolineEv+0x8)
-// C:\Users\Admin\Documents\GitHub\midibuilder8\midibuilder8/Encoder.h:62:(.iram1.0[_ZN7Encoder13isrTrampolineEv]+0x70): dangerous relocation: l32r: literal placed after use: (.literal._ZN7Encoder13isrTrampolineEv+0x8)
-// collect2.exe: error: ld returned 1 exit status
-// exit status 1
-
-// Compilation error: exit status 1

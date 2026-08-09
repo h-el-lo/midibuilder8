@@ -164,3 +164,8 @@ add min, max velocity to settings
 add rgb brightness setting
 
 
+
+create page class
+two types of page class
+one scrollable with a list of items  (Highlighting happens by encoder movement)
+the other has a template for {string(display name), function, min, max}, should display current value and move to previous page when exit pressed

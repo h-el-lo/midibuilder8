@@ -32,15 +32,12 @@ void setup() {
 
 void loop() {
 
-  // Serial.println("Mainloop runnning!"); // DEBUGGER
-
-
+  // Serial.println("Mainloop runnning!");  // DEBUGGER
 
   linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
   keys.updateKeys();                                                 // read through keys
   DamperPedal.update();
   scanButtons();
-
 
   keys.updateKeys();  // read through keys
   PitchWheel.update();
@@ -50,10 +47,9 @@ void loop() {
   linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
   keys.updateKeys();                                                 // read through keys
   // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================
-  // encoder.updateScreenValues();
-  menuController_update();  // new — polls the encoder, moves selection / edits value
+  encoder.updateScreenValues();
+  // menuController_update();  // new — polls the encoder, moves selection / edits value
   // ========================================================================================
-
 
   keys.updateKeys();  // read through keys
   // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 3 CYCLES  ================
@@ -62,9 +58,6 @@ void loop() {
   if (cycleCount >= 3) cycleCount = 0;  // Reset cycle count every third cycle
   // ========================================================================================
   // ExpressionPedal.update();
-
-
-
 
 
 

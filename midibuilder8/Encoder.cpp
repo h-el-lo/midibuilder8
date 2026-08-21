@@ -29,7 +29,7 @@ void Encoder::init() {
   pinMode(_PIN_B, INPUT);  // External pullup resistors are used
   instance = this;         // Bind ISR to this instance
   _lastState = readState();
-  // Attach interrupts for encoder channels/pins
+
   attachInterrupt(digitalPinToInterrupt(_PIN_A), updateEncoderISR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_PIN_B), updateEncoderISR, CHANGE);
 }
@@ -42,7 +42,7 @@ uint8_t Encoder::readState() {
 
 void Encoder::updateEncoderISR() {
   if (instance != nullptr) {
-    instance->handleInterrupt();  // Call the actual member function
+    instance->handleInterrupt(); 
   }
 }
 
@@ -55,7 +55,7 @@ void Encoder::handleInterrupt() {
   // Determine direction based on state changes
   if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _accum++;
   if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _accum--;
-  noInterrupts();
+  // noInterrupts();
   if (_accum >= 4) {
     _delta++;
     _accum = 0;
@@ -63,7 +63,7 @@ void Encoder::handleInterrupt() {
     _delta--;
     _accum = 0;
   }
-  interrupts();
+  // interrupts();
   _lastState = state;
 }
 
@@ -72,11 +72,11 @@ int8_t Encoder::consumeDelta() {
   // portENABLE_INTERRUPTS(); // should be used only within ISRs
 
   int16_t d;
-  noInterrupts();  // should be called for only a very short period, three lines at the most
+  // noInterrupts();  // should be called for only a very short period, three lines at the most
   // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
   d = _delta;
   _delta = 0;
-  interrupts();
+  // interrupts();
   return d;
 }
 

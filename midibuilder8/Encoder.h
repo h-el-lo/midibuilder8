@@ -5,7 +5,7 @@
 
 class Encoder {
 private:
-  volatile long _lastState = 0;
+  volatile uint8_t _lastState = 0;
   volatile int16_t _delta = 0;
   volatile int8_t _accum = 0;
 

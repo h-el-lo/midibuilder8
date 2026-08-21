@@ -77,8 +77,8 @@ Knob::MinMax Knob::getMinMax() const {
 }
 
 uint8_t Knob::getMIDIChannel() const {
-    return _channel;
-  }
+  return _channel;
+}
 
 // Setters
 void Knob::setPinMode() {
@@ -213,6 +213,10 @@ Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uin
 
 Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue)
   : Fader(mux, potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL) {
+}
+
+Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t channel)
+  : Fader(mux, potPin, CCNumber, 0, 127, channel) {
 }
 
 Fader::Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber)

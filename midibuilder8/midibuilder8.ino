@@ -34,44 +34,43 @@ void loop() {
 
   // Serial.println("Mainloop runnning!"); // DEBUGGER
 
-  // ==============================  PERFORM RGB LIGHTING  ===============================
-  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);
-  // =====================================================================================
 
-  // ================================  READ THROUGH KEYS  ===================================
-  keys.updateKeys();
-  // ========================================================================================
 
-  // ==============================  UPDATE SPECIAL UNITS  ==================================
+  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
+  keys.updateKeys();                                                 // read through keys
   DamperPedal.update();
+  scanButtons();
+
+
+  keys.updateKeys();  // read through keys
   PitchWheel.update();
   Slider.update();
-  // ExpressionPedal.update();
-  // joystick.update();
-  // ========================================================================================
 
-  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 5 CYCLES  ================
-  if (cycleCount == 0) {
-    updateKnobs();
-  }
-  cycleCount++;
 
-  // Reset cycle count
-  if (cycleCount >= 5) {
-    cycleCount = 0;
-  }
-  // ========================================================================================
-
-  // ==============================  READ THROUGH BUTTONS  ==================================
-  scanButtons();
-  // ========================================================================================
-
+  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
+  keys.updateKeys();                                                 // read through keys
   // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================
   // encoder.updateScreenValues();
   menuController_update();  // new — polls the encoder, moves selection / edits value
   // ========================================================================================
 
-  // ==========================  UPDATE TOUCH SENSOR READINGS  ==============================
+
+  keys.updateKeys();  // read through keys
+  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 3 CYCLES  ================
+  if (cycleCount == 0) updateKnobs();
+  cycleCount++;
+  if (cycleCount >= 3) cycleCount = 0;  // Reset cycle count every third cycle
+  // ========================================================================================
+  // ExpressionPedal.update();
+
+
+
+
+
+
+
+  // ========================================================================================
+  // joystick.update();
   // updateTouchSensors();
   // ========================================================================================
 }

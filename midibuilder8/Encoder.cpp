@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "Encoder.h"
 #include "Screen.h"
 #include "Keys.h"
@@ -24,45 +23,48 @@ Encoder::Encoder()
 // Methods
 
 // This method shall be called in case of change in pin numbering, encoder resolution or rotation
-void Encoder::initializeEncoder() {
+void Encoder::init() {
   // Configure encoder pins as inputs with pull-up resistors
   pinMode(_PIN_A, INPUT);  // External pullup resistors are used
   pinMode(_PIN_B, INPUT);  // External pullup resistors are used
-  _lastEncoded = readState();
-
+  instance = this;         // Bind ISR to this instance
+  _lastState = readState();
   // Attach interrupts for encoder channels/pins
   attachInterrupt(digitalPinToInterrupt(_PIN_A), updateEncoderISR, CHANGE);
   attachInterrupt(digitalPinToInterrupt(_PIN_B), updateEncoderISR, CHANGE);
-
-  // Bind ISR to this instance
-  instance = this;
 }
 
 uint8_t Encoder::readState() {
-  uint8_t MSB = digitalRead(_PIN_A);    // Most significant bit
-  uint8_t LSB = digitalRead(_PIN_B);    // Least significant bit
+  uint8_t MSB = digitalRead(_PIN_A);   // Most significant bit
+  uint8_t LSB = digitalRead(_PIN_B);   // Least significant bit
   return (uint8_t)((MSB << 1) | LSB);  // Convert to single number
 }
 
 void Encoder::updateEncoderISR() {
   if (instance != nullptr) {
-    instance->updateEncoder();  // Call the actual member function
+    instance->handleInterrupt();  // Call the actual member function
   }
 }
 
 // Interrupt service routine for encoder - removed artificial limits
-void Encoder::updateEncoder() {
+void Encoder::handleInterrupt() {
 
-  uint8_t encoded = readState();      
-  uint8_t sum = (_lastEncoded << 2) | encoded;  // Add it to previous encoded value
+  uint8_t state = readState();
+  uint8_t sum = (_lastState << 2) | state;  // Add it to previous encoded value
 
   // Determine direction based on state changes
-  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _encoderPos++;
-  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _encoderPos--;
-
-  _lastEncoded = encoded;  // Store this value for next time
-  // Serial.print("Encoder ORIGINAL value: "); // DEBUGGER
-  // Serial.println(_encoderPos); // DEBUGGER
+  if (sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011) _accum++;
+  if (sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000) _accum--;
+  noInterrupts();
+  if (_accum >= 4) {
+    _delta++;
+    _accum = 0;
+  } else if (_accum <= -4) {
+    _delta--;
+    _accum = 0;
+  }
+  interrupts();
+  _lastState = state;
 }
 
 int8_t Encoder::consumeDelta() {
@@ -72,12 +74,8 @@ int8_t Encoder::consumeDelta() {
   int16_t d;
   noInterrupts();  // should be called for only a very short period, three lines at the most
   // else, the watchdog thinks the program has frozen even after just a few milliseconds and reboots
-
-  _encoderVal = _encoderPos / 4;
-  if (_encoderVal != _prevEncoderVal) {
-    d = _encoderVal - _prevEncoderVal;
-    _prevEncoderVal = _encoderVal;
-  }
+  d = _delta;
+  _delta = 0;
   interrupts();
   return d;
 }

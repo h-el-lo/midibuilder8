@@ -33,6 +33,16 @@ Knob_On_Mux knobSet[NUM_OF_KNOBS] = {
   Fader(Mux4, 13, 26),  // Fader 7
   Fader(Mux4, 14, 27),  // Fader 8
   Fader(Mux4, 15, 28),  // Fader 9
+  
+  // Fader(Mux4, 7, 7, 1),   // Fader 1
+  // Fader(Mux4, 8, 7, 2),   // Fader 2
+  // Fader(Mux4, 9, 7, 3),   // Fader 3
+  // Fader(Mux4, 10, 7, 4),  // Fader 4
+  // Fader(Mux4, 11, 7, 5),  // Fader 5
+  // Fader(Mux4, 12, 7, 6),  // Fader 6
+  // Fader(Mux4, 13, 7, 7),  // Fader 7
+  // Fader(Mux4, 14, 7, 8),  // Fader 8
+  // Fader(Mux4, 15, 28),  // Fader 9
 };
 // ============================================================================
 

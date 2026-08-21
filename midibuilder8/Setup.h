@@ -2,7 +2,7 @@
 
 #include "ADSManager.h"
 #include "MIDIHelper.h"
-// #include "Screen.h"
+#include "Screen.h"
 
 #include <Wire.h>
 #define SDA_PIN 21
@@ -13,11 +13,11 @@
 #include "Encoder.h"
 #include "Buttons.h"
 
-#include "MenuController.h"
+// #include "MenuController.h"
 
 
 inline void Setup() {
-  // put your setup code here, to run once:
+  
   Serial.begin(921600);
 
   // Initialize Button manager and buttons
@@ -37,22 +37,15 @@ inline void Setup() {
 
   BLEMIDI_TRANSPORT.setHandleConnected([]() {
     BLE_MIDI_IS_CONNECTED = true;
-    // digitalWrite(LED_BUILTIN, HIGH);
     // rgbLedWrite(RGB_BUILTIN, 0, 255, 0);
     BUTTON_STRIP.update(10, { 0, 255, 0 });
   });
 
   BLEMIDI_TRANSPORT.setHandleDisconnected([]() {
     BLE_MIDI_IS_CONNECTED = false;
-    // digitalWrite(LED_BUILTIN, LOW);
     // rgbLedWrite(RGB_BUILTIN, 255, 0, 0);
     BUTTON_STRIP.update(10, { 255, 0, 0 });
   });
-  // BUTTON_STRIP.update(11, { 75, 155, 214 });
-  // BUTTON_STRIP.update(12, { 75, 155, 214 });
-  // BUTTON_STRIP.update(13, { 75, 155, 214 });
-  // BUTTON_STRIP.update(14, { 255, 0, 0 });
-  // BUTTON_STRIP.update(15, { 75, 155, 214 });
 
   // Begin Wire
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -61,20 +54,18 @@ inline void Setup() {
   // Begin ADS Manager
   ADSManager.begin();
 
+  // initialize LCD Screen
+  screen.init();
+  screen.printHome();
 
-
-  // // initialize LCD Screen
-  // screen.init();
-  // screen.printHome();
-
-  // // initialize encoder
-  // encoder.initializeEncoder();
+  // initialize encoder
+  encoder.init();
 
   // Set analog read resolution to 12 bits
   analogReadResolution(12);
 
   initButtons();
-  menuController_begin();  // new — encoder.begin() + menuScreen.begin() (Wire.begin(21,47))
+  // menuController_begin();  // new — encoder.begin() + menuScreen.begin() (Wire.begin(21,47))
 
   // ExpressionPedal.init();
 

@@ -8,9 +8,11 @@ extern USBMIDI usbmidi;
 
 #include <BLEMIDI_Transport.h>
 #include <hardware/BLEMIDI_ESP32.h>
+// #include <hardware/BLEMIDI_ESP32_NimBLE.h>
 
-typedef BLEMIDI_NAMESPACE::BLEMIDI_Transport<BLEMIDI_NAMESPACE::BLEMIDI_ESP32> BleMidiTransport_t;
-typedef MIDI_NAMESPACE::MidiInterface<BleMidiTransport_t> BleMidiInterface_t;  // , BLEMIDI_NAMESPACE::MySettings > Name((BLEMIDI_NAMESPACE::BLEMIDI_Transport<BLEMIDI_NAMESPACE::BLEMIDI_ESP32> &)BLE##Name) BleMidiInterface_t;
+typedef BLEMIDI_NAMESPACE::BLEMIDI_Transport<BLEMIDI_NAMESPACE::BLEMIDI_ESP32> BleMidiTransport_t; // Using ESP default BLE stack
+// typedef BLEMIDI_NAMESPACE::BLEMIDI_Transport<BLEMIDI_NAMESPACE::BLEMIDI_ESP32_NimBLE> BleMidiTransport_t; // Using NimBLE
+typedef MIDI_NAMESPACE::MidiInterface<BleMidiTransport_t> BleMidiInterface_t;
 
 extern BleMidiTransport_t BLEMIDI_TRANSPORT;
 extern BleMidiInterface_t BLEMIDI_MIDI;

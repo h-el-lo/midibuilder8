@@ -134,6 +134,7 @@ public:
   Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel, bool isEnabled);
   Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max, uint8_t channel);
   Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t min, uint8_t max);
+  Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t channel);
   Fader(Mux& mux, uint8_t potPin, uint8_t CCNumber);
 
   // Getters

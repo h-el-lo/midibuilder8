@@ -70,36 +70,43 @@ public:
     return transpose;
   }
 
-  void updateTranspose(int8_t increment) {
-    transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
-    // Serial.println(getTranspose());
-    screen.printTranspose();
+  inline static void updateTranspose(int8_t increment) {
+    int8_t TI = transpose + increment;
+    if (TI >= transposeLowerLimit && TI <= transposeUpperLimit) {
+      transpose += increment;
+      // Serial.println(getTranspose());
+      screen.printTranspose();
+    }
+
+    // transpose = constrain(transpose + increment, transposeLowerLimit, transposeUpperLimit);
+    // // Serial.println(getTranspose());
+    // screen.printTranspose();
   }
 
   inline static void transposeUp() {
-    if (transpose + 1 <= transposeUpperLimit) transpose++;
-    // Serial.print("Button Press Transpose Up: ");
-    // Serial.println(getTranspose());
-    screen.printTranspose();
+    updateTranspose(1);
+
+    //   if (transpose + 1 <= transposeUpperLimit) {transpose++;
+    //   // Serial.print("Button Press Transpose Up: ");
+    //   // Serial.println(getTranspose());
+    //   screen.printTranspose();
+    // }
   }
 
   inline static void transposeDown() {
-    if (transpose - 1 >= transposeLowerLimit) transpose--;
-    // Serial.print("Button Press Transpose Down: ");
-    // Serial.println(getTranspose());
-    screen.printTranspose();
+    updateTranspose(-1);
   }
 
   inline static void octaveUp() {
-    if (transpose + 12 <= transposeUpperLimit) transpose += 12;
-    // Serial.println(transpose);
-    screen.printTranspose();
+    updateTranspose(12);
+
+    // if (transpose + 12 <= transposeUpperLimit) {transpose += 12;
+    // // Serial.println(transpose);
+    // screen.printTranspose();}
   }
 
   inline static void octaveDown() {
-    if (transpose - 12 >= transposeLowerLimit) transpose -= 12;
-    // Serial.println(transpose);
-    screen.printTranspose();
+    updateTranspose(-12);
   }
 
   void setKeysChannel(uint8_t channel) {

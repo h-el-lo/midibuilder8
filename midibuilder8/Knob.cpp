@@ -1,6 +1,8 @@
 #include "Knob.h"
 #include "MIDIHelper.h"
 
+#define MIDI_UNSPECIFIED_CHANNEL 0
+
 // ================================== REGULAR KNOB CLASS ================================================
 // ======================================================================================================
 // Constructors
@@ -33,7 +35,7 @@ Knob::Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, u
 }
 
 Knob::Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue)
-  : Knob(usesADS, potPin, CCNumber, minCCValue, maxCCValue, GLOBAL_MIDI_CHANNEL) {
+  : Knob(usesADS, potPin, CCNumber, minCCValue, maxCCValue, MIDI_UNSPECIFIED_CHANNEL) {
 }
 
 Knob::Knob(bool usesADS, uint8_t potPin, uint8_t CCNumber)
@@ -77,7 +79,11 @@ Knob::MinMax Knob::getMinMax() const {
 }
 
 uint8_t Knob::getMIDIChannel() const {
-  return _channel;
+  if (_channel == MIDI_UNSPECIFIED_CHANNEL) {
+    return GLOBAL_MIDI_CHANNEL;
+  } else {
+    return _channel;
+  }
 }
 
 // Setters
@@ -172,6 +178,9 @@ void Knob::update() {
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel, bool isEnabled)
   : Knob(potPin, CCNumber, minCCValue, maxCCValue, channel, isEnabled, false), _mux(mux) {
   _usesADS = _mux.usesADS();
+  // Capture the initial physical state of the pot to avoid random CC sends on voltage spikes
+  readKnob();
+  validateAnalogRead();
 }
 
 Knob_On_Mux::Knob_On_Mux(Mux& mux, uint8_t potPin, uint8_t CCNumber, uint8_t minCCValue, uint8_t maxCCValue, uint8_t channel)

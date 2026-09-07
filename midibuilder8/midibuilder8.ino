@@ -14,16 +14,10 @@ void loop() {}
 #include "General.h"
 #include "Setup.h"
 
-// ============================  PROGRAM VARIABLES  ===========================
-uint8_t cycleCount = 0;
 // ============================================================================
-
-// ===============================  KEYS  ==================================
 Keys keys;
-// =========================================================================
-
-// =============================  PITCH WHEEL  ================================
 Pitch_Wheel PitchWheel;
+Damper_Pedal DamperPedal = { 12 };
 // ============================================================================
 
 void setup() {
@@ -34,32 +28,35 @@ void loop() {
 
   // Serial.println("Mainloop runnning!");  // DEBUGGER
 
-  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
+  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform is_running sequence indicator
   keys.updateKeys();                                                 // read through keys
   DamperPedal.update();
   scanButtons();
+  static uint8_t ADSCycleCount = 0;
+  // ============================  ADS1115 READS EVERY N CYCLES  ============================
+  if (ADSCycleCount == 0) {
+    PitchWheel.update();
+    Slider.update();
+  }
+  ADSCycleCount++;
+  if (ADSCycleCount >= 3) ADSCycleCount = 0;  // Reset cycle count every nth cycle
+  // ========================================================================================
 
-  keys.updateKeys();  // read through keys
-  PitchWheel.update();
-  Slider.update();
 
-
-  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform _is_running sequence indicator
+  linear_stepper_forward_backward(r, g, b, steps, timeon, timeoff);  // Perform is_running sequence indicator
   keys.updateKeys();                                                 // read through keys
   // ======================  UPDATE SCREEN BASED ON ENCODER VALUES  =========================
   encoder.updateScreenValues();
   // menuController_update();  // new — polls the encoder, moves selection / edits value
   // ========================================================================================
 
-  keys.updateKeys();  // read through keys
-  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY 3 CYCLES  ================
-  if (cycleCount == 0) updateKnobs();
-  cycleCount++;
-  if (cycleCount >= 3) cycleCount = 0;  // Reset cycle count every third cycle
-  // ========================================================================================
+  static uint8_t knobCycleCount = 0;
+  // ============  READ THROUGH ALL KNOBS AND FADERS ON MUX4 EVERY N CYCLES  ================
+  if (knobCycleCount == 0) updateKnobs();
+  knobCycleCount++;
+  if (knobCycleCount >= 5) knobCycleCount = 0;  // Reset cycle count every nth cycle
   // ExpressionPedal.update();
-
-
+  // ========================================================================================
 
 
   // ========================================================================================

@@ -17,10 +17,9 @@
 
 
 inline void Setup() {
-  
+
   Serial.begin(921600);
 
-  // Initialize Button manager and buttons
   BUTTON_STRIP.begin();
   // INDICATOR_STRIP.begin();
 
@@ -37,7 +36,6 @@ inline void Setup() {
 
   BLEMIDI_TRANSPORT.setHandleConnected([]() {
     BLE_MIDI_IS_CONNECTED = true;
-    // rgbLedWrite(RGB_BUILTIN, 0, 255, 0);
     BUTTON_STRIP.update(10, { 0, 255, 0 });
   });
 
@@ -51,33 +49,18 @@ inline void Setup() {
   Wire.begin(SDA_PIN, SCL_PIN);
   Wire.setClock(400000);
 
-  // Begin ADS Manager
-  ADSManager.begin();
+  ADSManager.begin();  // Begin ADS Manager
 
   // initialize LCD Screen
   screen.init();
   screen.printHome();
 
-  // initialize encoder
-  encoder.init();
+  encoder.init();  // initialize encoder
 
-  // Set analog read resolution to 12 bits
-  analogReadResolution(12);
+  analogReadResolution(12);  // Set analog read resolution to 12 bits
 
-  initButtons();
+  initButtons();  // Initialize Button manager and buttons
   // menuController_begin();  // new — encoder.begin() + menuScreen.begin() (Wire.begin(21,47))
 
   // ExpressionPedal.init();
-
-  // Serial.print("Mux1 mode is ");
-  // Serial.println(Mux1.getMode());
-  // Serial.print("Mux2 mode is ");
-  // Serial.println(Mux2.getMode());
-  // Serial.print("Mux3 mode is ");
-  // Serial.println(Mux3.getMode());
-  // Serial.print("Mux4 mode is ");
-  // Serial.println(Mux4.getMode());
-
-  // Serial.println("Let's get started!");
-  // delay(2000);
 }

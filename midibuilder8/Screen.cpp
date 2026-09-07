@@ -48,8 +48,8 @@ void Screen::printHome() {
 
   _lcd.setCursor(0, 1);
   _lcd.print("Transpose: ");
-  _lcd.setCursor(11, 1);
-  _lcd.printf("%3d", keys.getTranspose());
+  _lcd.setCursor(8, 1);
+  _lcd.print(keys.getTranspose());
 }
 
 void Screen::printHomeHandler() {

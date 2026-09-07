@@ -252,12 +252,11 @@ void ButtonManager::scan() {
 
 
 // ═════════════════════════════════════════════
-//  Composition Root
-//  All button instances live here
+//  Composition Root - All button instances live here
 //  Called once from setup()
 // ═════════════════════════════════════════════
 
-// ── Button instance storage ──
+// ── Button instance storage ──static const uint8_t BUTTON_COUNT = 46;
 static const uint8_t BUTTON_COUNT = 46;
 static Button* buttonArray[BUTTON_COUNT];
 static ButtonManager* manager = nullptr;
@@ -350,7 +349,6 @@ void initButtons() {
   //   []() { /* TODO: memory press action  */ });
 
   // ── Remaining XY action buttons ──
-  // Add yours here following the same pattern:
   // buttonArray[i++] = new ActionButton(type, anodePin, cathodePin, onPress);
   // buttonArray[i++] = new RGBActionButton(buttonType, anodePin, cathodePin, rgbIndex, color, onPress);
 

@@ -64,38 +64,15 @@ void Mux::selectChannel(uint8_t channel) {
   }
 }
 
-// void Mux::selectChannel(uint8_t channel) {
-//   if (micros() - _lastUpdatedTime < _delayThreshold) return;  //signal stabilization
-//   if (channel != _selectedChannel) {
-//     digitalWrite(_S0, channel & 0x01);
-//     digitalWrite(_S1, (channel >> 1) & 0x01);
-//     digitalWrite(_S2, (channel >> 2) & 0x01);
-//     digitalWrite(_S3, (channel >> 3) & 0x01);
-//     // delayMicroseconds(5);  // for signal stabilization
-//     _selectedChannel = channel;
-//   }
-// }
-
 uint16_t Mux::read() {
-  // Serial.print("Reading (");
-  // Serial.print(_selectedChannel);
-  // Serial.print("), ");
-
   if (_usesADS) {
-    // Serial.print("ADS Read, ");
     if (_mode == INPUT) {
       if (_type == ANALOG) {
-        // Serial.print("TYPE=ANALOG, ");
-        // Serial.print("Value= ");
         ADSManager.selectChannel(_signalPin);
-        // Serial.println(ADSManager.read());
         return ADSManager.read();
 
       } else if (_type == DIGITAL) {
-        // Serial.print("TYPE=DIGITAL, ");
-        // Serial.print("Value= ");
         ADSManager.selectChannel(_signalPin);
-        // Serial.println(map(constrain(ADSManager.read(), 0, ADS_RAW_MAX), 0, ADS_RAW_MAX, 0, 1));
         return map(constrain(ADSManager.read(), 0, ADS_RAW_MAX), 0, ADS_RAW_MAX, 0, 1);
 
       } else {
@@ -105,41 +82,25 @@ uint16_t Mux::read() {
       Serial.println("Error: Attempting to read from an output Mux!");
     }
   } else {
-    // Serial.print("MUX read, ");
     if (_mode == INPUT) {
-      // Serial.print("MODE=INPUT, ");
       if (_type == DIGITAL) {
-        // Serial.print("TYPE=DIGITAL, ");
-        // Serial.print("Value= ");
-        // Serial.println(digitalRead(_signalPin));
         return digitalRead(_signalPin);
       } else if (_type == ANALOG) {
-        // Serial.print("TYPE=ANALOG, ");
-        // Serial.print("Value= ");
-        // Serial.println(analogRead(_signalPin));
         return analogRead(_signalPin);
       } else {
         Serial.print("Error: Mux type cannot be determined");
       }
     } else if (_mode == INPUT_PULLUP) {
-      // Serial.print("MODE=INPUT_PULLUP, ");
-      // Serial.print("Value= ");
-      // Serial.println(digitalRead(_signalPin));
       return digitalRead(_signalPin);
     } else {
       Serial.println("Error: Attempting to read from an output Mux!");
     }
-    // Serial.println(".");
   }
 }
 
 void Mux::write(uint8_t state) {
   // This mux class shall not yet perform analogWrite.
   if (_mode == OUTPUT) {
-    // Serial.print("Writing ");
-    // Serial.print(state);
-    // Serial.print(" to ");
-    // Serial.println(_selectedChannel);
     digitalWrite(_signalPin, state);
   } else {
     Serial.println("Invalid Mux operation: attempting digitalWrite on an Input mux");
@@ -163,4 +124,4 @@ Mux Mux2(42, 41, 40, 39, 8, OUTPUT, DIGITAL);         // Mux 2 (Outputs (keys), 
 Mux Mux3(7, 6, 5, 4, 3, INPUT_PULLUP, DIGITAL);       // Mux 3 (Digital output of buttons)
 // Mux Mux4(/* usesADS */ true, 15, 16, 17, 18, /* Pin on ADS */ ADS_MUX4_CHANNEL, INPUT, ANALOG);   // Mux 4 (Analog Input, Knobs and Faders)
 Mux Mux4(15, 16, 17, 18, 9, INPUT, ANALOG);  // Mux 4 (Analog Input, Knobs and Faders)
-                                             // ===========================================================================
+// ===========================================================================

@@ -24,7 +24,7 @@ uint8_t colors[12][3] = {
 // Animation variables (Very similar to Synthage)
 int timeon = 300;     // milliseconds
 int timeoff = 0;      // milliseconds
-uint8_t steps = 30;  // frames per cycle
+uint8_t steps = 40;  // frames per cycle
 unsigned long RGB_timer = 0;
 int threshold = (timeon * 1000) / steps;
 int RGB_count = 0;

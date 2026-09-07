@@ -212,7 +212,7 @@ public:
 
 // ─────────────────────────────────────────────
 //  Action Button
-//  Home, Settings, Exit etc. — no MIDI, no RGB
+//  Home, Settings, Exit
 //  Accepts a plain function pointer as its action
 // ─────────────────────────────────────────────
 class ActionButton : public Button {

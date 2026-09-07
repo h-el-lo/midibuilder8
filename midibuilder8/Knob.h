@@ -23,7 +23,7 @@ protected:
   int16_t _potState, _potPState;
   uint8_t _midiState = 0;
   uint8_t _midiPState = 0;
-  uint8_t _channel;
+  uint8_t _channel = 0;
   bool _isEnabled;
 
   unsigned long snapshot = millis();  // Pot time recorder snapshot
